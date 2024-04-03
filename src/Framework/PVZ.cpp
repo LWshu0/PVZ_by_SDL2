@@ -18,7 +18,9 @@ Timer pvz_timer;
 
 void RenderThread()
 {
-    SDL_Rect rect{ 0, 0, 100, 100 };
+    
+    float rect_x = 0.0f;
+
     while (!QuitFlag)
     {
         pvz_timer.updateTime();
@@ -33,8 +35,10 @@ void RenderThread()
         SDL_SetRenderDrawColor(pvz_renderer, 255, 255, 255, 255);
         SDL_RenderDrawLine(pvz_renderer, 0, 100, 200, 100);
         SDL_RenderDrawLine(pvz_renderer, 100, 0, 100, 200);
-        rect.x += 1;
-        if (rect.x > pvz_window_width) rect.x = 0;
+
+        rect_x += 0.1f * pvz_timer.getDeltaTime();
+        if (rect_x > pvz_window_width) rect_x = 0;
+        SDL_Rect rect{ (int)rect_x, 0, 100, 100 };
         SDL_RenderDrawRect(pvz_renderer, &rect);
 
         // 刷新屏幕
@@ -72,11 +76,16 @@ int main(int argc, char* args[])
     SDL_Event event;
     while (!QuitFlag)
     {
-        while (SDL_PollEvent(&event))
+        if (SDL_WaitEvent(&event))
         {
             if (event.type == SDL_QUIT)
             {
                 QuitFlag = true;
+            }
+            if (event.type == SDL_KEYDOWN)
+            {
+                if (event.key.keysym.sym == SDLK_SPACE) pvz_timer.pause();
+                else pvz_timer.start();
             }
 
         }

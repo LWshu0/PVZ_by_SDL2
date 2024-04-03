@@ -2,6 +2,7 @@
 #define TIMER_H
 
 #include "SDL.h"
+#include "SpinLock.h"
 /**
  * 当游戏暂停时, SDL 时间并不会停止
  * Timer 类用来记录游戏时间, 当游戏暂停时, Timer 的游戏时间也会暂停
@@ -10,6 +11,7 @@
 class Timer
 {
 private:
+    SpinLock m_spinlock;
     uint64_t m_sdlMilliSecond;          // 上一次更新时的 SDL 时间(毫秒)
     bool m_isPause;                     // 是否暂停中
     uint64_t m_MilliSecond;             // 上一次更新时的游戏时间(毫秒)
@@ -34,6 +36,7 @@ public:
 
     inline uint64_t getDeltaTime()
     {
+        if (m_isPause) return 0;
         return m_deltaMilliSecond;
     }
 
