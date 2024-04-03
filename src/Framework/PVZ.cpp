@@ -2,6 +2,7 @@
 #include <thread>
 #include "SDL_image.h"
 #include "Core/Timer.h"
+#include "Core/Camera.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -13,12 +14,13 @@ unsigned int pvz_window_height = 600;
 bool QuitFlag = false;
 // float pvz_window_scale = 1.0f;
 Timer pvz_timer;
+Camera pvz_camera(0, 0, 800, 600);
 // int pvz_card_width = 53;
 // int pvz_card_height = 71;
 
 void RenderThread()
 {
-    
+
     float rect_x = 0.0f;
 
     while (!QuitFlag)
@@ -33,12 +35,12 @@ void RenderThread()
 
         // 渲染图形
         SDL_SetRenderDrawColor(pvz_renderer, 255, 255, 255, 255);
-        SDL_RenderDrawLine(pvz_renderer, 0, 100, 200, 100);
-        SDL_RenderDrawLine(pvz_renderer, 100, 0, 100, 200);
+        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera.getRenderX(0)), (int)(pvz_camera.getRenderY(100)), (int)(pvz_camera.getRenderX(200)), (int)(pvz_camera.getRenderY(100)));
+        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera.getRenderX(100)), (int)(pvz_camera.getRenderY(0)), (int)(pvz_camera.getRenderX(100)), (int)(pvz_camera.getRenderY(200)));
 
         rect_x += 0.1f * pvz_timer.getDeltaTime();
         if (rect_x > pvz_window_width) rect_x = 0;
-        SDL_Rect rect{ (int)rect_x, 0, 100, 100 };
+        SDL_Rect rect{ (int)(rect_x - pvz_camera.getX()), (int)(-pvz_camera.getY()), 100, 100 };
         SDL_RenderDrawRect(pvz_renderer, &rect);
 
         // 刷新屏幕
@@ -84,12 +86,34 @@ int main(int argc, char* args[])
             }
             if (event.type == SDL_KEYDOWN)
             {
-                if (event.key.keysym.sym == SDLK_SPACE) pvz_timer.pause();
-                else pvz_timer.start();
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_ESCAPE:
+                    QuitFlag = true;
+                    break;
+                case SDLK_SPACE:
+                    if (pvz_timer.isPause()) pvz_timer.start();
+                    else pvz_timer.pause();
+                    break;
+                case SDLK_UP:
+                    pvz_camera.move(0, -5.0f);
+                    break;
+                case SDLK_DOWN:
+                    pvz_camera.move(0, 5.0f);
+                    break;
+                case SDLK_LEFT:
+                    pvz_camera.move(-5.0f, 0);
+                    break;
+                case SDLK_RIGHT:
+                    pvz_camera.move(5.0f, 0);
+                    break;
+                default:
+                    break;
+                }
             }
 
         }
-        
+
     }
 
     render_thread.join();

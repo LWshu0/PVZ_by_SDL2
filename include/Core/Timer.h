@@ -29,6 +29,11 @@ public:
 
     void reset();
 
+    inline bool isPause()
+    {
+        return m_isPause;
+    }
+
     inline uint64_t getTime()
     {
         return m_MilliSecond;

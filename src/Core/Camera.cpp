@@ -15,6 +15,16 @@ int Camera::setPosition(float x, float y)
     m_y = y;
     m_bottom = m_y + m_height;
     m_right = m_x + m_width;
+    return 0;
+}
+
+int Camera::move(float offset_x, float offset_y)
+{
+    m_x += offset_x;
+    m_y += offset_y;
+    m_bottom += offset_y;
+    m_right += offset_x;
+    return 0;
 }
 
 Camera::~Camera()
