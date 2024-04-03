@@ -1,0 +1,5 @@
+.vscode
+build
+run
+run/bin/*
+!run/bin/tips.txt
