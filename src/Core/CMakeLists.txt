@@ -1,6 +1,6 @@
+set(NORMAL_CORE_SRC SpinLock.cpp XmlLoader.cpp)
+add_library(normal_core OBJECT ${NORMAL_CORE_SRC})
 
-link_libraries(mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image::SDL2_image)
-
-set(CORE_FILE SpinLock.cpp Camera.cpp Timer.cpp)
-
-add_library(core OBJECT ${CORE_FILE})
+set(SDL_CORE_SRC Timer.cpp Camera.cpp TextureRes.cpp Anim_reanim.cpp)
+add_library(sdl_core OBJECT ${SDL_CORE_SRC})
+target_link_libraries(sdl_core PUBLIC mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image::SDL2_image)
