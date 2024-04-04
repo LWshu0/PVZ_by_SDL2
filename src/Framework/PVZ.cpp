@@ -3,6 +3,7 @@
 #include "SDL_image.h"
 #include "Core/Timer.h"
 #include "Core/Camera.h"
+#include "Core/TextureRes.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -17,10 +18,12 @@ Timer pvz_timer;
 Camera pvz_camera(0, 0, 800, 600);
 // int pvz_card_width = 53;
 // int pvz_card_height = 71;
+std::shared_ptr<TextureRes> res;
 
 void RenderThread()
 {
-
+    // SDL_Texture* texture = res->getReanimTexture("IMAGE_REANIM_SELECTORSCREEN_BG");
+    SDL_Texture* texture = res->getTextureFrom("reanim/Wallnut_body.png");
     float rect_x = 0.0f;
 
     while (!QuitFlag)
@@ -37,11 +40,11 @@ void RenderThread()
         SDL_SetRenderDrawColor(pvz_renderer, 255, 255, 255, 255);
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera.getRenderX(0)), (int)(pvz_camera.getRenderY(100)), (int)(pvz_camera.getRenderX(200)), (int)(pvz_camera.getRenderY(100)));
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera.getRenderX(100)), (int)(pvz_camera.getRenderY(0)), (int)(pvz_camera.getRenderX(100)), (int)(pvz_camera.getRenderY(200)));
-
+        
         rect_x += 0.1f * pvz_timer.getDeltaTime();
         if (rect_x > pvz_window_width) rect_x = 0;
-        SDL_Rect rect{ (int)(rect_x - pvz_camera.getX()), (int)(-pvz_camera.getY()), 100, 100 };
-        SDL_RenderDrawRect(pvz_renderer, &rect);
+        SDL_Rect rect{ (int)(rect_x - pvz_camera.getX()), (int)(-pvz_camera.getY()), 200, 200 };
+        SDL_RenderCopy(pvz_renderer, texture, NULL, &rect);
 
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
@@ -72,6 +75,8 @@ int main(int argc, char* args[])
     if (pvz_renderer == nullptr) { SDL_Log("fail to create a renderer"); return 2; }
 
     SDL_SetRenderDrawBlendMode(pvz_renderer, SDL_BLENDMODE_BLEND);
+
+    res = std::make_shared<TextureRes>(pvz_renderer, "resource/resource.xml", "reanim");
 
     std::thread render_thread(RenderThread);
 
