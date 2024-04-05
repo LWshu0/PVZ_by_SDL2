@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "SDL.h"
+
 class Camera {
 private:
     float m_width;
@@ -20,7 +22,7 @@ public:
 
     inline float getRenderX(float x) { return x - m_x; }
     inline float getRenderY(float y) { return y - m_y; }
-
+    inline SDL_FPoint getRenderPoint(const SDL_FPoint& point) { return SDL_FPoint{ point.x - m_x, point.y - m_y }; }
     inline float getClickX(int x) { return static_cast<float>(x) + m_x; }
     inline float getClickY(int y) { return static_cast<float>(y) + m_y; }
 

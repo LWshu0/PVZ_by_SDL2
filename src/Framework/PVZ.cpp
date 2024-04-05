@@ -4,6 +4,8 @@
 #include "Core/Timer.h"
 #include "Core/Camera.h"
 #include "Core/TextureRes.h"
+#include "Core/AnimPlayer.h"
+#include "Plants/PeaShooterSingle.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -15,10 +17,12 @@ unsigned int pvz_window_height = 600;
 bool QuitFlag = false;
 // float pvz_window_scale = 1.0f;
 Timer pvz_timer;
-Camera pvz_camera(0, 0, 800, 600);
+std::shared_ptr<Camera> pvz_camera;
 // int pvz_card_width = 53;
 // int pvz_card_height = 71;
 std::shared_ptr<TextureRes> res;
+std::shared_ptr<AnimLoader> loader;
+std::shared_ptr<Anim_PeaShooterSingle> player;
 
 void RenderThread()
 {
@@ -38,13 +42,14 @@ void RenderThread()
 
         // 渲染图形
         SDL_SetRenderDrawColor(pvz_renderer, 255, 255, 255, 255);
-        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera.getRenderX(0)), (int)(pvz_camera.getRenderY(100)), (int)(pvz_camera.getRenderX(200)), (int)(pvz_camera.getRenderY(100)));
-        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera.getRenderX(100)), (int)(pvz_camera.getRenderY(0)), (int)(pvz_camera.getRenderX(100)), (int)(pvz_camera.getRenderY(200)));
+        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(0)), (int)(pvz_camera->getRenderY(100)), (int)(pvz_camera->getRenderX(200)), (int)(pvz_camera->getRenderY(100)));
+        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(0)), (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(200)));
         
         rect_x += 0.1f * pvz_timer.getDeltaTime();
         if (rect_x > pvz_window_width) rect_x = 0;
-        SDL_Rect rect{ (int)(rect_x - pvz_camera.getX()), (int)(-pvz_camera.getY()), 200, 200 };
+        SDL_Rect rect{ (int)(rect_x - pvz_camera->getX()), (int)(-pvz_camera->getY()), 200, 200 };
         SDL_RenderCopy(pvz_renderer, texture, NULL, &rect);
+        player->Play(pvz_timer.getTime());
 
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
@@ -77,7 +82,15 @@ int main(int argc, char* args[])
     SDL_SetRenderDrawBlendMode(pvz_renderer, SDL_BLENDMODE_BLEND);
 
     res = std::make_shared<TextureRes>(pvz_renderer, "resource/resource.xml", "reanim");
+    pvz_camera = std::make_shared<Camera>(0, 0, 800, 600);
 
+    loader = std::make_shared<AnimLoader>("reanim/PeaShooterSingle.reanim", pvz_renderer, res);
+    loader->Attach(14, SDL_FPoint{ 32.0f, 63.0f }, 8, SDL_FPoint{ 11.0f, 6.0f });
+    loader->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
+    loader->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
+
+    player = std::make_shared<Anim_PeaShooterSingle>(loader, pvz_camera, SDL_FPoint{ 100.0f, 100.0f });
+    // player->ChangeAnim(AnimState::R_ATTACK);
     std::thread render_thread(RenderThread);
 
     SDL_Event event;
@@ -101,16 +114,22 @@ int main(int argc, char* args[])
                     else pvz_timer.pause();
                     break;
                 case SDLK_UP:
-                    pvz_camera.move(0, -5.0f);
+                    pvz_camera->move(0, -5.0f);
                     break;
                 case SDLK_DOWN:
-                    pvz_camera.move(0, 5.0f);
+                    pvz_camera->move(0, 5.0f);
                     break;
                 case SDLK_LEFT:
-                    pvz_camera.move(-5.0f, 0);
+                    pvz_camera->move(-5.0f, 0);
                     break;
                 case SDLK_RIGHT:
-                    pvz_camera.move(5.0f, 0);
+                    pvz_camera->move(5.0f, 0);
+                    break;
+                case SDLK_1:
+                    player->ChangeAnim(AnimState::R_IDLE);
+                    break;
+                case SDLK_2:
+                    player->ChangeAnim(AnimState::R_ATTACK);
                     break;
                 default:
                     break;
