@@ -20,8 +20,17 @@
     16 : idle_shoot_blink->range : [64, 70] total : [0, 103]
     17 : anim_blink->range : [1, 4] total : [0, 103]
 */
-Anim_PeaShooterSingle::Anim_PeaShooterSingle(std::shared_ptr<AnimLoader> loader, std::shared_ptr<Camera> camera, const SDL_FPoint& init_point) :
-    AnimPlayer(loader, camera, init_point),
+PeaShooterSingle::PeaShooterSingle(
+    std::shared_ptr<AnimLoader> loader,
+    std::shared_ptr<Camera> camera,
+    const SDL_FPoint& root_point
+) :
+    PlantObject(
+        loader, camera,             // 资源 相机
+        SDL_FPoint{ 0.0f, 0.0f },   // 动画播放位置
+        100,                        // HP
+        root_point, 100, 200        // 碰撞箱
+    ),
     is_blinking(false),
     last_blink_ms(0),
     delta_blink_ms(3000)
@@ -32,7 +41,7 @@ Anim_PeaShooterSingle::Anim_PeaShooterSingle(std::shared_ptr<AnimLoader> loader,
     );
 }
 
-int Anim_PeaShooterSingle::Play(uint64_t now_ms)
+int PeaShooterSingle::Play(uint64_t now_ms)
 {
     // 更新帧
     updatePlayingFrameIdx(now_ms);
@@ -55,12 +64,12 @@ int Anim_PeaShooterSingle::Play(uint64_t now_ms)
     if (AnimState::R_ATTACK == m_playingAnimState)
     {
         playTrack(16);
-        if (isPlayEnd(15)) ChangeAnim(AnimState::R_IDLE);
+        if (isPlayEnd(15)) changeAnimState(AnimState::R_IDLE);
     }
     return 0;
 }
 
-int Anim_PeaShooterSingle::ChangeAnim(AnimState to_state)
+int PeaShooterSingle::changeAnimState(AnimState to_state)
 {
     if (to_state == m_playingAnimState) return 0;
     m_playingAnimState = to_state;
@@ -89,7 +98,12 @@ int Anim_PeaShooterSingle::ChangeAnim(AnimState to_state)
     return 0;
 }
 
-Anim_PeaShooterSingle::~Anim_PeaShooterSingle()
+int PeaShooterSingle::attack()
+{
+    // 通知 bullet manager 产生子弹
+}
+
+PeaShooterSingle::~PeaShooterSingle()
 {
 
 }

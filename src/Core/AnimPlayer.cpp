@@ -26,24 +26,24 @@ int AnimPlayer::Play(uint64_t now_ms)
     return 0;
 }
 
-int AnimPlayer::Damage(DamageState to_state)
+int AnimPlayer::changeDamageState(DamageState to_state)
 {
     m_damageState = to_state;
     return 0;
 }
 
-int AnimPlayer::ChangeAnim(AnimState to_state)
+int AnimPlayer::changeAnimState(AnimState to_state)
 {
     m_playingAnimState = to_state;
     return 0;
 }
 
-SDL_FPoint AnimPlayer::GetPosition()
+SDL_FPoint AnimPlayer::getPlayPosition()
 {
     return m_realtimeScreenPoint;
 }
 
-void AnimPlayer::SetPosition(const SDL_FPoint& point)
+void AnimPlayer::setPlayPosition(const SDL_FPoint& point)
 {
     m_realtimeScreenPoint = point;
 }

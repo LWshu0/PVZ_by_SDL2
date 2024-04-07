@@ -22,7 +22,7 @@ std::shared_ptr<Camera> pvz_camera;
 // int pvz_card_height = 71;
 std::shared_ptr<TextureRes> res;
 std::shared_ptr<AnimLoader> loader;
-std::shared_ptr<Anim_PeaShooterSingle> player;
+std::shared_ptr<PeaShooterSingle> player;
 
 void RenderThread()
 {
@@ -89,8 +89,8 @@ int main(int argc, char* args[])
     loader->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     loader->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
 
-    player = std::make_shared<Anim_PeaShooterSingle>(loader, pvz_camera, SDL_FPoint{ 100.0f, 100.0f });
-    // player->ChangeAnim(AnimState::R_ATTACK);
+    player = std::make_shared<PeaShooterSingle>(loader, pvz_camera, SDL_FPoint{ 100.0f, 100.0f });
+    // player->changeAnimState(AnimState::R_ATTACK);
     std::thread render_thread(RenderThread);
 
     SDL_Event event;
@@ -126,10 +126,10 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-                    player->ChangeAnim(AnimState::R_IDLE);
+                    player->changeAnimState(AnimState::R_IDLE);
                     break;
                 case SDLK_2:
-                    player->ChangeAnim(AnimState::R_ATTACK);
+                    player->changeAnimState(AnimState::R_ATTACK);
                     break;
                 default:
                     break;

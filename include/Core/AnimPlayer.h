@@ -85,13 +85,13 @@ public:
     // 动画播放控制
     virtual int Play(uint64_t now_ms);
 
-    virtual int Damage(DamageState to_state);
+    virtual int changeDamageState(DamageState to_state);
 
-    virtual int ChangeAnim(AnimState to_state);
+    virtual int changeAnimState(AnimState to_state);
 
     // 动画播放位置
-    virtual SDL_FPoint GetPosition();
-    virtual void SetPosition(const SDL_FPoint& point);
+    virtual SDL_FPoint getPlayPosition();
+    virtual void setPlayPosition(const SDL_FPoint& point);
 
     virtual ~AnimPlayer() {}
 
