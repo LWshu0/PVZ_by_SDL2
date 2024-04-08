@@ -6,6 +6,9 @@
 #include "Core/TextureRes.h"
 #include "Core/AnimPlayer.h"
 #include "Plants/PeaShooterSingle.h"
+#include "Manager/MapManager.h"
+#include "Map/GrassDayOneLine.h"
+#include "Manager/PlantManager.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -22,13 +25,13 @@ std::shared_ptr<Camera> pvz_camera;
 // int pvz_card_height = 71;
 std::shared_ptr<TextureRes> res;
 std::shared_ptr<AnimLoader> loader;
-std::shared_ptr<PeaShooterSingle> player;
+std::shared_ptr<PeaShooterSingle> peashooter;
+std::shared_ptr<MapManager> map;
+std::shared_ptr<PlantManager> plants;
+SDL_Texture* bk_img = nullptr;
 
 void RenderThread()
 {
-    // SDL_Texture* texture = res->getReanimTexture("IMAGE_REANIM_SELECTORSCREEN_BG");
-    SDL_Texture* texture = res->getTextureFrom("reanim/Wallnut_body.png");
-    float rect_x = 0.0f;
 
     while (!QuitFlag)
     {
@@ -44,13 +47,9 @@ void RenderThread()
         SDL_SetRenderDrawColor(pvz_renderer, 255, 255, 255, 255);
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(0)), (int)(pvz_camera->getRenderY(100)), (int)(pvz_camera->getRenderX(200)), (int)(pvz_camera->getRenderY(100)));
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(0)), (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(200)));
-        
-        rect_x += 0.1f * pvz_timer.getDeltaTime();
-        if (rect_x > pvz_window_width) rect_x = 0;
-        SDL_Rect rect{ (int)(rect_x - pvz_camera->getX()), (int)(-pvz_camera->getY()), 200, 200 };
-        SDL_RenderCopy(pvz_renderer, texture, NULL, &rect);
-        player->Play(pvz_timer.getTime());
 
+
+        plants->renderPlants(pvz_timer.getTime());
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
         // 帧率控制
@@ -89,8 +88,23 @@ int main(int argc, char* args[])
     loader->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     loader->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
 
-    player = std::make_shared<PeaShooterSingle>(loader, pvz_camera, SDL_FPoint{ 100.0f, 100.0f });
-    // player->changeAnimState(AnimState::R_ATTACK);
+    map = std::make_shared<MapManager>();
+    bk_img = res->getTextureFrom("images/background1unsodded.jpg");
+    int bk_w,  bk_h;
+    SDL_QueryTexture(bk_img, NULL, NULL, &bk_w, &bk_h);
+    std::shared_ptr<MapInitilizer> map_init = std::make_shared<GrassDayOneLine>();
+    map_init->initilizeMapTemplate();
+    map->setMap(bk_w, bk_h, 0, bk_w, 0, bk_h, map_init);
+
+    plants = std::make_shared<PlantManager>(map);
+    plants->initilizePlants();
+
+    peashooter = std::make_shared<PeaShooterSingle>(loader, pvz_camera, SDL_FPoint{ 0.0f, 0.0f });
+
+    if (0 == plants->addPlant(0, 0, peashooter)) { SDL_Log("add at (0, 0)\n"); }
+    if (0 == plants->addPlant(0, 1, peashooter)) { SDL_Log("add at (0, 1)\n"); }
+    if (0 == plants->addPlant(1, 1, peashooter)) { SDL_Log("add at (1, 1)\n"); }
+
     std::thread render_thread(RenderThread);
 
     SDL_Event event;
@@ -126,10 +140,10 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-                    player->changeAnimState(AnimState::R_IDLE);
+                    
                     break;
                 case SDLK_2:
-                    player->changeAnimState(AnimState::R_ATTACK);
+                    
                     break;
                 default:
                     break;

@@ -19,6 +19,7 @@ public:
     virtual int Play(uint64_t now_ms) override;
     virtual int changeAnimState(AnimState to_state) override;
 
+    virtual std::shared_ptr<PlantObject> createPlant(const SDL_FPoint& root_point) override;
     virtual int attack() override;
 
     ~PeaShooterSingle();

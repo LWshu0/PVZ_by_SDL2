@@ -27,7 +27,7 @@ PeaShooterSingle::PeaShooterSingle(
 ) :
     PlantObject(
         loader, camera,             // 资源 相机
-        SDL_FPoint{ 0.0f, 0.0f },   // 动画播放位置
+        SDL_FPoint{ root_point.x, root_point.y },   // 动画播放位置
         100,                        // HP
         root_point, 100, 200        // 碰撞箱
     ),
@@ -96,6 +96,11 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
         );
     }
     return 0;
+}
+
+std::shared_ptr<PlantObject> PeaShooterSingle::createPlant(const SDL_FPoint& root_point)
+{
+    return std::make_shared<PeaShooterSingle>(m_loader, m_camera, root_point);
 }
 
 int PeaShooterSingle::attack()

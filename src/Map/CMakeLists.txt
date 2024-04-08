@@ -1,0 +1,1 @@
+add_library(map OBJECT GrassDayOneLine.cpp)

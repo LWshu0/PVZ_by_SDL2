@@ -4,7 +4,9 @@
 #include "Core/GameObject.h"
 #include "Core/AnimPlayer.h"
 
-class PlantObject: public GameObject, public AnimPlayer {
+#include <memory>
+
+class PlantObject : public GameObject, public AnimPlayer {
 public:
     // 
     int m_HP;
@@ -32,6 +34,8 @@ public:
     // virtual int changeAnimState(AnimState to_state);
     // virtual SDL_FPoint GetPosition();
     // virtual void setPlayPosition(const SDL_FPoint& point);
+
+    virtual std::shared_ptr<PlantObject> createPlant(const SDL_FPoint& root_point) = 0;
 
     // 
     virtual int attack() = 0;
