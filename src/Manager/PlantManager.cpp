@@ -1,7 +1,26 @@
 #include "Manager/PlantManager.h"
-PlantManager::PlantManager(std::shared_ptr<MapManager> mapManager) :
+
+PlantManager::PlantManager(
+    SDL_Renderer* renderer,
+    std::shared_ptr<TextureRes> res,
+    std::shared_ptr<Camera> camera,
+    std::shared_ptr<MapManager> mapManager
+) :
+    m_renderer(renderer),
+    m_textureRes(res),
+    m_camera(camera),
     m_mapManager(mapManager)
-{}
+{
+    m_plantTemplate.resize(PlantType::MaxPlantType);
+    m_animLoader.resize(PlantType::MaxPlantType);
+    // 豌豆射手
+    m_animLoader[PlantType::PlantPeaShooter1] = std::make_shared<AnimLoader>("reanim/PeaShooterSingle.reanim", m_renderer, m_textureRes);
+    m_animLoader[PlantType::PlantPeaShooter1]->Attach(14, SDL_FPoint{ 32.0f, 63.0f }, 8, SDL_FPoint{ 11.0f, 6.0f });
+    m_animLoader[PlantType::PlantPeaShooter1]->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
+    m_animLoader[PlantType::PlantPeaShooter1]->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
+    m_plantTemplate[PlantType::PlantPeaShooter1] = std::make_shared<PeaShooterSingle>(m_animLoader[PlantType::PlantPeaShooter1], m_camera, SDL_FPoint{ 0.0f, 0.0f });
+
+}
 
 int PlantManager::initilizePlants()
 {
@@ -19,11 +38,11 @@ int PlantManager::initilizePlants()
     return 0;
 }
 
-int PlantManager::addPlant(int row, int col, std::shared_ptr<PlantObject> plant)
+int PlantManager::addPlant(PlantType type, int row, int col)
 {
     if (row < 0 || row >= m_mapManager->getRow()
         || col < 0 || col >= m_mapManager->getCol()
-        || nullptr == plant
+        || PlantType::MaxPlantType == type
         || nullptr != m_mainPlants[row][col])
     {
         return -1;
@@ -32,7 +51,7 @@ int PlantManager::addPlant(int row, int col, std::shared_ptr<PlantObject> plant)
     float root_y = m_mapManager->getTopMargin() + row * m_mapManager->getCellHeight();
     root_x += m_mapManager->getCellWidth() / 2;
     root_y += m_mapManager->getCellHeight() * 0.8;
-    m_mainPlants[row][col] = plant->createPlant(SDL_FPoint{ root_x, root_y });
+    m_mainPlants[row][col] = m_plantTemplate[type]->createPlant(SDL_FPoint{ root_x, root_y });
     return 0;
 }
 

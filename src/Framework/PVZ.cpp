@@ -4,10 +4,7 @@
 #include "Core/Timer.h"
 #include "Core/Camera.h"
 #include "Core/TextureRes.h"
-#include "Core/AnimPlayer.h"
-#include "Plants/PeaShooterSingle.h"
 #include "Manager/MapManager.h"
-#include "Map/GrassDayOneLine.h"
 #include "Manager/PlantManager.h"
 
 #define FLUSH_DELAY 1000 / 45
@@ -24,8 +21,6 @@ std::shared_ptr<Camera> pvz_camera;
 // int pvz_card_width = 53;
 // int pvz_card_height = 71;
 std::shared_ptr<TextureRes> res;
-std::shared_ptr<AnimLoader> loader;
-std::shared_ptr<PeaShooterSingle> peashooter;
 std::shared_ptr<MapManager> map;
 std::shared_ptr<PlantManager> plants;
 SDL_Texture* bk_img = nullptr;
@@ -83,22 +78,15 @@ int main(int argc, char* args[])
     res = std::make_shared<TextureRes>(pvz_renderer, "resource/resource.xml", "reanim");
     pvz_camera = std::make_shared<Camera>(0, 0, 800, 600);
 
-    loader = std::make_shared<AnimLoader>("reanim/PeaShooterSingle.reanim", pvz_renderer, res);
-    loader->Attach(14, SDL_FPoint{ 32.0f, 63.0f }, 8, SDL_FPoint{ 11.0f, 6.0f });
-    loader->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
-    loader->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
-
     map = std::make_shared<MapManager>(pvz_renderer, res, pvz_camera);
     map->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
 
-    plants = std::make_shared<PlantManager>(map);
+    plants = std::make_shared<PlantManager>(pvz_renderer, res, pvz_camera, map);
     plants->initilizePlants();
 
-    peashooter = std::make_shared<PeaShooterSingle>(loader, pvz_camera, SDL_FPoint{ 0.0f, 0.0f });
-
-    if (0 == plants->addPlant(0, 0, peashooter)) { SDL_Log("add at (0, 0)\n"); }
-    if (0 == plants->addPlant(0, 1, peashooter)) { SDL_Log("add at (0, 1)\n"); }
-    if (0 == plants->addPlant(1, 1, peashooter)) { SDL_Log("add at (1, 1)\n"); }
+    if (0 == plants->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add at (0, 0)\n"); }
+    if (0 == plants->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add at (0, 1)\n"); }
+    if (0 == plants->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add at (1, 1)\n"); }
 
     std::thread render_thread(RenderThread);
 
@@ -135,10 +123,10 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-                    
+
                     break;
                 case SDLK_2:
-                    
+
                     break;
                 default:
                     break;
