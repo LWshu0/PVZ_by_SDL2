@@ -83,11 +83,7 @@ int main(int argc, char* args[])
     loader->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     loader->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
 
-    std::shared_ptr<BulletObject> peaTemplate = std::make_shared<Pea>(pvz_renderer, pvz_camera, 0, 0);
-    std::shared_ptr<ObjectMotion> motion = std::make_shared<MotionSpeed>(10.0f, 0.0f);
-    peaTemplate->setMotion(motion);
-
-    bullets = std::make_shared<BulletManager>(pvz_renderer, 10);
+    bullets = std::make_shared<BulletManager>(pvz_renderer, res, pvz_camera, 10);
 
     std::thread render_thread(RenderThread);
 
@@ -124,10 +120,10 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-                    bullets->addBullet(peaTemplate, 100, 100);
+                    bullets->addBullet(BulletType::BulletPea, 100, 100);
                     break;
                 case SDLK_2:
-                    bullets->addBullet(peaTemplate, 100, 100);
+                    bullets->addBullet(BulletType::BulletPea, 100, 100);
                     break;
                 default:
                     break;

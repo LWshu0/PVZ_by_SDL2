@@ -1,26 +1,44 @@
 #ifndef BULLETMANAGER_H
 #define BULLETMANAGER_H
 
+#include "Core/TextureRes.h"
+#include "Core/Camera.h"
 #include "Core/ObjectMotion.h"
 #include "Bullet/Pea.h"
 #include <vector>
 #include <memory>
 
+enum BulletType {
+    BulletPea,
+    MaxBulletType   // 新的类型添加到该类型上方 此变量可指定子弹的种类数量
+};
+
 class BulletManager
 {
 protected:
+    // 不可变
     SDL_Renderer* m_renderer;
+    std::shared_ptr<TextureRes> m_textureRes;
+    std::shared_ptr<Camera> m_camera;
+    std::vector<std::shared_ptr<BulletObject>> m_bulletTemplate;
+    // 可变
     int m_maxBulletNum;
     std::vector<std::shared_ptr<BulletObject>> m_bullets;
 
 public:
-    BulletManager(SDL_Renderer* renderer, int maxBullet);
+    BulletManager(
+        SDL_Renderer* renderer,
+        std::shared_ptr<TextureRes> texture_res,
+        std::shared_ptr<Camera> camera,
+        int maxBullet);
 
-    int addBullet(std::shared_ptr<BulletObject> bulletTemplate, float x, float y);
+    int addBullet(BulletType type, float x, float y);
 
     int updateBullets(uint64_t delta_ms);
 
     int renderBullets();
+
+    int clearBullets();
 
     ~BulletManager();
 };

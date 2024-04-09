@@ -4,9 +4,14 @@
 #include "BulletObject.h"
 
 class Pea :public BulletObject {
+protected:
+    SDL_Texture* m_texture;
+    int m_textureWidth;
+    int m_textureHeight;
 public:
     Pea(
         SDL_Renderer* renderer,
+        SDL_Texture* texture,
         std::shared_ptr<Camera> camera,
         float x, float y);
 
