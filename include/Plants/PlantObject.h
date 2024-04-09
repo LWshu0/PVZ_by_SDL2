@@ -11,6 +11,8 @@ public:
     // 
     int m_HP;
     int m_lastAttackMilliSecond;
+    SDL_Texture* m_shadow;
+    SDL_FRect m_shadowRange;
 public:
     PlantObject(
         std::shared_ptr<AnimLoader> loader,
@@ -43,6 +45,9 @@ public:
     virtual int damage(int damege);
     //
     // virtual int update(uint64_t now_ms) override;
+    int showAABB();
+
+    int showShadow();
 
     virtual ~PlantObject() {};
 };

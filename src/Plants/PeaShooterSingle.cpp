@@ -27,14 +27,16 @@ PeaShooterSingle::PeaShooterSingle(
 ) :
     PlantObject(
         loader, camera,             // 资源 相机
-        SDL_FPoint{ root_point.x, root_point.y },   // 动画播放位置
+        SDL_FPoint{ root_point.x - 50, root_point.y - 80 },   // 动画播放位置
         100,                        // HP
-        root_point, 100, 200        // 碰撞箱
+        root_point, 40, 70        // 碰撞箱
     ),
     is_blinking(false),
     last_blink_ms(0),
     delta_blink_ms(3000)
 {
+    // 阴影
+    m_shadowRange = SDL_FRect{ root_point.x - 50, root_point.y - 25, 80, 30 };
     initPlayingTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
@@ -46,6 +48,8 @@ int PeaShooterSingle::Play(uint64_t now_ms)
     // 更新帧
     updatePlayingFrameIdx(now_ms);
     // 渲染帧
+    // 阴影
+    showShadow();
     // 茎 & 叶
     playTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
@@ -66,6 +70,7 @@ int PeaShooterSingle::Play(uint64_t now_ms)
         playTrack(16);
         if (isPlayEnd(15)) changeAnimState(AnimState::R_IDLE);
     }
+    showAABB();
     return 0;
 }
 
@@ -106,6 +111,7 @@ std::shared_ptr<PlantObject> PeaShooterSingle::createPlant(const SDL_FPoint& roo
 int PeaShooterSingle::attack()
 {
     // 通知 bullet manager 产生子弹
+    return 0;
 }
 
 PeaShooterSingle::~PeaShooterSingle()

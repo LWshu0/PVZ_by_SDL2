@@ -10,7 +10,9 @@ PlantObject::PlantObject(
     AnimPlayer(loader, camera, init_point),
     GameObject(aabb),
     m_HP(HP)
-{}
+{
+    m_shadow = m_loader->m_imageRes->getTextureFrom("images/plantshadow.png");
+}
 
 PlantObject::PlantObject(
     std::shared_ptr<AnimLoader> loader,
@@ -25,6 +27,7 @@ PlantObject::PlantObject(
     GameObject(root_point, width, height),
     m_HP(HP)
 {
+    m_shadow = m_loader->m_imageRes->getTextureFrom("images/plantshadow.png");
 }
 
 int PlantObject::damage(int damege)
@@ -34,4 +37,21 @@ int PlantObject::damage(int damege)
     {
         changeDamageState(DamageState::R_Death);
     }
+    return 0;
+}
+
+int PlantObject::showAABB()
+{
+    SDL_FRect aabb = m_aabb;
+    aabb.x = m_camera->getRenderX(aabb.x);
+    aabb.y = m_camera->getRenderY(aabb.y);
+    return SDL_RenderDrawRectF(m_loader->m_renderer, &aabb);
+}
+
+int PlantObject::showShadow()
+{
+    SDL_FRect aabb = m_shadowRange;
+    aabb.x = m_camera->getRenderX(aabb.x);
+    aabb.y = m_camera->getRenderY(aabb.y);
+    return SDL_RenderCopyF(m_loader->m_renderer, m_shadow, NULL, &aabb);
 }

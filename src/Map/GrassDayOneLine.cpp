@@ -5,7 +5,8 @@ GrassDayOneLine::GrassDayOneLine(
 ) :
     MapInitilizer()
 {
-    m_bkTexture = res->getTextureFrom("images/background1unsodded.jpg");
+    // m_bkTexture = res->getTextureFrom("images/background1unsodded.jpg");
+    m_bkTexture = res->getTextureFrom("images/background1.jpg");
     int w, h;
     SDL_QueryTexture(m_bkTexture, NULL, NULL, &w, &h);
     m_mapWidthPixel = static_cast<float>(w);
