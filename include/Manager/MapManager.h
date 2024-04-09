@@ -3,11 +3,31 @@
 
 #include <vector>
 #include <memory>
-
+#include "Core/TextureRes.h"
+#include "Core/Camera.h"
 #include "Map/MapInitilizer.h"
+#include "Map/GrassDayOneLine.h"
+
+enum MapType {
+    MapGrassDayOneLine,
+    // 此处添加新的地图 ...
+    MaxMapType
+};
 
 class MapManager {
 protected:
+    /**********************
+    *    初始化后不可变   *
+    *    与渲染相关       *
+    **********************/
+    SDL_Renderer* m_renderer;
+    std::shared_ptr<TextureRes> m_textureRes;
+    std::shared_ptr<Camera> m_camera;
+    std::vector<std::shared_ptr<MapInitilizer>> m_mapTemplate;
+    /********************
+    *   地图管理变量    *
+    ********************/
+public:
     // 地图大小
     float m_mapWidthPixel;
     float m_mapHeightPixel;
@@ -22,21 +42,24 @@ protected:
     // 可种植区域的行列数
     int m_rowNum;
     int m_colNum;
+    // 地图背景
+    SDL_Texture* m_bkTexture;
+protected:
+    // 地图类型
+    MapType m_mapType;
     // 二维数组
     std::vector<std::vector<MapNode>> m_mapRunTime;
-
-    std::shared_ptr<MapInitilizer> m_initilizer;
 public:
-    MapManager();
+    MapManager(
+        SDL_Renderer* renderer,
+        std::shared_ptr<TextureRes> res,
+        std::shared_ptr<Camera> camera
+    );
 
     int setMap(
         float width,
         float height,
-        float left,
-        float right,
-        float top,
-        float bottom,
-        std::shared_ptr<MapInitilizer> mapTemplate
+        MapType type
     );
 
     inline void setTime(MapNode::Time time, int row, int col) { m_mapRunTime[row][col].m_time = time; }
@@ -52,6 +75,8 @@ public:
     inline int getCol() { return m_colNum; }
     inline int getTime(int row, int col) { return m_mapRunTime[row][col].m_time; }
     inline int getLandForm(int row, int col) { return m_mapRunTime[row][col].m_landForm; }
+
+    int renderMap();
 
     ~MapManager();
 };

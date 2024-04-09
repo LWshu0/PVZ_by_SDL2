@@ -7,10 +7,10 @@ class GrassDayOneLine :public MapInitilizer {
 protected:
     
 public:
-    GrassDayOneLine();
-
-    virtual int initilizeMapTemplate() override;
-
+    GrassDayOneLine(
+        std::shared_ptr<TextureRes> res
+    );
+    
     virtual ~GrassDayOneLine();
 };
 

@@ -48,7 +48,7 @@ void RenderThread()
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(0)), (int)(pvz_camera->getRenderY(100)), (int)(pvz_camera->getRenderX(200)), (int)(pvz_camera->getRenderY(100)));
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(0)), (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(200)));
 
-
+        map->renderMap();
         plants->renderPlants(pvz_timer.getTime());
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
@@ -88,13 +88,8 @@ int main(int argc, char* args[])
     loader->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     loader->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
 
-    map = std::make_shared<MapManager>();
-    bk_img = res->getTextureFrom("images/background1unsodded.jpg");
-    int bk_w,  bk_h;
-    SDL_QueryTexture(bk_img, NULL, NULL, &bk_w, &bk_h);
-    std::shared_ptr<MapInitilizer> map_init = std::make_shared<GrassDayOneLine>();
-    map_init->initilizeMapTemplate();
-    map->setMap(bk_w, bk_h, 0, bk_w, 0, bk_h, map_init);
+    map = std::make_shared<MapManager>(pvz_renderer, res, pvz_camera);
+    map->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
 
     plants = std::make_shared<PlantManager>(map);
     plants->initilizePlants();
