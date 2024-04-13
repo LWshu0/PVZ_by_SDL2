@@ -47,6 +47,7 @@ public:
     int addPlant(PlantType type, int row, int col);
     int removePlant(int row, int col);
     int doDamage(int row, int col, int d);
+
     int updatePlants();
     int renderPlants();
 

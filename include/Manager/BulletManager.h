@@ -1,35 +1,39 @@
 #ifndef BULLETMANAGER_H
 #define BULLETMANAGER_H
 
-#include "Core/TextureRes.h"
-#include "Core/Camera.h"
-#include "Core/ObjectMotion.h"
-#include "Bullet/Pea.h"
 #include <vector>
 #include <memory>
+#include "Core/TextureRes.h"
+#include "Core/Camera.h"
+#include "Core/Timer.h"
+#include "Core/ObjectMotion.h"
 
-class BulletManager
-{
+#include "Bullet/Pea.h"
+
+class BulletManager {
 protected:
     // 不可变
-    SDL_Renderer* m_renderer;
-    std::shared_ptr<TextureRes> m_textureRes;
-    std::shared_ptr<Camera> m_camera;
-    std::vector<std::shared_ptr<BulletObject>> m_bulletTemplate;
+    SDL_Renderer* m_renderer;                                       // 渲染器
+    std::shared_ptr<TextureRes> m_textureRes;                       // 纹理资源
+    std::shared_ptr<Camera> m_camera;                               // 相机
+    std::shared_ptr<Timer> m_timer;                                 // 游戏时钟
+    std::vector<std::shared_ptr<BulletObject>> m_bulletTemplate;    // 子弹模板
     // 可变
-    int m_maxBulletNum;
-    std::vector<std::shared_ptr<BulletObject>> m_bullets;
+    int m_maxBulletNum;                                             // 局内最大子弹数量
+    std::vector<std::shared_ptr<BulletObject>> m_bullets;           // 子弹数组
 
 public:
     BulletManager(
         SDL_Renderer* renderer,
         std::shared_ptr<TextureRes> texture_res,
         std::shared_ptr<Camera> camera,
-        int maxBullet);
+        std::shared_ptr<Timer> timer,
+        int maxBullet
+    );
 
     int addBullet(BulletType type, float x, float y);
 
-    int updateBullets(uint64_t delta_ms);
+    int updateBullets();
 
     int renderBullets();
 

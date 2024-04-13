@@ -27,11 +27,11 @@ PeaShooterSingle::PeaShooterSingle(
     const SDL_FPoint& root_point
 ) :
     PlantObject(
-        loader, camera,             // 资源 相机
-        SDL_FPoint{ root_point.x - 50, root_point.y - 80 },   // 动画播放位置
-        100,                        // HP
-        3000,                       // reload 时间
-        root_point, 40, 70        // 碰撞箱
+        loader, camera,                                         // 资源 相机
+        SDL_FPoint{ root_point.x - 50, root_point.y - 80 },     // 动画播放位置
+        100,                                                    // HP
+        3000,                                                   // reload 时间
+        root_point, 40, 70                                      // 碰撞箱
     ),
     is_blinking(false),
     last_blink_ms(0),
@@ -46,13 +46,13 @@ PeaShooterSingle::PeaShooterSingle(
     // }
     // 动画时间
     m_windUpDuration = (70 - 54) * 1000 / default_attack_fps;
-    
-    // 阴影
-    m_shadowRange = SDL_FRect{ root_point.x - 50, root_point.y - 25, 80, 30 };
+    // 初始播放的轨道
     initPlayingTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
     );
+    // 阴影
+    m_shadowRange = SDL_FRect{ root_point.x - 50, root_point.y - 25, 80, 30 };
 }
 
 std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root_point)
@@ -129,16 +129,15 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
 int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Timer> timer)
 {
     if (to_state == m_state) return 0;
+    m_state = to_state;
     if (PlantState::ATTACK == to_state)
     {
-        m_state = to_state;
         m_nextAttackAnimMilliSecond = timer->getTime();
         m_nextFireMilliSecond = timer->getTime() + m_windUpDuration;
         changeAnimState(AnimState::R_ATTACK);
     }
     else
     {
-        m_state = to_state;
         changeAnimState(AnimState::R_IDLE);
     }
     

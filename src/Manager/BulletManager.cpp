@@ -4,11 +4,13 @@ BulletManager::BulletManager(
     SDL_Renderer* renderer,
     std::shared_ptr<TextureRes> texture_res,
     std::shared_ptr<Camera> camera,
+    std::shared_ptr<Timer> timer,
     int maxBullet
 ) :
     m_renderer(renderer),
     m_textureRes(texture_res),
     m_camera(camera),
+    m_timer(timer),
     m_maxBulletNum(maxBullet)
 {
     // 初始化模板数组
@@ -45,18 +47,20 @@ int BulletManager::addBullet(BulletType type, float x, float y)
     return -1;
 }
 
-int BulletManager::updateBullets(uint64_t delta_ms)
+int BulletManager::updateBullets()
 {
     for (auto& ptr : m_bullets)
     {
-        if (nullptr != ptr)
+        if (nullptr == ptr) continue;
+        ptr->updateBullet(m_timer->getDeltaTime());
+        // 超出屏幕范围子弹检查
+        if (ptr->m_aabb.x > m_camera->getRight()
+            || ptr->m_aabb.x + ptr->m_aabb.w < m_camera->getLeft()
+            || ptr->m_aabb.y > m_camera->getBottom()
+            || ptr->m_aabb.y + ptr->m_aabb.h < m_camera->getTop())
         {
-            ptr->updateBullet(delta_ms);
-            if (ptr->m_aabb.x > m_camera->getRight())
-            {
-                ptr = nullptr;
-                // SDL_Log("remove one\n");
-            }
+            ptr = nullptr;
+            // SDL_Log("remove one\n");
         }
     }
     return 0;
@@ -66,10 +70,8 @@ int BulletManager::renderBullets()
 {
     for (auto& ptr : m_bullets)
     {
-        if (nullptr != ptr)
-        {
-            ptr->renderBullet();
-        }
+        if (nullptr == ptr) continue;
+        ptr->renderBullet();
     }
     return 0;
 }

@@ -10,7 +10,6 @@ protected:
     uint64_t last_blink_ms;
     uint64_t delta_blink_ms;
 
-
 public:
     PeaShooterSingle(
         std::shared_ptr<AnimLoader> loader,
@@ -23,7 +22,6 @@ public:
     // 0 -> idel, 1 -> emit
     virtual int Play(uint64_t now_ms) override;
     virtual int changeAnimState(AnimState to_state) override;
-    
 
     virtual int changePlantState(PlantState to_state, std::shared_ptr<Timer> timer) override;
     virtual BulletType attack(std::shared_ptr<Timer> timer) override;

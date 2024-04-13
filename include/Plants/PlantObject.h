@@ -15,8 +15,10 @@ enum PlantState {
 
 class PlantObject : public GameObject, public AnimPlayer {
 public:
-    // 
+    // 植物属性
     int m_HP;
+    PlantState m_state;                     // 植物当前的状态
+    uint64_t m_reloadMilliSecond;           // 两次攻击逻辑之间的间隔 即下图中 01+02+03
     /*  in the timeline shown below - 代表 IDLE 动画
                                     * 代表 ATTACK 动画
                                     + 代表进入攻击逻辑(等待一段前摇后产生子弹)
@@ -24,14 +26,15 @@ public:
         ----------*********----------*********----------*********
                   +    |             +                  +
         | logic   | 01 |02|   03     |
+        01: 攻击前摇
+        02: 攻击后摇
+        03: 攻击动画之间的 idle 动画填充
     */
-    PlantState m_state;                     // 植物当前的状态
-    uint64_t m_reloadMilliSecond;           // 植物属性, 固定值, 两次攻击逻辑之间的间隔 即 01+02+03
     uint64_t m_windUpDuration;              // 攻击前摇 即 01
-
     uint64_t m_nextAttackAnimMilliSecond;   // 下一次 attack 动画播放时间
     uint64_t m_nextFireMilliSecond;         // 下一次 Fire 时间
 
+    // 植物影子
     SDL_Texture* m_shadow;
     SDL_FRect m_shadowRange;
 public:
@@ -64,7 +67,6 @@ public:
     // virtual void setPlayPosition(const SDL_FPoint& point);
 
     inline bool isDead() { return m_HP <= 0; }
-
     
     // 待实现
     // virtual bool inAttackRange(const SDL_FRect& enemy_aabb) = 0;
@@ -81,8 +83,6 @@ public:
     // 更新到下一帧的状态
     virtual int updatePlant(std::shared_ptr<Timer> timer) = 0;
 
-    //
-    // virtual int update(uint64_t now_ms) override;
     int showAABB();
 
     int showShadow();

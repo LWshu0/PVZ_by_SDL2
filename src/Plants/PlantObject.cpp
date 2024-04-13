@@ -39,7 +39,7 @@ PlantObject::PlantObject(
 int PlantObject::damage(int damege)
 {
     m_HP -= damege;
-    if (m_HP < 0)
+    if (m_HP <= 0)
     {
         changeDamageState(DamageState::R_Death);
     }

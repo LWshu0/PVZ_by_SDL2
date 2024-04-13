@@ -25,33 +25,32 @@ std::shared_ptr<TextureRes> texture_res;
 std::shared_ptr<MapManager> map_manager;
 std::shared_ptr<BulletManager> bullet_manager;
 std::shared_ptr<PlantManager> plant_manager;
-SDL_Texture* bk_img = nullptr;
 
 void RenderThread()
 {
 
     while (!QuitFlag)
     {
+        // 更新时钟
         pvz_timer->updateTime();
+
         // 更新物体状态
         plant_manager->updatePlants();
-        bullet_manager->updateBullets(pvz_timer->getDeltaTime());
+        bullet_manager->updateBullets();
         // ...
 
         // 清空屏幕
         SDL_SetRenderDrawColor(pvz_renderer, 0, 10, 100, 255);
         SDL_RenderClear(pvz_renderer);
 
-        // 渲染图形
-        SDL_SetRenderDrawColor(pvz_renderer, 255, 255, 255, 255);
-        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(0)), (int)(pvz_camera->getRenderY(100)), (int)(pvz_camera->getRenderX(200)), (int)(pvz_camera->getRenderY(100)));
-        SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(0)), (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(200)));
-
+        // 渲染对象
         map_manager->renderMap();
         plant_manager->renderPlants();
         bullet_manager->renderBullets();
+
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
+
         // 帧率控制
         if (pvz_timer->getDeltaTime() < FLUSH_DELAY)
         {
@@ -87,7 +86,7 @@ int main(int argc, char* args[])
     map_manager = std::make_shared<MapManager>(pvz_renderer, texture_res, pvz_camera);
     map_manager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
 
-    bullet_manager = std::make_shared<BulletManager>(pvz_renderer, texture_res, pvz_camera, 100);
+    bullet_manager = std::make_shared<BulletManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, 100);
 
     plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager);
     plant_manager->initilizePlants();
@@ -141,9 +140,7 @@ int main(int argc, char* args[])
                     break;
                 }
             }
-
         }
-
     }
 
     render_thread.join();
