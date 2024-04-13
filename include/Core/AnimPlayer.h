@@ -124,6 +124,9 @@ protected:
     int setFPS(int track_idx, float fps);
     int setFPS(const std::initializer_list<int>& track_idx, float fps);
 
+    int resetTrack(int track_idx);
+    int resetTrack(const std::initializer_list<int>& track_idx);
+    
     // 判断播放到结束帧
     inline bool isPlayEnd(int track_idx)
     {

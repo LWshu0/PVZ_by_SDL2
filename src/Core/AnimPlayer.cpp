@@ -263,3 +263,18 @@ int AnimPlayer::setFPS(const std::initializer_list<int>& track_idx, float fps)
     }
     return 0;
 }
+
+int AnimPlayer::resetTrack(int track_idx)
+{
+    m_trackPlayRecord[track_idx].m_playingFrameIdx = m_trackPlayRecord[track_idx].m_begin;
+    return 0;
+}
+
+int AnimPlayer::resetTrack(const std::initializer_list<int>& track_idx)
+{
+    for (auto idx : track_idx)
+    {
+        m_trackPlayRecord[idx].m_playingFrameIdx = m_trackPlayRecord[idx].m_begin;
+    }
+    return 0;
+}
