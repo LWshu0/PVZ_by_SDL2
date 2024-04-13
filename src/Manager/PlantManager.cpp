@@ -4,12 +4,16 @@ PlantManager::PlantManager(
     SDL_Renderer* renderer,
     std::shared_ptr<TextureRes> res,
     std::shared_ptr<Camera> camera,
-    std::shared_ptr<MapManager> mapManager
+    std::shared_ptr<Timer> timer,
+    std::shared_ptr<MapManager> mapManager,
+    std::shared_ptr<BulletManager> bulletManager
 ) :
     m_renderer(renderer),
     m_textureRes(res),
     m_camera(camera),
-    m_mapManager(mapManager)
+    m_timer(timer),
+    m_mapManager(mapManager),
+    m_bulletManager(bulletManager)
 {
     m_plantTemplate.resize(PlantType::MaxPlantType);
     m_animLoader.resize(PlantType::MaxPlantType);
@@ -51,7 +55,7 @@ int PlantManager::addPlant(PlantType type, int row, int col)
     float root_y = m_mapManager->getTopMargin() + row * m_mapManager->getCellHeight();
     root_x += m_mapManager->getCellWidth() / 2;
     root_y += m_mapManager->getCellHeight() * 0.8;
-    m_mainPlants[row][col] = m_plantTemplate[type]->createPlant(SDL_FPoint{ root_x, root_y });
+    m_mainPlants[row][col] = m_plantTemplate[type]->clonePlant(SDL_FPoint{ root_x, root_y });
     return 0;
 }
 
@@ -78,22 +82,46 @@ int PlantManager::doDamage(int row, int col, int d)
     return 0;
 }
 
-int PlantManager::renderPlants(uint64_t now_ms)
+int PlantManager::updatePlants()
 {
     for (int i = 0;i < m_mainPlants.size();i++)
     {
         for (int j = 0;j < m_mainPlants[i].size();j++)
         {
-            if (nullptr != m_mainPlants[i][j]) m_mainPlants[i][j]->Play(now_ms);
+            if (nullptr == m_mainPlants[i][j]) continue;
+
+            if (m_mainPlants[i][j]->isDead())
+            {
+                m_mainPlants[i][j] = nullptr;
+            }
+            else
+            {
+                // m_mainPlants[i][j]->changePlantState(PlantState::ATTACK, m_timer);
+                BulletType bullet_type = m_mainPlants[i][j]->attack(m_timer);
+                if (BulletType::MaxBulletType != bullet_type)
+                {
+                    m_bulletManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y);
+                }
+
+                m_mainPlants[i][j]->updatePlant(m_timer);
+            }                                
         }
     }
-    // for (auto& r : m_mainPlants)
-    // {
-    //     for (auto& c : r)
-    //     {
-    //         if(nullptr != c) c->Play(now_ms);
-    //     }
-    // }
+    return 0;
+}
+
+int PlantManager::renderPlants()
+{
+    for (int i = 0;i < m_mainPlants.size();i++)
+    {
+        for (int j = 0;j < m_mainPlants[i].size();j++)
+        {
+            if (nullptr != m_mainPlants[i][j])
+            {
+                m_mainPlants[i][j]->Play(m_timer->getTime());
+            }
+        }
+    }
     return 0;
 }
 

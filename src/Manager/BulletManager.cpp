@@ -49,7 +49,15 @@ int BulletManager::updateBullets(uint64_t delta_ms)
 {
     for (auto& ptr : m_bullets)
     {
-        if (nullptr != ptr) ptr->updateBullet(delta_ms);
+        if (nullptr != ptr)
+        {
+            ptr->updateBullet(delta_ms);
+            if (ptr->m_aabb.x > m_camera->getRight())
+            {
+                ptr = nullptr;
+                // SDL_Log("remove one\n");
+            }
+        }
     }
     return 0;
 }

@@ -8,11 +8,6 @@
 #include <vector>
 #include <memory>
 
-enum BulletType {
-    BulletPea,
-    MaxBulletType   // 新的类型添加到该类型上方 此变量可指定子弹的种类数量
-};
-
 class BulletManager
 {
 protected:

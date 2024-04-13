@@ -29,17 +29,17 @@ public:
 
     void reset();
 
-    inline bool isPause()
+    inline bool isPause() const
     {
         return m_isPause;
     }
 
-    inline uint64_t getTime()
+    inline uint64_t getTime() const
     {
         return m_MilliSecond;
     };
 
-    inline uint64_t getDeltaTime()
+    inline uint64_t getDeltaTime() const
     {
         if (m_isPause) return 0;
         return m_deltaMilliSecond;

@@ -5,6 +5,7 @@
 #include "Core/Camera.h"
 #include "Core/TextureRes.h"
 #include "Manager/MapManager.h"
+#include "Manager/BulletManager.h"
 #include "Manager/PlantManager.h"
 
 #define FLUSH_DELAY 1000 / 45
@@ -16,13 +17,14 @@ unsigned int pvz_window_width = 800;
 unsigned int pvz_window_height = 600;
 bool QuitFlag = false;
 // float pvz_window_scale = 1.0f;
-Timer pvz_timer;
+std::shared_ptr<Timer> pvz_timer;
 std::shared_ptr<Camera> pvz_camera;
 // int pvz_card_width = 53;
 // int pvz_card_height = 71;
-std::shared_ptr<TextureRes> res;
-std::shared_ptr<MapManager> map;
-std::shared_ptr<PlantManager> plants;
+std::shared_ptr<TextureRes> texture_res;
+std::shared_ptr<MapManager> map_manager;
+std::shared_ptr<BulletManager> bullet_manager;
+std::shared_ptr<PlantManager> plant_manager;
 SDL_Texture* bk_img = nullptr;
 
 void RenderThread()
@@ -30,8 +32,10 @@ void RenderThread()
 
     while (!QuitFlag)
     {
-        pvz_timer.updateTime();
+        pvz_timer->updateTime();
         // 更新物体状态
+        plant_manager->updatePlants();
+        bullet_manager->updateBullets(pvz_timer->getDeltaTime());
         // ...
 
         // 清空屏幕
@@ -43,14 +47,15 @@ void RenderThread()
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(0)), (int)(pvz_camera->getRenderY(100)), (int)(pvz_camera->getRenderX(200)), (int)(pvz_camera->getRenderY(100)));
         SDL_RenderDrawLine(pvz_renderer, (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(0)), (int)(pvz_camera->getRenderX(100)), (int)(pvz_camera->getRenderY(200)));
 
-        map->renderMap();
-        plants->renderPlants(pvz_timer.getTime());
+        map_manager->renderMap();
+        plant_manager->renderPlants();
+        bullet_manager->renderBullets();
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
         // 帧率控制
-        if (pvz_timer.getDeltaTime() < FLUSH_DELAY)
+        if (pvz_timer->getDeltaTime() < FLUSH_DELAY)
         {
-            SDL_Delay(FLUSH_DELAY - pvz_timer.getDeltaTime());
+            SDL_Delay(FLUSH_DELAY - pvz_timer->getDeltaTime());
         }
     }
 
@@ -75,18 +80,22 @@ int main(int argc, char* args[])
 
     SDL_SetRenderDrawBlendMode(pvz_renderer, SDL_BLENDMODE_BLEND);
 
-    res = std::make_shared<TextureRes>(pvz_renderer, "resource/resource.xml", "reanim");
+    texture_res = std::make_shared<TextureRes>(pvz_renderer, "resource/resource.xml", "reanim");
+    pvz_timer = std::make_shared<Timer>();
     pvz_camera = std::make_shared<Camera>(0, 0, 800, 600);
 
-    map = std::make_shared<MapManager>(pvz_renderer, res, pvz_camera);
-    map->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
+    map_manager = std::make_shared<MapManager>(pvz_renderer, texture_res, pvz_camera);
+    map_manager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
 
-    plants = std::make_shared<PlantManager>(pvz_renderer, res, pvz_camera, map);
-    plants->initilizePlants();
+    bullet_manager = std::make_shared<BulletManager>(pvz_renderer, texture_res, pvz_camera, 100);
 
-    if (0 == plants->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add at (0, 0)\n"); }
-    if (0 == plants->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add at (0, 1)\n"); }
-    if (0 == plants->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add at (1, 1)\n"); }
+    plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager);
+    plant_manager->initilizePlants();
+
+    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add at (0, 0)\n"); }
+    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add at (0, 1)\n"); }
+    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add at (1, 1)\n"); }
+    if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove at (1, 1)\n"); }
 
     std::thread render_thread(RenderThread);
 
@@ -107,8 +116,8 @@ int main(int argc, char* args[])
                     QuitFlag = true;
                     break;
                 case SDLK_SPACE:
-                    if (pvz_timer.isPause()) pvz_timer.start();
-                    else pvz_timer.pause();
+                    if (pvz_timer->isPause()) pvz_timer->start();
+                    else pvz_timer->pause();
                     break;
                 case SDLK_UP:
                     pvz_camera->move(0, -5.0f);
@@ -123,7 +132,7 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-
+                    plant_manager->doDamage(0, 0, 50);
                     break;
                 case SDLK_2:
 

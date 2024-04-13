@@ -1,4 +1,5 @@
 #include "Plants/PeaShooterSingle.h"
+
 /*
     fps: 12
     0 : anim_idle->range : [4, 29] total : [0, 103]
@@ -29,18 +30,34 @@ PeaShooterSingle::PeaShooterSingle(
         loader, camera,             // 资源 相机
         SDL_FPoint{ root_point.x - 50, root_point.y - 80 },   // 动画播放位置
         100,                        // HP
+        3000,                       // reload 时间
         root_point, 40, 70        // 碰撞箱
     ),
     is_blinking(false),
     last_blink_ms(0),
-    delta_blink_ms(3000)
+    delta_blink_ms(5000)
 {
+    float default_attack_fps = 48.0f;
+    // uint64_t attack_logic_ms = (79 - 54) * 1000 / default_attack_fps;
+    // if (attack_logic_ms > m_reloadMilliSecond)
+    // {
+    //     default_attack_fps = (79 - 54) * 1000 / m_reloadMilliSecond;
+    //     attack_logic_ms = m_reloadMilliSecond;
+    // }
+    // 动画时间
+    m_windUpDuration = (70 - 54) * 1000 / default_attack_fps;
+    
     // 阴影
     m_shadowRange = SDL_FRect{ root_point.x - 50, root_point.y - 25, 80, 30 };
     initPlayingTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
     );
+}
+
+std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root_point)
+{
+    return std::make_shared<PeaShooterSingle>(m_loader, m_camera, root_point);
 }
 
 int PeaShooterSingle::Play(uint64_t now_ms)
@@ -86,7 +103,10 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
         );
         setFPS(
             { 13, 14, 15, 16 },
-            24.0f
+            48.0f
+        );
+        resetTrack(
+            { 13, 14, 15, 16 }
         );
     }
     else
@@ -97,20 +117,55 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
         );
         setFPS(
             { 13, 14, 15, 16 },
-            12.0f
+            14.0f
+        );
+        resetTrack(
+            { 13, 14, 15, 16 }
         );
     }
     return 0;
 }
 
-std::shared_ptr<PlantObject> PeaShooterSingle::createPlant(const SDL_FPoint& root_point)
+int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Timer> timer)
 {
-    return std::make_shared<PeaShooterSingle>(m_loader, m_camera, root_point);
+    if (to_state == m_state) return 0;
+    if (PlantState::ATTACK == to_state)
+    {
+        m_state = to_state;
+        m_nextAttackAnimMilliSecond = timer->getTime();
+        m_nextFireMilliSecond = timer->getTime() + m_windUpDuration;
+        changeAnimState(AnimState::R_ATTACK);
+    }
+    else
+    {
+        m_state = to_state;
+        changeAnimState(AnimState::R_IDLE);
+    }
+    
+    return -1;
 }
 
-int PeaShooterSingle::attack()
+BulletType PeaShooterSingle::attack(std::shared_ptr<Timer> timer)
 {
-    // 通知 bullet manager 产生子弹
+    if (PlantState::ATTACK != m_state) return BulletType::MaxBulletType;
+    if (timer->getTime() >= m_nextFireMilliSecond)
+    {
+        m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;
+        return BulletType::BulletPea;
+    }
+    return BulletType::MaxBulletType;
+}
+
+int PeaShooterSingle::updatePlant(std::shared_ptr<Timer> timer)
+{
+    if (PlantState::ATTACK == m_state)
+    {
+        if (timer->getTime() >= m_nextAttackAnimMilliSecond)
+        {
+            changeAnimState(AnimState::R_ATTACK);
+            m_nextAttackAnimMilliSecond = m_nextAttackAnimMilliSecond + m_reloadMilliSecond;
+        }
+    }
     return 0;
 }
 
