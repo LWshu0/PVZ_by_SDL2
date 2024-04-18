@@ -68,7 +68,9 @@ public:
     inline float getWidth() { return m_mapWidthPixel; }
     inline float getHeight() { return m_mapHeightPixel; }
     inline float getLeftMargin() { return m_leftMargin; }
+    inline float getRightMargin() { return m_rightMargin; }
     inline float getTopMargin() { return m_topMargin; }
+    inline float getBottomMargin() { return m_bottomMargin; }
     inline float getCellWidth() { return m_cellWidth; }
     inline float getCellHeight() { return m_cellHeight; }
     inline int getRow() { return m_rowNum; }

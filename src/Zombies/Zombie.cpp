@@ -54,7 +54,7 @@ Zombie::Zombie(
         SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
         SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
         SDL_FPoint{ 10, 100 }, 80, 30,                       // 阴影
-        1000,                                                // HP
+        200,                                                // HP
         ZombieState::Zombie_IDLE
     )
 {

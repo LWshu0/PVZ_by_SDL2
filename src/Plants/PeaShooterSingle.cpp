@@ -52,6 +52,10 @@ PeaShooterSingle::PeaShooterSingle(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
     );
+    setFPS(
+        { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
+        14.0f
+    );
     restartTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 }
     );
@@ -130,6 +134,7 @@ int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Time
         m_nextAttackAnimMilliSecond = timer->getTime();
         m_nextFireMilliSecond = timer->getTime() + m_windUpDuration;
         changeAnimState(AnimState::R_ATTACK);
+        SDL_Log("change to attack plant\n");
     }
     else
     {
@@ -166,6 +171,7 @@ int PeaShooterSingle::updatePlant(std::shared_ptr<Timer> timer)
         if (timer->getTime() >= m_nextAttackAnimMilliSecond)
         {
             changeAnimState(AnimState::R_ATTACK);
+            // m_nextFireMilliSecond = m_nextAttackAnimMilliSecond + m_windUpDuration;
             m_nextAttackAnimMilliSecond = m_nextAttackAnimMilliSecond + m_reloadMilliSecond;
         }
     }
