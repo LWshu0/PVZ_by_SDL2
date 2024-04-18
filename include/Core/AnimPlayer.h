@@ -81,57 +81,106 @@ protected:
     // 需要播放的轨道
     std::vector<int> m_playingTrack;
 public:
-    AnimPlayer(std::shared_ptr<AnimLoader> loader, std::shared_ptr<Camera> camera, const SDL_FPoint& init_point);
+    AnimPlayer(
+        std::shared_ptr<AnimLoader> loader,
+        std::shared_ptr<Camera> camera,
+        const SDL_FPoint& init_point,
+        AnimState anim_state = AnimState::R_IDLE,
+        DamageState damage_state = DamageState::R_Damage1
+    );
     // 动画播放控制
-    virtual int Play(uint64_t now_ms);
 
+    /*  调用 render 之前需要先 updatePlayingFrameIdx 更新当前需要渲染的帧下标
+     *  如果不更新, 动画将停留在起始帧 */
+    int updatePlayingFrameIdx(uint64_t now_ms);
+    /* 更新帧的同时进行移动(僵尸用) */
+    int updatePlayingFrameIdx(uint64_t now_ms, int ground_track_idx, float cycle_offset_x);
+
+    // 渲染指定轨道
+    int renderTrack(int track_idx);
+    int renderTrack(int track_idx, Uint8 mask_a);
+    // 将输入的轨道偏移 offset 渲染
+    int renderTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset = SDL_FPoint{ 0.0f, 0.0f });
+    int renderTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset, Uint8 mask_a);
+    // 在设定的动画播放位置渲染正在播放的所有轨道
+    virtual int render();
+
+    int setTrackRGB(int track_idx, Uint8 mask_r, Uint8 mask_g, Uint8 mask_b);
+    int setTrackRGB(const std::initializer_list<int>& track_idx, Uint8 mask_r, Uint8 mask_g, Uint8 mask_b);
+    int setTrackTexture(int track_idx, SDL_Texture* alter_texture);
+
+    /**************************************
+    *  animation playing process control  *
+    ***************************************/
+    // 设置播放的动画 (不重置至动画起始位置)
+    int setPlayingTrack(const std::initializer_list<int>& playing_track_idx, int playing_anim_idx);
+    // 设置播放的动画 (不重置至动画起始位置)
+    int setPlayingTrack(const std::initializer_list<int>& playing_track_idx, const std::initializer_list<int>& playing_anim_idx);
+
+    int pushPlayingTrack(int playing_track_idx, int playing_anim_idx);
+    int popPlayingTrack();
+
+    int restartTrack(int track_idx);
+    int restartTrack(const std::initializer_list<int>& track_idx);
+
+    // 使 track_idx 轨道正在播放的帧对齐到 ref_track_idx 轨道
+    // 使两者正在播放的帧下标相同
+    int alignTrack(int track_idx, int ref_track_idx);
+    int alignTrack(const std::initializer_list<int>& track_idx, int ref_track_idx);
+
+    // 设置 track_idx 号轨道的动画数据
+    // 将 track_idx 号轨道按照第 anim_idx 个动画的数据重置到起始帧
+    // 同时更改 record 中的起始点和终止点
+    int setTrackAnim(int track_idx, int anim_idx);
+
+    int setFPS(int track_idx, float fps);
+    int setFPS(const std::initializer_list<int>& track_idx, float fps);
+
+    /**************************************
+    *    animation state transition       *
+    ***************************************/
+    // 受损状态转移
     virtual int changeDamageState(DamageState to_state);
-
+    // 动画状态转移
     virtual int changeAnimState(AnimState to_state);
 
     // 动画播放位置
-    virtual SDL_FPoint getPlayPosition();
-    virtual void setPlayPosition(const SDL_FPoint& point);
+    inline SDL_FPoint getPlayPosition()
+    {
+        return m_realtimeScreenPoint;
+    }
+    inline void setPlayPosition(const SDL_FPoint& point)
+    {
+        m_realtimeScreenPoint = point;
+    }
+    // 判断指定轨道是否正在播放第一帧
+    inline bool isPlayBegin(int track_idx)
+    {
+        return m_trackPlayRecord[track_idx].m_playingFrameIdx == m_trackPlayRecord[track_idx].m_begin;
+    }
+    // 判断播放到结束帧
+    inline bool isPlayEnd(int track_idx)
+    {
+        return m_trackPlayRecord[track_idx].m_playingFrameIdx == m_trackPlayRecord[track_idx].m_end;
+    }
+    // 判断轨道是否是在当前时刻更新的
+    inline bool isUpdateAt(int track_idx, uint64_t now_ms)
+    {
+        return now_ms == m_trackPlayRecord[track_idx].m_lastMilliSecond;
+    }
 
     virtual ~AnimPlayer() {}
 
 protected:
-    /*  调用 playTrack 之前需要先 updatePlayingFrameIdx 更新当前需要渲染的帧下标
-     *  如果不更新, 动画将停留在起始帧
-     */
-    int updatePlayingFrameIdx(uint64_t now_ms);
-    int playTrack(int track_idx);
-    int playTrack(int track_idx, Uint8 mask_a);
-    // 将输入的轨道偏移 offset 渲染
-    int playTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset = SDL_FPoint{ 0.0f, 0.0f });
-    int playTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset, Uint8 mask_a);
-
     // 如果使用了参考点 计算偏移后的真实渲染位置
     // 否则返回默认的渲染位置
     SDL_FPoint getRealPoint(int track_idx);
     // 如果使用了参考点 计算偏移距离
     // 否则返回 {0, 0}
     SDL_FPoint getOffset(int track_idx);
-
-    int setTrackRGB(int track_idx, Uint8 mask_r, Uint8 mask_g, Uint8 mask_b);
-    int setTrackRGB(const std::initializer_list<int>& track_idx, Uint8 mask_r, Uint8 mask_g, Uint8 mask_b);
-
-    int setTrackTexture(int track_idx, SDL_Texture* alter_texture);
-
-    int initPlayingTrack(const std::initializer_list<int>& playing_track_idx, const std::initializer_list<int>& playing_anim_idx);
-    int setPlayingTrack(const std::initializer_list<int>& playing_track_idx, const std::initializer_list<int>& playing_anim_idx);
-
-    int setFPS(int track_idx, float fps);
-    int setFPS(const std::initializer_list<int>& track_idx, float fps);
-
-    int resetTrack(int track_idx);
-    int resetTrack(const std::initializer_list<int>& track_idx);
-    
-    // 判断播放到结束帧
-    inline bool isPlayEnd(int track_idx)
-    {
-        return m_trackPlayRecord[track_idx].m_playingFrameIdx == m_trackPlayRecord[track_idx].m_end;
-    }
+    // 获取轨道当前播放帧的 x 偏移
+    // 仅在僵尸移动时, 用于获取 _ground 轨道的 x 数据, 使移动符合实际
+    float getPlayingX(int track_idx);
 };
 
 #endif
