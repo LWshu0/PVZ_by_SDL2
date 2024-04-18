@@ -93,18 +93,20 @@ int main(int argc, char* args[])
 
     bullet_manager = std::make_shared<BulletManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, 100);
 
-    plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager);
+    plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
+    zombie_manager = std::make_shared<ZombieManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
+
+    plant_manager->initilizeManagers(map_manager, bullet_manager, zombie_manager);
     plant_manager->initilizePlants();
+    zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
+    zombie_manager->initilizeZombie();
 
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
-    if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove plant at (1, 1)\n"); }
+    // if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove plant at (1, 1)\n"); }
 
-    zombie_manager = std::make_shared<ZombieManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager);
-    zombie_manager->initilizeZombie();
-
-    if (0 == zombie_manager->addZombie(ZombieType::ZombieNormal, 0, 1)) { SDL_Log("add zombie at (0, 0)\n"); }
+    if (0 == zombie_manager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
 
     std::thread render_thread(RenderThread);
 
@@ -141,10 +143,10 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-                    plant_manager->doDamage(0, 0, 50);
+                    zombie_manager->addZombie(ZombieType::ZombieNormal, 0, 7);
                     break;
                 case SDLK_2:
-
+                    zombie_manager->addZombie(ZombieType::ZombieNormal, 1, 7);
                     break;
                 default:
                     break;
@@ -154,6 +156,9 @@ int main(int argc, char* args[])
     }
 
     render_thread.join();
+
+    plant_manager->releaseManagers();
+    zombie_manager->releaseManagers();
 
     SDL_DestroyRenderer(pvz_renderer);
     SDL_DestroyWindow(pvz_window);

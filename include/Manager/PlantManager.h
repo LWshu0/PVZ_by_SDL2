@@ -4,10 +4,12 @@
 #include <vector>
 #include <memory>
 
-#include "MapManager.h"
-#include "BulletManager.h"
 #include "Plants/PlantObject.h"
 #include "Plants/PeaShooterSingle.h"
+
+class MapManager;
+class BulletManager;
+class ZombieManager;
 
 enum PlantType {
     PlantPeaShooter1,
@@ -29,6 +31,7 @@ protected:
     // 关联 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<BulletManager> m_bulletManager;
+    std::shared_ptr<ZombieManager> m_zombieManager;
     // plants in game
     std::vector<std::vector<std::shared_ptr<PlantObject>>> m_mainPlants;
 
@@ -37,10 +40,14 @@ public:
         SDL_Renderer* renderer,
         std::shared_ptr<TextureRes> res,
         std::shared_ptr<Camera> camera,
-        std::shared_ptr<Timer> timer,
+        std::shared_ptr<Timer> timer
+    );
+
+    int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<BulletManager> bulletManager
-        );
+        std::shared_ptr<BulletManager> bulletManager,
+        std::shared_ptr<ZombieManager> zombieManager
+    );
 
     int initilizePlants();
 
@@ -53,7 +60,11 @@ public:
     int updatePlants();
     int renderPlants();
 
+    void releaseManagers();
+
     ~PlantManager();
+    // 测试
+    int changeAllTo(PlantState state);
 };
 
 #endif

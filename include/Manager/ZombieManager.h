@@ -9,12 +9,13 @@
 #include "Core/AnimLoader.h"
 #include "Core/Camera.h"
 #include "Core/Timer.h"
-#include "Manager/MapManager.h"
-#include "Manager/BulletManager.h"
-#include "Manager/PlantManager.h"
 
 #include "Zombies/ZombieObject.h"
 #include "Zombies/Zombie.h"
+
+class MapManager;
+class BulletManager;
+class PlantManager;
 
 enum ZombieType {
     ZombieNormal,
@@ -47,7 +48,10 @@ public:
         SDL_Renderer* renderer,
         std::shared_ptr<TextureRes> res,
         std::shared_ptr<Camera> camera,
-        std::shared_ptr<Timer> timer,
+        std::shared_ptr<Timer> timer
+    );
+
+    int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
         std::shared_ptr<BulletManager> bulletManager,
         std::shared_ptr<PlantManager> plantManager
@@ -56,13 +60,16 @@ public:
     int initilizeZombie();
 
     int addZombie(ZombieType type, int row, int col);
-
+    // 在第 row 行的 left_x 和 right_x 之间是否有僵尸
+    bool hasZombieBetween(int row, float left_x, float right_x);
     // 碰撞检测
     int updateZombie();
     // 攻击检测
     int attackPlants();
 
     int renderZombie();
+
+    void releaseManagers();
 
     ~ZombieManager();
 

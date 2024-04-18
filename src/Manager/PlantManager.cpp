@@ -1,19 +1,21 @@
 #include "Manager/PlantManager.h"
+#include "Manager/MapManager.h"
+#include "Manager/BulletManager.h"
+#include "Manager/ZombieManager.h"
 
 PlantManager::PlantManager(
     SDL_Renderer* renderer,
     std::shared_ptr<TextureRes> res,
     std::shared_ptr<Camera> camera,
-    std::shared_ptr<Timer> timer,
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<BulletManager> bulletManager
+    std::shared_ptr<Timer> timer
 ) :
     m_renderer(renderer),
     m_textureRes(res),
     m_camera(camera),
     m_timer(timer),
-    m_mapManager(mapManager),
-    m_bulletManager(bulletManager)
+    m_mapManager(nullptr),
+    m_bulletManager(nullptr),
+    m_zombieManager(nullptr)
 {
     m_plantTemplate.resize(PlantType::MaxPlantType);
     m_animLoader.resize(PlantType::MaxPlantType);
@@ -24,6 +26,18 @@ PlantManager::PlantManager(
     m_animLoader[PlantType::PlantPeaShooter1]->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     m_plantTemplate[PlantType::PlantPeaShooter1] = std::make_shared<PeaShooterSingle>(m_animLoader[PlantType::PlantPeaShooter1], m_camera, SDL_FPoint{ 0.0f, 0.0f });
 
+}
+
+int PlantManager::initilizeManagers(
+    std::shared_ptr<MapManager> mapManager,
+    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<ZombieManager> zombieManager
+)
+{
+    m_mapManager = mapManager;
+    m_bulletManager = bulletManager;
+    m_zombieManager = zombieManager;
+    return 0;
 }
 
 int PlantManager::initilizePlants()
@@ -108,7 +122,14 @@ int PlantManager::updatePlants()
             }
             else
             {
-                m_mainPlants[i][j]->changePlantState(PlantState::ATTACK, m_timer);
+                if (m_zombieManager->hasZombieBetween(i, m_mainPlants[i][j]->m_aabb.x, m_mapManager->getRightMargin()))
+                {
+                    m_mainPlants[i][j]->changePlantState(PlantState::ATTACK, m_timer);
+                }
+                else
+                {
+                    m_mainPlants[i][j]->changePlantState(PlantState::IDLE, m_timer);
+                }
                 BulletType bullet_type = m_mainPlants[i][j]->attack(m_timer);
                 if (BulletType::MaxBulletType != bullet_type)
                 {
@@ -116,7 +137,7 @@ int PlantManager::updatePlants()
                 }
 
                 m_mainPlants[i][j]->updatePlant(m_timer);
-            }                                
+            }
         }
     }
     return 0;
@@ -137,5 +158,27 @@ int PlantManager::renderPlants()
     return 0;
 }
 
+void PlantManager::releaseManagers()
+{
+    m_mapManager = nullptr;
+    m_bulletManager = nullptr;
+    m_zombieManager = nullptr;
+}
+
 PlantManager::~PlantManager()
 {}
+
+int PlantManager::changeAllTo(PlantState state)
+{
+    for (int i = 0;i < m_mainPlants.size();i++)
+    {
+        for (int j = 0;j < m_mainPlants[i].size();j++)
+        {
+            if (nullptr != m_mainPlants[i][j])
+            {
+                m_mainPlants[i][j]->changePlantState(state, m_timer);
+            }
+        }
+    }
+    return 0;
+}

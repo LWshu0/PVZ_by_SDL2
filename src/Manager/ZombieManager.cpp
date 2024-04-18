@@ -1,21 +1,21 @@
 #include "Manager/ZombieManager.h"
+#include "Manager/MapManager.h"
+#include "Manager/BulletManager.h"
+#include "Manager/PlantManager.h"
 
 ZombieManager::ZombieManager(
     SDL_Renderer* renderer,
     std::shared_ptr<TextureRes> res,
     std::shared_ptr<Camera> camera,
-    std::shared_ptr<Timer> timer,
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<BulletManager> bulletManager,
-    std::shared_ptr<PlantManager> plantManager
+    std::shared_ptr<Timer> timer
 ) :
     m_renderer(renderer),
     m_textureRes(res),
     m_camera(camera),
     m_timer(timer),
-    m_mapManager(mapManager),
-    m_bulletManager(bulletManager),
-    m_plantManager(plantManager)
+    m_mapManager(nullptr),
+    m_bulletManager(nullptr),
+    m_plantManager(nullptr)
 {
     m_zombies.resize(10);
     m_zombieTemplate.resize(ZombieType::MaxZombieType);
@@ -23,6 +23,18 @@ ZombieManager::ZombieManager(
     // 普通僵尸
     m_animLoader[ZombieType::ZombieNormal] = std::make_shared<AnimLoader>("reanim/Zombie.reanim", m_renderer, m_textureRes);
     m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(m_animLoader[ZombieType::ZombieNormal], m_camera, SDL_FPoint{ 0.0f, 0.0f });
+}
+
+int ZombieManager::initilizeManagers(
+    std::shared_ptr<MapManager> mapManager,
+    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<PlantManager> plantManager
+)
+{
+    m_mapManager = mapManager;
+    m_bulletManager = bulletManager;
+    m_plantManager = plantManager;
+    return 0;
 }
 
 int ZombieManager::initilizeZombie()
@@ -53,6 +65,20 @@ int ZombieManager::addZombie(ZombieType type, int row, int col)
     return -1;
 }
 
+bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
+{
+    for (int i = 0;i < m_zombies.size();i++)
+    {
+        if (nullptr == m_zombies[i]) continue;
+        int rowIdx = m_mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
+        if (rowIdx == row && (m_zombies[i]->m_aabb.x >= left_x && m_zombies[i]->m_aabb.x <= right_x))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 int ZombieManager::updateZombie()
 {
     m_mutex.lock();
@@ -79,7 +105,7 @@ int ZombieManager::attackPlants()
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
-        int row = m_mapManager->caculRow(m_zombies[i]->m_aabb.y);
+        int row = m_mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
         int col = m_mapManager->caculCol(m_zombies[i]->m_aabb.x);
         if (m_plantManager->collisionPlant(m_zombies[i], row, col))
         {
@@ -106,6 +132,13 @@ int ZombieManager::renderZombie()
     }
     m_mutex.unlock();
     return 0;
+}
+
+void ZombieManager::releaseManagers()
+{
+    m_mapManager = nullptr;
+    m_bulletManager = nullptr;
+    m_plantManager = nullptr;
 }
 
 ZombieManager::~ZombieManager()
