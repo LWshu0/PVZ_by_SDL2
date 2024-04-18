@@ -40,11 +40,41 @@ int BulletManager::addBullet(BulletType type, float x, float y)
     {
         if (nullptr == ptr)
         {
-            ptr = m_bulletTemplate[type]->createBullet(x, y);
+            ptr = m_bulletTemplate[type]->cloneBullet(x, y);
             return 0;
         }
     }
     return -1;
+}
+
+int BulletManager::collisionBullet(GameObject& other)
+{
+    int rt_value = 0;
+    for (auto& ptr : m_bullets)
+    {
+        if (nullptr == ptr) continue;
+        if (ptr->collision(other))
+        {
+            rt_value += ptr->getDamage();
+            ptr = nullptr;
+        }
+    }
+    return rt_value;
+}
+
+int BulletManager::collisionBullet(std::shared_ptr<GameObject> other)
+{
+    int rt_value = 0;
+    for (auto& ptr : m_bullets)
+    {
+        if (nullptr == ptr) continue;
+        if (ptr->collision(other))
+        {
+            rt_value += ptr->getDamage();
+            ptr = nullptr;
+        }
+    }
+    return rt_value;
 }
 
 int BulletManager::updateBullets()

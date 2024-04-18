@@ -6,4 +6,5 @@ target_link_libraries(PVZ PUBLIC
     map mapmanager 
     bullet bulletmanager 
     plants plantmanager
+    zombies zombiemanager
 )

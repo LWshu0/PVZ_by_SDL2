@@ -36,6 +36,16 @@ int MapManager::setMap(
     return 0;
 }
 
+int MapManager::caculRow(float y)
+{
+    return static_cast<int>((y - m_topMargin) / m_cellHeight);
+}
+
+int MapManager::caculCol(float x)
+{
+    return static_cast<int>((x - m_leftMargin) / m_cellWidth);
+}
+
 int MapManager::renderMap()
 {
     SDL_FRect map_rect{

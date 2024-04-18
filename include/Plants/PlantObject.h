@@ -34,6 +34,9 @@ public:
     uint64_t m_nextAttackAnimMilliSecond;   // 下一次 attack 动画播放时间
     uint64_t m_nextFireMilliSecond;         // 下一次 Fire 时间
 
+    SDL_FPoint m_offsetAABB;    // 动画播放位置到aabb位置的偏移量
+    SDL_FPoint m_offsetShadow;  // 动画播放位置到阴影位置的偏移量
+
     // 植物影子
     SDL_Texture* m_shadow;
     SDL_FRect m_shadowRange;
@@ -42,25 +45,35 @@ public:
         std::shared_ptr<AnimLoader> loader,
         std::shared_ptr<Camera> camera,
         const SDL_FPoint& init_point,
+        const SDL_FRect& aabb,
+        const SDL_FPoint& offset_shadow,
+        float shadow_width,
+        float shadow_height,
         int HP,
+        PlantState state,
         uint64_t reload_ms,
-        const SDL_FRect& aabb
+        uint64_t windup_duration
     );
 
     PlantObject(
         std::shared_ptr<AnimLoader> loader,
         std::shared_ptr<Camera> camera,
         const SDL_FPoint& init_point,
+        const SDL_FPoint& offset_abbb,      // aabb 偏移
+        float aabb_width,                   // 碰撞箱宽度
+        float aabb_height,                  // 碰撞箱高度
+        const SDL_FPoint& offset_shadow,    // 阴影偏移
+        float shadow_width,                 // 阴影宽度
+        float shadow_height,                // 阴影高度
         int HP,
+        PlantState state,
         int reload_ms,
-        const SDL_FPoint& root_point,
-        float width,
-        float height
+        uint64_t windup_duration
     );
 
     virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) = 0;
 
-    // virtual int Play(uint64_t now_ms);
+    // virtual int render(uint64_t now_ms);
     // virtual int changeDamageState(DamageState to_state);
     // virtual int changeAnimState(AnimState to_state);
     // virtual SDL_FPoint GetPosition();
@@ -78,7 +91,7 @@ public:
     // 返回产生的子弹类型, BulletType::MaxBulletType 代表该时刻不产生子弹
     virtual BulletType attack(std::shared_ptr<Timer> timer) = 0;
 
-    virtual int damage(int damege);
+    virtual int damage(int damege_num);
 
     // 更新到下一帧的状态
     virtual int updatePlant(std::shared_ptr<Timer> timer) = 0;

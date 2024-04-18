@@ -42,6 +42,18 @@ int PlantManager::initilizePlants()
     return 0;
 }
 
+bool PlantManager::collisionPlant(std::shared_ptr<GameObject> obj, int row, int col)
+{
+    if (row < 0 || row >= m_mapManager->getRow()
+        || col < 0 || col >= m_mapManager->getCol()
+        || nullptr == obj
+        || nullptr == m_mainPlants[row][col])
+    {
+        return false;
+    }
+    return m_mainPlants[row][col]->collision(obj);
+}
+
 int PlantManager::addPlant(PlantType type, int row, int col)
 {
     if (row < 0 || row >= m_mapManager->getRow()
@@ -96,7 +108,7 @@ int PlantManager::updatePlants()
             }
             else
             {
-                // m_mainPlants[i][j]->changePlantState(PlantState::ATTACK, m_timer);
+                m_mainPlants[i][j]->changePlantState(PlantState::ATTACK, m_timer);
                 BulletType bullet_type = m_mainPlants[i][j]->attack(m_timer);
                 if (BulletType::MaxBulletType != bullet_type)
                 {
@@ -118,7 +130,7 @@ int PlantManager::renderPlants()
         {
             if (nullptr != m_mainPlants[i][j])
             {
-                m_mainPlants[i][j]->Play(m_timer->getTime());
+                m_mainPlants[i][j]->render();
             }
         }
     }

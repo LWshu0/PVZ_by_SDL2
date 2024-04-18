@@ -27,32 +27,34 @@ PeaShooterSingle::PeaShooterSingle(
     const SDL_FPoint& root_point
 ) :
     PlantObject(
-        loader, camera,                                         // 资源 相机
-        SDL_FPoint{ root_point.x - 50, root_point.y - 80 },     // 动画播放位置
-        100,                                                    // HP
-        3000,                                                   // reload 时间
-        root_point, 40, 70                                      // 碰撞箱
+        loader, camera,                                      // 资源 相机   
+        SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
+        SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
+        SDL_FPoint{ 20, 100 }, 80, 30,                       // 阴影
+        1000,                                                // HP
+        PlantState::IDLE,                                    // state
+        3000,                                                // reload 时间
+        (70 - 54) * 1000 / 48.0f                             // windup duration
     ),
     is_blinking(false),
     last_blink_ms(0),
     delta_blink_ms(5000)
 {
-    float default_attack_fps = 48.0f;
+    // float default_attack_fps = 48.0f;
     // uint64_t attack_logic_ms = (79 - 54) * 1000 / default_attack_fps;
     // if (attack_logic_ms > m_reloadMilliSecond)
     // {
     //     default_attack_fps = (79 - 54) * 1000 / m_reloadMilliSecond;
     //     attack_logic_ms = m_reloadMilliSecond;
     // }
-    // 动画时间
-    m_windUpDuration = (70 - 54) * 1000 / default_attack_fps;
     // 初始播放的轨道
-    initPlayingTrack(
+    setPlayingTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
     );
-    // 阴影
-    m_shadowRange = SDL_FRect{ root_point.x - 50, root_point.y - 25, 80, 30 };
+    restartTrack(
+        { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 }
+    );
 }
 
 std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root_point)
@@ -60,31 +62,24 @@ std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root
     return std::make_shared<PeaShooterSingle>(m_loader, m_camera, root_point);
 }
 
-int PeaShooterSingle::Play(uint64_t now_ms)
+int PeaShooterSingle::render()
 {
-    // 更新帧
-    updatePlayingFrameIdx(now_ms);
     // 渲染帧
     // 阴影
     showShadow();
     // 茎 & 叶
-    playTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
+    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
-    playTracks({ 13, 14, 15 }, getOffset(14));
-    // 眨眼
-    if (last_blink_ms + delta_blink_ms < now_ms)
-    {
-        is_blinking = true;
-        last_blink_ms = now_ms;
-    }
+    renderTracks({ 13, 14, 15 }, getOffset(14));
+    
     if (AnimState::R_ATTACK != m_playingAnimState && is_blinking)
     {
-        playTrack(17);
+        renderTrack(17);
         if (isPlayEnd(17)) is_blinking = false;
     }
     if (AnimState::R_ATTACK == m_playingAnimState)
     {
-        playTrack(16);
+        renderTrack(16);
         if (isPlayEnd(15)) changeAnimState(AnimState::R_IDLE);
     }
     showAABB();
@@ -105,7 +100,7 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
             { 13, 14, 15, 16 },
             48.0f
         );
-        resetTrack(
+        restartTrack(
             { 13, 14, 15, 16 }
         );
     }
@@ -119,7 +114,7 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
             { 13, 14, 15, 16 },
             14.0f
         );
-        resetTrack(
+        restartTrack(
             { 13, 14, 15, 16 }
         );
     }
@@ -157,6 +152,15 @@ BulletType PeaShooterSingle::attack(std::shared_ptr<Timer> timer)
 
 int PeaShooterSingle::updatePlant(std::shared_ptr<Timer> timer)
 {
+    // 更新帧
+    updatePlayingFrameIdx(timer->getTime());
+    // 眨眼
+    if (last_blink_ms + delta_blink_ms < timer->getTime())
+    {
+        is_blinking = true;
+        last_blink_ms = timer->getTime();
+    }
+    // 攻击动画
     if (PlantState::ATTACK == m_state)
     {
         if (timer->getTime() >= m_nextAttackAnimMilliSecond)

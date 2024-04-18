@@ -20,7 +20,7 @@ public:
     virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) override;
 
     // 0 -> idel, 1 -> emit
-    virtual int Play(uint64_t now_ms) override;
+    virtual int render() override;
     virtual int changeAnimState(AnimState to_state) override;
 
     virtual int changePlantState(PlantState to_state, std::shared_ptr<Timer> timer) override;

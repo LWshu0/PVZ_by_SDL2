@@ -76,6 +76,9 @@ public:
     inline int getTime(int row, int col) { return m_mapRunTime[row][col].m_time; }
     inline int getLandForm(int row, int col) { return m_mapRunTime[row][col].m_landForm; }
 
+    int caculRow(float y);
+    int caculCol(float x);
+
     int renderMap();
 
     ~MapManager();

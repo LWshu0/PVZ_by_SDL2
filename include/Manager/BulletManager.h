@@ -33,6 +33,11 @@ public:
 
     int addBullet(BulletType type, float x, float y);
 
+    // 计算与 other 碰撞的 damage
+    // 删除碰撞后的 bullet
+    int collisionBullet(GameObject& other);
+    int collisionBullet(std::shared_ptr<GameObject> other);
+
     int updateBullets();
 
     int renderBullets();

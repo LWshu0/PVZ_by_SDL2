@@ -44,6 +44,8 @@ public:
 
     int initilizePlants();
 
+    bool collisionPlant(std::shared_ptr<GameObject> obj, int row, int col);
+
     int addPlant(PlantType type, int row, int col);
     int removePlant(int row, int col);
     int doDamage(int row, int col, int d);

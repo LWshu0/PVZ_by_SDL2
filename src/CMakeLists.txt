@@ -6,6 +6,8 @@ add_subdirectory(Bullet)
 
 add_subdirectory(Plants)
 
+add_subdirectory(Zombies)
+
 add_subdirectory(Manager)
 
 add_subdirectory(Test)

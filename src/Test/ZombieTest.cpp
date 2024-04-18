@@ -37,10 +37,10 @@ void RenderThread()
         pvz_timer->updateTime();
 
         // 更新物体状态
-        plant_manager->updatePlants();
-        bullet_manager->updateBullets();
+        // plant_manager->updatePlants();
+        // bullet_manager->updateBullets();
         zombie_manager->updateZombie();
-        zombie_manager->attackPlants();
+        // zombie_manager->attackPlants();
         // ...
 
         // 清空屏幕
@@ -49,9 +49,9 @@ void RenderThread()
 
         // 渲染对象
         map_manager->renderMap();
-        plant_manager->renderPlants();
+        // plant_manager->renderPlants();
         zombie_manager->renderZombie();
-        bullet_manager->renderBullets();
+        // bullet_manager->renderBullets();
 
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
@@ -96,15 +96,10 @@ int main(int argc, char* args[])
     plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager);
     plant_manager->initilizePlants();
 
-    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
-    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
-    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
-    if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove plant at (1, 1)\n"); }
-
     zombie_manager = std::make_shared<ZombieManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager);
     zombie_manager->initilizeZombie();
 
-    if (0 == zombie_manager->addZombie(ZombieType::ZombieNormal, 0, 1)) { SDL_Log("add zombie at (0, 0)\n"); }
+    if (0 == zombie_manager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
 
     std::thread render_thread(RenderThread);
 
@@ -141,10 +136,19 @@ int main(int argc, char* args[])
                     pvz_camera->move(5.0f, 0);
                     break;
                 case SDLK_1:
-                    plant_manager->doDamage(0, 0, 50);
+                    SDL_Log("try to change to attack\n");
+                    zombie_manager->changeAllTo(ZombieState::Zombie_ATTACK);
+                    
                     break;
                 case SDLK_2:
-
+                    SDL_Log("try to change to walk\n");
+                    zombie_manager->changeAllTo(ZombieState::Zombie_WALK);
+                    
+                    break;
+                case SDLK_3:
+                    SDL_Log("try to change to idle\n");
+                    zombie_manager->changeAllTo(ZombieState::Zombie_IDLE);
+                    
                     break;
                 default:
                     break;
