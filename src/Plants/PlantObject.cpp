@@ -19,6 +19,8 @@ PlantObject::PlantObject(
     m_state(state),
     m_reloadMilliSecond(reload_ms),
     m_windUpDuration(windup_duration),
+    m_nextAttackAnimMilliSecond(0),
+    m_nextFireMilliSecond(0),
     m_offsetAABB(SDL_FPoint{ aabb.x - init_point.x, aabb.y - init_point.y }),
     m_offsetShadow(offset_shadow),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
@@ -46,6 +48,9 @@ PlantObject::PlantObject(
     m_HP(HP),
     m_state(state),
     m_reloadMilliSecond(reload_ms),
+    m_windUpDuration(windup_duration),
+    m_nextAttackAnimMilliSecond(0),
+    m_nextFireMilliSecond(0),
     m_offsetAABB(offset_abbb),
     m_offsetShadow(offset_shadow),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
