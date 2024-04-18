@@ -1,21 +1,12 @@
 #include "Core/GameObject.h"
 
 GameObject::GameObject(const SDL_FRect& aabb) :
-    m_aabb(aabb),
-    m_rootPoint({ aabb.x + aabb.w / 2, aabb.y + aabb.h })
+    m_aabb(aabb)
 {}
 
 GameObject::GameObject(const SDL_FPoint& root_point, float width, float height) :
-    m_aabb({ root_point.x - width / 2, root_point.y - height, width, height }),
-    m_rootPoint(root_point)
-{
-    
-}
-
-// int GameObject::handleEvent(SDL_Event& event)
-// {
-//     return -1;
-// }
+    m_aabb({ root_point.x - width / 2, root_point.y - height, width, height })
+{}
 
 bool GameObject::collision(std::shared_ptr<GameObject> other)
 {

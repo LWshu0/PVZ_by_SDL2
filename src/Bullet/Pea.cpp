@@ -4,18 +4,18 @@ Pea::Pea(
     SDL_Renderer* renderer,
     SDL_Texture* texture,
     std::shared_ptr<Camera> camera,
-    float x, float y) :
-    BulletObject(renderer, camera, SDL_FRect{ x, y, 20, 20 }),
+    float x, float y
+) :
+    BulletObject(renderer, camera, SDL_FRect{ x, y, 20, 20 }, 20),
     m_texture(texture)
 {
-    m_damage = 20;
     if (texture != nullptr)
     {
         SDL_QueryTexture(m_texture, NULL, NULL, &m_textureWidth, &m_textureHeight);
     }
 }
 
-std::shared_ptr<BulletObject> Pea::createBullet(float x, float y)
+std::shared_ptr<BulletObject> Pea::cloneBullet(float x, float y)
 {
     std::shared_ptr<BulletObject> new_one = std::make_shared<Pea>(
         m_renderer,

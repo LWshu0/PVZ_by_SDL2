@@ -12,27 +12,29 @@ enum BulletType {
 
 class BulletObject :public GameObject {
 protected:
-    int m_damage;
     SDL_Renderer* m_renderer;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<ObjectMotion> m_updater;
+    int m_damage;
 public:
     BulletObject(
         SDL_Renderer* renderer,
         std::shared_ptr<Camera> camera,
-        const SDL_FRect& aabb
+        const SDL_FRect& aabb,
+        int dam
     ) :
         GameObject(aabb),
         m_renderer(renderer),
-        m_camera(camera)
+        m_camera(camera),
+        m_damage(dam)
     {}
 
-    virtual std::shared_ptr<BulletObject> createBullet(float x, float y) = 0;
+    virtual std::shared_ptr<BulletObject> cloneBullet(float x, float y) = 0;
 
     virtual int updateBullet(uint64_t delta_ms)
     {
         return m_updater->step(this, delta_ms);
-    } 
+    }
 
     inline void setMotion(std::shared_ptr<ObjectMotion> motion)
     {

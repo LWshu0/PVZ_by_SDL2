@@ -54,8 +54,9 @@ public:
     void caculateVertex(float scale);
     // 根据该帧的数据对一个点进行线性变换
     int transferPoint(SDL_FPoint& point, float scale);
-    // 为该帧添加一个锚点 使得计算偏移时根据锚点计算
-    int addAnchorPoint(const SDL_FPoint& point);
+    // 为该帧设置一个锚点 使得计算偏移时根据锚点计算
+    // 锚点不可重复设置
+    int setAnchorPoint(const SDL_FPoint& point);
     // 为该帧添加一个参考点
     // 返回参考点在该帧中的下标
     int addReferPoint(const SDL_FPoint& point);
@@ -76,11 +77,21 @@ public:
     AnimTrack(const std::string& name = "");
     int AddFrame(const AnimFrame& new_frame);
     void scaleFrames(float scale);
-    // int attachTrackTo(int other, const SDL_FPoint& src_point, const SDL_FPoint& dst_point);
 
-    int renderTrack(SDL_Renderer* renderer, const SDL_FPoint& dst_point, int real_frame_idx, SDL_Texture* alter_texture = nullptr, Uint8 mask_r = 255, Uint8 mask_g = 255, Uint8 mask_b = 255);
+    int renderTrack(
+        SDL_Renderer* renderer,
+        const SDL_FPoint& dst_point,
+        int real_frame_idx,
+        SDL_Texture* alter_texture = nullptr,
+        Uint8 mask_r = 255, Uint8 mask_g = 255, Uint8 mask_b = 255
+    );
 
-    int renderTrack(SDL_Renderer* renderer, const SDL_FPoint& dst_point, int real_frame_idx, Uint8 mask_a);
+    int renderTrack(
+        SDL_Renderer* renderer,
+        const SDL_FPoint& dst_point,
+        int real_frame_idx,
+        Uint8 mask_a
+    );
 
     ~AnimTrack() {};
 };
@@ -96,24 +107,27 @@ struct Control_Track {
 // 动画数据转换器 从 reanim 文档信息转为可播放的动画信息
 class AnimLoader {
 public:
-    float m_fps;
-    // 动画种类数量
-    int m_anim_num;
-    std::vector<Control_Track> m_animTracks; // 记录动画名称与起始帧(全闭区间)
-    // .reanim 文件路径
-    std::string m_reanimFilePath;
-    // 全部动画轨道数据
-    std::vector<AnimTrack> m_tracks;
     // 渲染器
     SDL_Renderer* m_renderer;
     // 图片资源
     std::shared_ptr<TextureRes> m_imageRes;
+    // .reanim 文件路径
+    std::string m_reanimFilePath;
+    // 动画默认帧率(由文件指定)
+    float m_fps;
+    // 动画种类数量
+    int m_anim_num;
+    // 记录动画名称与起始帧(全闭区间)
+    std::vector<Control_Track> m_animTracks;
+    // 全部动画轨道数据
+    std::vector<AnimTrack> m_tracks;
 
 public:
     AnimLoader(
         const std::string& reanim_path,
         SDL_Renderer* renderer,
-        std::shared_ptr<TextureRes> image
+        std::shared_ptr<TextureRes> image,
+        float anim_scale = 1.0f
     );
     
     /**

@@ -6,33 +6,44 @@ AnimFrame::AnimFrame(
     float x, float y,
     float sx, float sy,
     float kx, float ky,
-    float alpha) :
+    float alpha
+) :
     m_f(m_f),
-    m_texture(tex),
     m_x(x), m_y(y),
     m_sx(sx), m_sy(sy),
     m_kx(kx), m_ky(ky),
     m_alpha(alpha),
+    m_texture(tex),
     m_scale(1.0f),
-    m_enableRefer(false)
+    m_point{ SDL_FPoint{0.0f, 0.0f},SDL_FPoint{0.0f, 0.0f},SDL_FPoint{0.0f, 0.0f},SDL_FPoint{0.0f, 0.0f} },
+    m_enableRefer(false),
+    m_anchorPoint(SDL_FPoint{ 0.0f, 0.0f })
 {
     m_referPoint.clear();
 }
 
 AnimFrame::AnimFrame(const AnimFrame& other) :
     m_f(other.m_f),
-    m_texture(other.m_texture),
     m_x(other.m_x), m_y(other.m_y),
     m_sx(other.m_sx), m_sy(other.m_sy),
     m_kx(other.m_kx), m_ky(other.m_ky),
     m_alpha(other.m_alpha),
+    m_texture(other.m_texture),
     m_scale(other.m_scale),
-    m_enableRefer(other.m_enableRefer)
+    m_enableRefer(other.m_enableRefer),
+    m_anchorPoint(other.m_anchorPoint)
 {
+    for (int i = 0;i < 4;i++)
+    {
+        m_point[i] = other.m_point[i];
+    }
     if (m_enableRefer)
     {
-        m_anchorPoint = other.m_anchorPoint;
         m_referPoint = other.m_referPoint;
+    }
+    else
+    {
+        m_referPoint.clear();
     }
 }
 
@@ -77,7 +88,7 @@ int AnimFrame::transferPoint(SDL_FPoint& point, float scale)
     return 0;
 }
 
-int AnimFrame::addAnchorPoint(const SDL_FPoint& point)
+int AnimFrame::setAnchorPoint(const SDL_FPoint& point)
 {
     if (m_enableRefer) return -1;
     m_enableRefer = true;
@@ -97,12 +108,19 @@ SDL_FPoint AnimFrame::caculateOffset(const SDL_FPoint& anchorPoint, int referIdx
 {
     if (referIdx < 0 ||
         referIdx >= m_referPoint.size())
+    {
         return SDL_FPoint{ 0.0f, 0.0f };
+    }
     return SDL_FPoint{ m_referPoint[referIdx].x - anchorPoint.x, m_referPoint[referIdx].y - anchorPoint.y };
 }
 
-AnimTrack::AnimTrack(const std::string& name) :m_name(name)
-{}
+AnimTrack::AnimTrack(const std::string& name) :
+    m_name(name),
+    m_referTrackIdx(0),
+    m_referPointIdx(0)
+{
+    m_frames.clear();
+}
 
 int AnimTrack::AddFrame(const AnimFrame& new_frame)
 {
@@ -118,7 +136,13 @@ void AnimTrack::scaleFrames(float scale)
     }
 }
 
-int AnimTrack::renderTrack(SDL_Renderer* renderer, const SDL_FPoint& dst_point, int real_frame_idx, SDL_Texture* alter_texture, Uint8 mask_r, Uint8 mask_g, Uint8 mask_b)
+int AnimTrack::renderTrack(
+    SDL_Renderer* renderer,
+    const SDL_FPoint& dst_point,
+    int real_frame_idx,
+    SDL_Texture* alter_texture,
+    Uint8 mask_r, Uint8 mask_g, Uint8 mask_b
+)
 {
     if (real_frame_idx < 0 || real_frame_idx >= m_frames.size()) return -1;
     if (-1 == m_frames[real_frame_idx].m_f || (nullptr == m_frames[real_frame_idx].m_texture && nullptr == alter_texture)) return -1;
@@ -145,11 +169,28 @@ int AnimTrack::renderTrack(SDL_Renderer* renderer, const SDL_FPoint& dst_point, 
             m_frames[real_frame_idx].m_point[3].y + dst_point.y},
             {mask_r, mask_g, mask_b, TEX_ALPHA}, {1, 1} }
     };
+    // static float last_frame_X = 0.0f;
+    // if (debug_msg && last_frame_X != m_frames[real_frame_idx].m_point[0].x + dst_point.x)
+    // {
+    //     SDL_Log("frame x: %f, frmae y: %f, off_X: %f, cacu_x: %f, dst_x: %f\n",
+    //         m_frames[real_frame_idx].m_point[0].x + dst_point.x,
+    //         m_frames[real_frame_idx].m_point[0].x + dst_point.y,
+    //         m_frames[real_frame_idx].m_point[0].x + dst_point.x - last_frame_X,
+    //         m_frames[real_frame_idx].m_point[0].x,
+    //         dst_point.x
+    //     );
+    //     last_frame_X = m_frames[real_frame_idx].m_point[0].x + dst_point.x;
+    // }
     int index[] = { 0, 2, 1, 1, 2, 3 };
     return SDL_RenderGeometry(renderer, render_texture, vertices, 4, index, 6);
 }
 
-int AnimTrack::renderTrack(SDL_Renderer* renderer, const SDL_FPoint& dst_point, int real_frame_idx, Uint8 mask_a)
+int AnimTrack::renderTrack(
+    SDL_Renderer* renderer,
+    const SDL_FPoint& dst_point,
+    int real_frame_idx,
+    Uint8 mask_a
+)
 {
     if (real_frame_idx < 0 || real_frame_idx >= m_frames.size()) return -1;
     if (-1 == m_frames[real_frame_idx].m_f || nullptr == m_frames[real_frame_idx].m_texture) return -1;
@@ -179,15 +220,17 @@ int AnimTrack::renderTrack(SDL_Renderer* renderer, const SDL_FPoint& dst_point, 
 AnimLoader::AnimLoader(
     const std::string& reanim_path,
     SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> image
+    std::shared_ptr<TextureRes> image,
+    float anim_scale
 ) :
-    m_reanimFilePath(reanim_path),
     m_renderer(renderer),
-    m_imageRes(image)
+    m_imageRes(image),
+    m_reanimFilePath(reanim_path),
+    m_fps(0.0f),
+    m_anim_num(0)
 {
     std::string file = "";
     size_t cur = 0; // 当前文件指针
-    m_fps = 0.0f;
     std::fstream reanim_file(m_reanimFilePath);
     if (reanim_file.is_open())
     {
@@ -231,7 +274,7 @@ AnimLoader::AnimLoader(
     // 计算轨道
     for (auto& t : m_tracks)
     {
-        t.scaleFrames(1.0f);
+        t.scaleFrames(anim_scale);
     }
     // 获取动画数量
     m_anim_num = GetAnimTracks();
@@ -242,14 +285,16 @@ int AnimLoader::Attach(int track_id, const SDL_FPoint& point, int ref_track_id, 
     // 越界检查
     if (track_id < 0 || track_id >= m_tracks.size()) return -1;
     if (ref_track_id < 0 || ref_track_id >= m_tracks.size()) return -1;
+    // 设置锚点
+    for (auto& frame : m_tracks[track_id].m_frames)
+    {
+        if (-1 == frame.setAnchorPoint(point)) return -1;
+    }
+    // 设置关联点
     int refer_p_idx;
     for (auto& frame : m_tracks[ref_track_id].m_frames)
     {
         refer_p_idx = frame.addReferPoint(ref_point);
-    }
-    for (auto& frame : m_tracks[track_id].m_frames)
-    {
-        frame.addAnchorPoint(point);
     }
     m_tracks[track_id].m_referTrackIdx = ref_track_id;
     m_tracks[track_id].m_referPointIdx = refer_p_idx;

@@ -13,9 +13,10 @@ public:
         SDL_Renderer* renderer,
         SDL_Texture* texture,
         std::shared_ptr<Camera> camera,
-        float x, float y);
+        float x, float y
+    );
 
-    virtual std::shared_ptr<BulletObject> createBullet(float x, float y) override;
+    virtual std::shared_ptr<BulletObject> cloneBullet(float x, float y) override;
     virtual int renderBullet() override;
     virtual ~Pea() {};
 };
