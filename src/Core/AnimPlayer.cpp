@@ -42,35 +42,6 @@ int AnimPlayer::updatePlayingFrameIdx(uint64_t now_ms)
     return 0;
 }
 
-int AnimPlayer::updatePlayingFrameIdx(uint64_t now_ms, int ground_track_idx, float cycle_offset_x)
-{
-    std::string out_msg = "";
-    for (int track_idx : m_playingTrack)
-    {
-        if (now_ms >= m_trackPlayRecord[track_idx].m_lastMilliSecond + m_trackPlayRecord[track_idx].m_deltaMilliSecond)
-        {
-            m_trackPlayRecord[track_idx].m_lastMilliSecond = now_ms;
-            m_trackPlayRecord[track_idx].m_playingFrameIdx += 1;
-            if (m_trackPlayRecord[track_idx].m_playingFrameIdx > m_trackPlayRecord[track_idx].m_end)
-            {
-                m_trackPlayRecord[track_idx].m_playingFrameIdx = m_trackPlayRecord[track_idx].m_begin;
-            }
-            if (track_idx == ground_track_idx)
-            {
-                if (isPlayBegin(track_idx))
-                {
-                    m_referenceScreenPoint.x -= cycle_offset_x;
-                }
-                int playing_ground_frame = m_trackPlayRecord[track_idx].m_playingFrameIdx;
-                m_realtimeScreenPoint.x = m_referenceScreenPoint.x - m_loader->m_tracks[track_idx].m_frames[playing_ground_frame].m_x;
-            }
-            out_msg += std::to_string(m_trackPlayRecord[track_idx].m_playingFrameIdx) + " ";
-        }
-    }
-    if(out_msg.length() != 0) SDL_Log("%s\n", out_msg.c_str());
-    return 0;
-}
-
 int AnimPlayer::renderTrack(int track_idx)
 {
     return m_loader->m_tracks[track_idx].renderTrack(
@@ -214,6 +185,16 @@ int AnimPlayer::pushPlayingTrack(int playing_track_idx, int playing_anim_idx)
 int AnimPlayer::popPlayingTrack()
 {
     m_playingTrack.pop_back();
+    return 0;
+}
+
+int AnimPlayer::restartTrack()
+{
+    for (auto idx : m_playingTrack)
+    {
+        m_trackPlayRecord[idx].m_lastMilliSecond = 0;
+        m_trackPlayRecord[idx].m_playingFrameIdx = m_trackPlayRecord[idx].m_begin;
+    }
     return 0;
 }
 

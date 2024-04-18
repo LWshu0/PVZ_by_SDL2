@@ -28,9 +28,9 @@ PeaShooterSingle::PeaShooterSingle(
 ) :
     PlantObject(
         loader, camera,                                      // 资源 相机   
-        SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
-        SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
-        SDL_FPoint{ 20, 100 }, 80, 30,                       // 阴影
+        SDL_FPoint{ root_point.x - 40, root_point.y - 80 }, // 动画播放位置
+        SDL_FPoint{ 20, 0 }, 40, 80,                       // 碰撞箱
+        SDL_FPoint{ 0, 55 }, 80, 30,                       // 阴影
         1000,                                                // HP
         PlantState::IDLE,                                    // state
         3000,                                                // reload 时间

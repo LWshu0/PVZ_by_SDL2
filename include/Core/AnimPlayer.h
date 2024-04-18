@@ -93,8 +93,6 @@ public:
     /*  调用 render 之前需要先 updatePlayingFrameIdx 更新当前需要渲染的帧下标
      *  如果不更新, 动画将停留在起始帧 */
     int updatePlayingFrameIdx(uint64_t now_ms);
-    /* 更新帧的同时进行移动(僵尸用) */
-    int updatePlayingFrameIdx(uint64_t now_ms, int ground_track_idx, float cycle_offset_x);
 
     // 渲染指定轨道
     int renderTrack(int track_idx);
@@ -120,6 +118,7 @@ public:
     int pushPlayingTrack(int playing_track_idx, int playing_anim_idx);
     int popPlayingTrack();
 
+    int restartTrack();
     int restartTrack(int track_idx);
     int restartTrack(const std::initializer_list<int>& track_idx);
 

@@ -53,7 +53,7 @@ Zombie::Zombie(
         loader, camera,                                      // 资源 相机   
         SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
         SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
-        SDL_FPoint{ 20, 100 }, 80, 30,                       // 阴影
+        SDL_FPoint{ 10, 100 }, 80, 30,                       // 阴影
         1000,                                                // HP
         ZombieState::Zombie_IDLE
     )
@@ -166,7 +166,18 @@ int Zombie::attack(std::shared_ptr<Timer> timer)
 int Zombie::updateZombie(std::shared_ptr<Timer> timer)
 {
     // 更新帧
-    updatePlayingFrameIdx(timer->getTime(), 11, 49.8f);
+    updatePlayingFrameIdx(timer->getTime());
+    if (isUpdateAt(11, timer->getTime()))
+    {
+        if (isPlayBegin(11))
+        {
+            m_referenceScreenPoint.x -= 49.8f;
+        }
+        int playing_ground_frame = m_trackPlayRecord[11].m_playingFrameIdx;
+        m_realtimeScreenPoint.x = m_referenceScreenPoint.x - m_loader->m_tracks[11].m_frames[playing_ground_frame].m_x;
+        m_aabb.x = m_realtimeScreenPoint.x + m_offsetAABB.x;
+        m_shadowRange.x = m_realtimeScreenPoint.x + m_offsetShadow.x;
+    }
     return 0;
 }
 
