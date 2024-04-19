@@ -8,6 +8,8 @@ add_subdirectory(Plants)
 
 add_subdirectory(Zombies)
 
+add_subdirectory(Scene)
+
 add_subdirectory(Manager)
 
 add_subdirectory(Test)

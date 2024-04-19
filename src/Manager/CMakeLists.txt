@@ -9,3 +9,5 @@ target_link_libraries(plantmanager PUBLIC mapmanager)
 
 add_library(zombiemanager OBJECT ZombieManager.cpp)
 target_link_libraries(zombiemanager PUBLIC plantmanager)
+
+add_library(scenemanager OBJECT SceneManager.cpp)

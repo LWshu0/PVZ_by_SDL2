@@ -7,4 +7,5 @@ target_link_libraries(PVZ PUBLIC
     bullet bulletmanager 
     plants plantmanager
     zombies zombiemanager
+    scene scenemanager
 )

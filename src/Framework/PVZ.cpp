@@ -8,6 +8,7 @@
 #include "Manager/BulletManager.h"
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
+#include "Manager/SceneManager.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -27,6 +28,7 @@ std::shared_ptr<MapManager> map_manager;
 std::shared_ptr<BulletManager> bullet_manager;
 std::shared_ptr<PlantManager> plant_manager;
 std::shared_ptr<ZombieManager> zombie_manager;
+std::shared_ptr<SceneManager> scene_manager;
 
 void RenderThread()
 {
@@ -37,10 +39,11 @@ void RenderThread()
         pvz_timer->updateTime();
 
         // 更新物体状态
-        plant_manager->updatePlants();
-        bullet_manager->updateBullets();
-        zombie_manager->updateZombie();
-        zombie_manager->attackPlants();
+        // plant_manager->updatePlants();
+        // bullet_manager->updateBullets();
+        // zombie_manager->updateZombie();
+        // zombie_manager->attackPlants();
+        scene_manager->updateScene();
         // ...
 
         // 清空屏幕
@@ -48,11 +51,11 @@ void RenderThread()
         SDL_RenderClear(pvz_renderer);
 
         // 渲染对象
-        map_manager->renderMap();
-        plant_manager->renderPlants();
-        zombie_manager->renderZombie();
-        bullet_manager->renderBullets();
-
+        // map_manager->renderMap();
+        // plant_manager->renderPlants();
+        // zombie_manager->renderZombie();
+        // bullet_manager->renderBullets();
+        scene_manager->renderScene();
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
 
@@ -100,6 +103,8 @@ int main(int argc, char* args[])
     plant_manager->initilizePlants();
     zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
     zombie_manager->initilizeZombie();
+
+    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
 
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
