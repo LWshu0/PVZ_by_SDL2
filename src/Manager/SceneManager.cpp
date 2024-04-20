@@ -4,7 +4,11 @@ SceneManager::SceneManager(
     SDL_Renderer* renderer,
     std::shared_ptr<TextureRes> res,
     std::shared_ptr<Camera> camera,
-    std::shared_ptr<Timer> timer
+    std::shared_ptr<Timer> timer,
+    std::shared_ptr<MapManager> mapManager,
+    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<PlantManager> plantManager,
+    std::shared_ptr<ZombieManager> zombieManager
 ) :
     m_renderer(renderer),
     m_textureRes(res),
@@ -17,7 +21,7 @@ SceneManager::SceneManager(
     std::shared_ptr<AnimLoader> main_scene_loader = std::make_shared<AnimLoader>("reanim/SelectorScreen.reanim", renderer, res);
     m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>(renderer, timer, camera, res, main_scene_loader);
     // 游戏界面
-    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(renderer, timer, camera, res);
+    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(renderer, timer, camera, res, mapManager, bulletManager, plantManager, zombieManager);
     // ...
 
     // 设置初始界面
@@ -49,5 +53,5 @@ int SceneManager::renderScene()
 
 SceneManager::~SceneManager()
 {
-    
+
 }

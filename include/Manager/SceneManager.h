@@ -5,8 +5,7 @@
 #include "Scene/MainScene.h"
 #include "Scene/GameScene.h"
 
-class SceneManager
-{
+class SceneManager {
 protected:
     SDL_Renderer* m_renderer;                                   // 渲染器
     std::shared_ptr<TextureRes> m_textureRes;                   // 纹理资源
@@ -22,7 +21,11 @@ public:
         SDL_Renderer* renderer,
         std::shared_ptr<TextureRes> res,
         std::shared_ptr<Camera> camera,
-        std::shared_ptr<Timer> timer
+        std::shared_ptr<Timer> timer,
+        std::shared_ptr<MapManager> mapManager,
+        std::shared_ptr<BulletManager> bulletManager,
+        std::shared_ptr<PlantManager> plantManager,
+        std::shared_ptr<ZombieManager> zombieManager
     );
 
     int handleEvent(SDL_Event& event);

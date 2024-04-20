@@ -30,6 +30,8 @@ std::shared_ptr<PlantManager> plant_manager;
 std::shared_ptr<ZombieManager> zombie_manager;
 std::shared_ptr<SceneManager> scene_manager;
 
+SpinLock handle_update_render_spinlock;
+
 void RenderThread()
 {
 
@@ -38,6 +40,10 @@ void RenderThread()
         // 更新时钟
         pvz_timer->updateTime();
 
+        /*************************************************************
+         *                            lock                           *
+        **************************************************************/
+        handle_update_render_spinlock.lock();
         // 更新物体状态
         // plant_manager->updatePlants();
         // bullet_manager->updateBullets();
@@ -56,6 +62,11 @@ void RenderThread()
         // zombie_manager->renderZombie();
         // bullet_manager->renderBullets();
         scene_manager->renderScene();
+        /*************************************************************
+         *                          unlock                           *
+        **************************************************************/
+        handle_update_render_spinlock.unlock();
+
         // 刷新屏幕
         SDL_RenderPresent(pvz_renderer);
 
@@ -104,7 +115,7 @@ int main(int argc, char* args[])
     zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
     zombie_manager->initilizeZombie();
 
-    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
+    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager, zombie_manager);
 
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
@@ -120,6 +131,11 @@ int main(int argc, char* args[])
     {
         if (SDL_WaitEvent(&event))
         {
+            /*************************************************************
+            *                            lock                           *
+            **************************************************************/
+            handle_update_render_spinlock.lock();
+
             if (event.type == SDL_QUIT)
             {
                 QuitFlag = true;
@@ -160,6 +176,10 @@ int main(int argc, char* args[])
                     break;
                 }
             }
+            /*************************************************************
+            *                          unlock                           *
+            **************************************************************/
+            handle_update_render_spinlock.unlock();
         }
     }
 
