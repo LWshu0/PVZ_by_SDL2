@@ -23,7 +23,7 @@ protected:
     std::vector<SDL_FPoint> m_buttonHoverOffset;    // 按钮在 click 状态下的偏移量
     std::vector<int> m_buttonTrackIdx;              // 按钮的动画轨道编号
     std::vector<SDL_Texture*> m_buttonHoverTexture; // 按钮处于 hover 状态下的纹理
-
+    std::vector<SceneType> m_jumpSceneType;         // 点击按钮跳转的页面
 public:
     MainScene(
         SDL_Renderer* renderer,
@@ -32,6 +32,8 @@ public:
         std::shared_ptr<TextureRes> res,
         std::shared_ptr<AnimLoader> loader
     );
+
+    virtual SceneType getType() override;
 
     virtual int changeAnimState(AnimState to_state) override;
 

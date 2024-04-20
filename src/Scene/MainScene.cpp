@@ -65,6 +65,7 @@ MainScene::MainScene(
     m_buttonHoverOffset.resize(MainSceneButtonType::MainScene_MaxButtonNum);
     m_buttonTrackIdx.resize(MainSceneButtonType::MainScene_MaxButtonNum);
     m_buttonHoverTexture.resize(MainSceneButtonType::MainScene_MaxButtonNum);
+    m_jumpSceneType.resize(MainSceneButtonType::MainScene_MaxButtonNum);
     m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
     m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
     {
@@ -86,6 +87,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_StartAdventure] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_StartAdventure] = 34;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_StartAdventure] = m_textureRes->getTextureFrom("reanim/SelectorScreen_StartAdventure_Highlight.png");
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_StartAdventure] = SceneType::Scene_GameScene;
     }
     /****************************************************************************/
     {
@@ -101,6 +103,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_MiniGame] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_MiniGame] = 26;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_MiniGame] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Survival_highlight.png");
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_MiniGame] = SceneType::Scene_GameScene;
     }
     /****************************************************************************/
     {
@@ -116,6 +119,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Challenge] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Challenge] = 28;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Challenge] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Challenges_highlight.png");
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_Challenge] = SceneType::Scene_GameScene;
     }
     /****************************************************************************/
     {
@@ -130,8 +134,14 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Survival] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Survival] = 30;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Survival] = m_textureRes->getTextureFrom("reanim/SelectorScreen_vasebreaker_highlight.png");
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_Survival] = SceneType::Scene_GameScene;
     }
 
+}
+
+SceneType MainScene::getType()
+{
+    return SceneType::Scene_MainScene;
 }
 
 int MainScene::changeAnimState(AnimState to_state)
@@ -169,18 +179,28 @@ int MainScene::changeAnimState(AnimState to_state)
 
 int MainScene::enterScene()
 {
+    SDL_Log("enter main scene\n");
+    // 初始化动画
+    m_playingAnimState = AnimState::R_ANIM1;
     setPlayingTrack(
         { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 },
         0
     );
     restartTrack();
+    // 初始化按钮状态
+    m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
+    m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
+    for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
+    {
+        m_trackPlayRecord[m_buttonTrackIdx[button_idx]].m_alterTexture = nullptr;
+    }
     return 0;
 }
 
 SceneType MainScene::handleEvent(SDL_Event& event)
 {
     // 动画播放完成后才开始处理事件
-    if (m_playingAnimState != AnimState::R_ANIM3) return SceneType::Scene_MaxSceneIdx;
+    if (m_playingAnimState == AnimState::R_ANIM1) return SceneType::Scene_MaxSceneIdx;
 
     switch (event.type)
     {
@@ -189,13 +209,17 @@ SceneType MainScene::handleEvent(SDL_Event& event)
         if (!isValidButton(m_clickButtonIdx) && isValidButton(m_hoverButtonIdx))
         {
             m_clickButtonIdx = m_hoverButtonIdx;
-            // todo: 返回对应的跳转页面
         }
         break;
     }
     case SDL_MOUSEBUTTONUP: {
+        SceneType rt_scene = SceneType::Scene_MaxSceneIdx;
+        if (m_hoverButtonIdx == m_clickButtonIdx)
+        {
+            rt_scene = m_jumpSceneType[m_clickButtonIdx];
+        }
         m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
-        break;
+        return rt_scene;
     }
     case SDL_MOUSEMOTION: {
         // 遍历按钮 找当前 hover 的按钮
@@ -253,6 +277,7 @@ int MainScene::updateScene()
 
 int MainScene::exitScene()
 {
+    SDL_Log("exit main scene\n");
     return 0;
 }
 
@@ -274,7 +299,7 @@ int MainScene::renderScene()
     // 花
     renderTracks({ 42, 43, 44 });
     // 木板
-    renderTracks({ 45, 46, 47 });
+    if(m_playingAnimState != AnimState::R_ANIM1) renderTracks({ 45, 46, 47 });
     // 渲染按钮的点击范围
     for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
     {
