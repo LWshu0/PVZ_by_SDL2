@@ -124,6 +124,9 @@ int main(int argc, char* args[])
             {
                 QuitFlag = true;
             }
+
+            scene_manager->handleEvent(event);
+
             if (event.type == SDL_KEYDOWN)
             {
                 switch (event.key.keysym.sym)

@@ -42,11 +42,15 @@ int AnimPlayer::updatePlayingFrameIdx(uint64_t now_ms)
     return 0;
 }
 
-int AnimPlayer::renderTrack(int track_idx)
+int AnimPlayer::renderTrack(int track_idx, const SDL_FPoint& offset)
 {
+    SDL_FPoint real_point{
+        m_camera->getRenderX(m_realtimeScreenPoint.x + offset.x),
+        m_camera->getRenderY(m_realtimeScreenPoint.y + offset.y)
+    };
     return m_loader->m_tracks[track_idx].renderTrack(
         m_loader->m_renderer,
-        m_camera->getRenderPoint(getRealPoint(track_idx)),
+        real_point,
         m_trackPlayRecord[track_idx].m_playingFrameIdx,
         m_trackPlayRecord[track_idx].m_alterTexture,
         m_trackPlayRecord[track_idx].m_maskR,

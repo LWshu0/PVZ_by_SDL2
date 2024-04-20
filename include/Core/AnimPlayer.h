@@ -95,7 +95,7 @@ public:
     int updatePlayingFrameIdx(uint64_t now_ms);
 
     // 渲染指定轨道
-    int renderTrack(int track_idx);
+    int renderTrack(int track_idx, const SDL_FPoint& offset = SDL_FPoint{ 0.0f, 0.0f });
     int renderTrack(int track_idx, Uint8 mask_a);
     // 将输入的轨道偏移 offset 渲染
     int renderTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset = SDL_FPoint{ 0.0f, 0.0f });

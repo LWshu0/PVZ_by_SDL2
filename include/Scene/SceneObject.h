@@ -16,15 +16,18 @@ enum SceneType {
 
 class SceneObject {
 protected:
+    SDL_Renderer* m_renderer;
     std::shared_ptr<Timer> m_timer;
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<TextureRes> m_textureRes;
 public:
     SceneObject(
+        SDL_Renderer* renderer,
         std::shared_ptr<Timer> timer,
         std::shared_ptr<Camera> camera,
         std::shared_ptr<TextureRes> res
-        ) :
+    ) :
+        m_renderer(renderer),
         m_timer(timer),
         m_camera(camera),
         m_textureRes(res)

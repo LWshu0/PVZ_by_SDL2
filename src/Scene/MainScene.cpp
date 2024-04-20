@@ -51,14 +51,88 @@ fps: 20
 47: woodsign3 -> range: [13, 78] total: [0, 705]
 */
 MainScene::MainScene(
+    SDL_Renderer* renderer,
     std::shared_ptr<Timer> timer,
     std::shared_ptr<Camera> camera,
     std::shared_ptr<TextureRes> res,
     std::shared_ptr<AnimLoader> loader
 ) :
-    SceneObject(timer, camera, res),
-    AnimPlayer(loader, camera, SDL_FPoint{ 0.0f, 0.0f }, AnimState::R_ANIM1, DamageState::R_Damage1)
-{}
+    SceneObject(renderer, timer, camera, res),
+    AnimPlayer(loader, camera, SDL_FPoint{ 0.0f, 0.0f }, AnimState::R_ANIM1, DamageState::R_Damage1),
+    m_hoverButtonIdx(MainSceneButtonType::MainScene_MaxButtonNum)
+{
+    m_buttonRange.resize(MainSceneButtonType::MainScene_MaxButtonNum);
+    m_buttonHoverOffset.resize(MainSceneButtonType::MainScene_MaxButtonNum);
+    m_buttonTrackIdx.resize(MainSceneButtonType::MainScene_MaxButtonNum);
+    m_buttonHoverTexture.resize(MainSceneButtonType::MainScene_MaxButtonNum);
+    m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
+    m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
+    {
+        SDL_FPoint base_point{ 405.0f, 65.0f };
+        std::vector<SDL_FPoint> points{
+            // 按钮主体
+            SDL_FPoint{ (base_point.x + 9.0f), (base_point.y + 37.0f) },
+            SDL_FPoint{ (base_point.x + 5.0f), (base_point.y + 93.0f) },
+            SDL_FPoint{ (base_point.x + 316.0f), (base_point.y + 61.0f) },
+            SDL_FPoint{ (base_point.x + 307.0f), (base_point.y + 134.0f) },
+            // 上方小突起
+            SDL_FPoint{ (base_point.x + 93.0f), (base_point.y + 8.0f) },
+            SDL_FPoint{ (base_point.x + 62.0f), (base_point.y + 45.0f) },
+            SDL_FPoint{ (base_point.x + 209.0f), (base_point.y + 6.0f) },
+            SDL_FPoint{ (base_point.x + 240.0f), (base_point.y + 57.0f) }
+        };
+        std::vector<int> idx{ 0,1,2,1,3,2 ,4,5,6,5,7,6 };
+        m_buttonRange[MainSceneButtonType::MainSceneButton_StartAdventure] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_StartAdventure] = SDL_FPoint{ 3.0f, 3.0f };
+        m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_StartAdventure] = 34;
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_StartAdventure] = m_textureRes->getTextureFrom("reanim/SelectorScreen_StartAdventure_Highlight.png");
+    }
+    /****************************************************************************/
+    {
+        SDL_FPoint base_point{ 406.0f, 173.1f };
+        std::vector<SDL_FPoint> points{
+            SDL_FPoint{  (base_point.x + 7.0f),  (base_point.y + 7.0f) },
+            SDL_FPoint{  (base_point.x + 8.0f),  (base_point.y + 73.0f) },
+            SDL_FPoint{  (base_point.x + 307.0f),  (base_point.y + 55.0f) },
+            SDL_FPoint{  (base_point.x + 292.0f),  (base_point.y + 127.0f) }
+        };
+        std::vector<int> idx{ 0,1,2,1,3,2 };
+        m_buttonRange[MainSceneButtonType::MainSceneButton_MiniGame] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_MiniGame] = SDL_FPoint{ 3.0f, 3.0f };
+        m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_MiniGame] = 26;
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_MiniGame] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Survival_highlight.png");
+    }
+    /****************************************************************************/
+    {
+        SDL_FPoint base_point{ 410.0f, 257.5f };
+        std::vector<SDL_FPoint> points{
+            SDL_FPoint{  (base_point.x + 7.0f),  (base_point.y + 4.0f) },
+            SDL_FPoint{  (base_point.x + 5.0f),  (base_point.y + 58.0f) },
+            SDL_FPoint{  (base_point.x + 277.0f),  (base_point.y + 52.0f) },
+            SDL_FPoint{  (base_point.x + 265.0f),  (base_point.y + 119.0f) }
+        };
+        std::vector<int> idx{ 0,1,2,1,3,2 };
+        m_buttonRange[MainSceneButtonType::MainSceneButton_Challenge] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Challenge] = SDL_FPoint{ 3.0f, 3.0f };
+        m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Challenge] = 28;
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Challenge] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Challenges_highlight.png");
+    }
+    /****************************************************************************/
+    {
+        SDL_FPoint base_point{ 413.0f, 328.0f };
+        std::vector<SDL_FPoint> points{
+            SDL_FPoint{  (base_point.x + 9.0f),  (base_point.y + 4.0f) },
+            SDL_FPoint{  (base_point.x + 9.0f),  (base_point.y + 55.0f) },
+            SDL_FPoint{  (base_point.x + 260.0f),  (base_point.y + 59.0f) },
+            SDL_FPoint{  (base_point.x + 251.0f),  (base_point.y + 116.0f) } };
+        std::vector<int> idx{ 0,1,2,1,3,2 };
+        m_buttonRange[MainSceneButtonType::MainSceneButton_Survival] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Survival] = SDL_FPoint{ 3.0f, 3.0f };
+        m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Survival] = 30;
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Survival] = m_textureRes->getTextureFrom("reanim/SelectorScreen_vasebreaker_highlight.png");
+    }
+
+}
 
 int MainScene::changeAnimState(AnimState to_state)
 {
@@ -105,7 +179,51 @@ int MainScene::enterScene()
 
 SceneType MainScene::handleEvent(SDL_Event& event)
 {
+    // 动画播放完成后才开始处理事件
+    if (m_playingAnimState != AnimState::R_ANIM3) return SceneType::Scene_MaxSceneIdx;
 
+    switch (event.type)
+    {
+    case SDL_MOUSEBUTTONDOWN: {
+        // 没有一个处于按下状态的按钮 同时鼠标放置在了一个按钮上
+        if (!isValidButton(m_clickButtonIdx) && isValidButton(m_hoverButtonIdx))
+        {
+            m_clickButtonIdx = m_hoverButtonIdx;
+            // todo: 返回对应的跳转页面
+        }
+        break;
+    }
+    case SDL_MOUSEBUTTONUP: {
+        m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
+        break;
+    }
+    case SDL_MOUSEMOTION: {
+        // 遍历按钮 找当前 hover 的按钮
+        int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure;
+        for (button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
+        {
+            if (m_buttonRange[button_idx]->isInShape(event.motion.x, event.motion.y))
+            {
+                break;
+            }
+        }
+        // 原来 hover 着一个按钮 需要 dehover 更换了按钮
+        if (isValidButton(m_hoverButtonIdx))
+        {
+            m_trackPlayRecord[m_buttonTrackIdx[m_hoverButtonIdx]].m_alterTexture = nullptr;
+            m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
+        }
+        // 如果当前 hover 了一个按钮, 变换形态
+        if (isValidButton(button_idx))
+        {
+            m_trackPlayRecord[m_buttonTrackIdx[button_idx]].m_alterTexture = m_buttonHoverTexture[button_idx];
+            m_hoverButtonIdx = button_idx;
+        }
+        break;
+    }
+    default:
+        break;
+    }
     return SceneType::Scene_MaxSceneIdx;
 }
 
@@ -140,7 +258,29 @@ int MainScene::exitScene()
 
 int MainScene::renderScene()
 {
-    return render();
+    // render();
+    // 背景 
+    renderTracks({ 14, 21, 22, 23 });
+    // 按钮阴影 31/33
+    renderTracks({ 25, 27, 29, 33 });
+    // 按钮 32/34
+    for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
+    {
+        if (button_idx == m_clickButtonIdx) renderTrack(m_buttonTrackIdx[button_idx], m_buttonHoverOffset[button_idx]);
+        else renderTrack(m_buttonTrackIdx[button_idx]);
+    }
+    // 草
+    renderTracks({ 35, 36, 37, 38, 39, 40, 41 });
+    // 花
+    renderTracks({ 42, 43, 44 });
+    // 木板
+    renderTracks({ 45, 46, 47 });
+    // 渲染按钮的点击范围
+    for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
+    {
+        m_buttonRange[button_idx]->renderShape();
+    }
+    return 0;
 }
 
 MainScene::~MainScene()

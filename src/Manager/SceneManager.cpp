@@ -15,8 +15,7 @@ SceneManager::SceneManager(
     m_sceneTemplate.resize(SceneType::Scene_MaxSceneIdx);
     // 主界面
     std::shared_ptr<AnimLoader> main_scene_loader = std::make_shared<AnimLoader>("reanim/SelectorScreen.reanim", renderer, res);
-    m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>(timer, camera, res, main_scene_loader);
-    m_sceneTemplate[SceneType::Scene_MainScene]->enterScene();
+    m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>(renderer, timer, camera, res, main_scene_loader);
     // ...
 
     // 设置初始界面
