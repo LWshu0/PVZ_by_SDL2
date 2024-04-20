@@ -11,6 +11,7 @@
 
 enum SceneType {
     Scene_MainScene,
+    Scene_GameScene,
     Scene_MaxSceneIdx
 };
 
@@ -32,6 +33,8 @@ public:
         m_camera(camera),
         m_textureRes(res)
     {};
+
+    virtual SceneType getType() = 0;
 
     virtual int enterScene() = 0;
 
