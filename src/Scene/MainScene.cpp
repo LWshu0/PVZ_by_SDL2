@@ -214,7 +214,7 @@ SceneType MainScene::handleEvent(SDL_Event& event)
     }
     case SDL_MOUSEBUTTONUP: {
         SceneType rt_scene = SceneType::Scene_MaxSceneIdx;
-        if (m_hoverButtonIdx == m_clickButtonIdx)
+        if (isValidButton(m_clickButtonIdx) && m_hoverButtonIdx == m_clickButtonIdx)
         {
             rt_scene = m_jumpSceneType[m_clickButtonIdx];
         }
