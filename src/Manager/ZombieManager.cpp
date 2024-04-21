@@ -81,7 +81,6 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
 
 int ZombieManager::updateZombie()
 {
-    m_mutex.lock();
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
@@ -95,13 +94,11 @@ int ZombieManager::updateZombie()
             m_zombies[i] = nullptr;
         }
     }
-    m_mutex.unlock();
     return 0;
 }
 
 int ZombieManager::attackPlants()
 {
-    m_mutex.lock();
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
@@ -118,19 +115,16 @@ int ZombieManager::attackPlants()
             m_zombies[i]->changeZombieState(ZombieState::Zombie_WALK, m_timer);
         }
     }
-    m_mutex.unlock();
     return 0;
 }
 
 int ZombieManager::renderZombie()
 {
-    m_mutex.lock();
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
         m_zombies[i]->render();
     }
-    m_mutex.unlock();
     return 0;
 }
 
@@ -146,7 +140,6 @@ ZombieManager::~ZombieManager()
 
 int ZombieManager::changeAllTo(ZombieState state)
 {
-    m_mutex.lock();
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
@@ -155,6 +148,5 @@ int ZombieManager::changeAllTo(ZombieState state)
             SDL_Log("change failed\n");
         }
     }
-    m_mutex.unlock();
     return 0;
 }

@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <memory>
-#include <mutex>
 
 #include "Core/TextureRes.h"
 #include "Core/AnimLoader.h"
@@ -37,7 +36,6 @@ protected:
     // zombies in game
     std::vector<std::shared_ptr<ZombieObject>> m_zombies;
 
-    std::mutex m_mutex;
 public:
     ZombieManager(
         SDL_Renderer* renderer,

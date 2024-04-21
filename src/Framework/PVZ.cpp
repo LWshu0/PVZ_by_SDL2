@@ -8,6 +8,7 @@
 #include "Manager/BulletManager.h"
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
+#include "Manager/TaskManager.h"
 #include "Manager/SceneManager.h"
 
 #define FLUSH_DELAY 1000 / 45
@@ -28,6 +29,7 @@ std::shared_ptr<MapManager> map_manager;
 std::shared_ptr<BulletManager> bullet_manager;
 std::shared_ptr<PlantManager> plant_manager;
 std::shared_ptr<ZombieManager> zombie_manager;
+std::shared_ptr<TaskManager> task_manager;
 std::shared_ptr<SceneManager> scene_manager;
 
 SpinLock handle_update_render_spinlock;
@@ -44,23 +46,14 @@ void RenderThread()
          *                            lock                           *
         **************************************************************/
         handle_update_render_spinlock.lock();
-        // 更新物体状态
-        // plant_manager->updatePlants();
-        // bullet_manager->updateBullets();
-        // zombie_manager->updateZombie();
-        // zombie_manager->attackPlants();
+        // 更新场景
         scene_manager->updateScene();
-        // ...
 
         // 清空屏幕
         SDL_SetRenderDrawColor(pvz_renderer, 0, 10, 100, 255);
         SDL_RenderClear(pvz_renderer);
 
-        // 渲染对象
-        // map_manager->renderMap();
-        // plant_manager->renderPlants();
-        // zombie_manager->renderZombie();
-        // bullet_manager->renderBullets();
+        // 渲染场景
         scene_manager->renderScene();
         /*************************************************************
          *                          unlock                           *
@@ -98,31 +91,23 @@ int main(int argc, char* args[])
 
     SDL_SetRenderDrawBlendMode(pvz_renderer, SDL_BLENDMODE_BLEND);
 
+    // 创建基础对象
     texture_res = std::make_shared<TextureRes>(pvz_renderer, "resource/resource.xml", "reanim");
     pvz_timer = std::make_shared<Timer>();
     pvz_camera = std::make_shared<Camera>(0, 0, 800, 600);
 
+    // 创建管理者
     map_manager = std::make_shared<MapManager>(pvz_renderer, texture_res, pvz_camera);
-    map_manager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
-
     bullet_manager = std::make_shared<BulletManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, 100);
-
     plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
     zombie_manager = std::make_shared<ZombieManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
+    task_manager = std::make_shared<TaskManager>(pvz_timer);
+    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager, zombie_manager, task_manager);
 
+    // 关联管理者
     plant_manager->initilizeManagers(map_manager, bullet_manager, zombie_manager);
-    plant_manager->initilizePlants();
     zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
-    zombie_manager->initilizeZombie();
-
-    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager, zombie_manager);
-
-    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
-    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
-    if (0 == plant_manager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
-    // if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove plant at (1, 1)\n"); }
-
-    if (0 == zombie_manager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
+    task_manager->initilizeManagers(map_manager, zombie_manager);
 
     std::thread render_thread(RenderThread);
 
@@ -185,8 +170,10 @@ int main(int argc, char* args[])
 
     render_thread.join();
 
+    // 取消关联(因存在循环引用, 需要释放内部的智能指针)
     plant_manager->releaseManagers();
     zombie_manager->releaseManagers();
+    task_manager->releaseManagers();
 
     SDL_DestroyRenderer(pvz_renderer);
     SDL_DestroyWindow(pvz_window);

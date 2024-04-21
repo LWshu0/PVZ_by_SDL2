@@ -3,6 +3,7 @@
 #include "Manager/BulletManager.h"
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
+#include "Manager/TaskManager.h"
 
 GameScene::GameScene(
     SDL_Renderer* renderer,
@@ -12,13 +13,15 @@ GameScene::GameScene(
     std::shared_ptr<MapManager> mapManager,
     std::shared_ptr<BulletManager> bulletManager,
     std::shared_ptr<PlantManager> plantManager,
-    std::shared_ptr<ZombieManager> zombieManager
+    std::shared_ptr<ZombieManager> zombieManager,
+    std::shared_ptr<TaskManager> taskManager
 ) :
     SceneObject(renderer, timer, camera, res),
     m_mapManager(mapManager),
     m_bulletManager(bulletManager),
     m_plantManager(plantManager),
-    m_zombieManager(zombieManager)
+    m_zombieManager(zombieManager),
+    m_taskManager(taskManager)
 {
 
 }
@@ -31,6 +34,17 @@ SceneType GameScene::getType()
 int GameScene::enterScene()
 {
     SDL_Log("enter game scene\n");
+    m_mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
+    m_plantManager->initilizePlants();
+    m_zombieManager->initilizeZombie();
+    m_bulletManager->clearBullets();
+    m_taskManager->loadTask("task/1-1-1.xml");
+    if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
+    if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
+    if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
+    // if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove plant at (1, 1)\n"); }
+
+    // if (0 == m_zombieManager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
     return 0;
 }
 
@@ -43,6 +57,11 @@ SceneType GameScene::handleEvent(SDL_Event& event)
 
 int GameScene::updateScene()
 {
+    m_taskManager->updateTask();
+    m_plantManager->updatePlants();
+    m_bulletManager->updateBullets();
+    m_zombieManager->updateZombie();
+    m_zombieManager->attackPlants();
     return 0;
 }
 
@@ -54,6 +73,10 @@ int GameScene::exitScene()
 
 int GameScene::renderScene()
 {
+    m_mapManager->renderMap();
+    m_plantManager->renderPlants();
+    m_zombieManager->renderZombie();
+    m_bulletManager->renderBullets();
     return 0;
 }
 
