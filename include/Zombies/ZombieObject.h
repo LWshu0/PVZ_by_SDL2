@@ -7,6 +7,11 @@
 #include "Core/GameObject.h"
 #include "Core/AnimPlayer.h"
 
+enum ZombieType {
+    ZombieNormal,
+    MaxZombieType
+};
+
 enum ZombieState {
     Zombie_IDLE,
     Zombie_WALK,

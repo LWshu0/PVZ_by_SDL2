@@ -11,11 +11,6 @@ class MapManager;
 class BulletManager;
 class ZombieManager;
 
-enum PlantType {
-    PlantPeaShooter1,
-    MaxPlantType
-};
-
 class PlantManager {
 protected:
     /**************************

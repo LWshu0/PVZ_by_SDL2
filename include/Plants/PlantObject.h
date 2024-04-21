@@ -8,6 +8,11 @@
 
 #include <memory>
 
+enum PlantType {
+    PlantPeaShooter1,
+    MaxPlantType
+};
+
 enum PlantState {
     IDLE,       // IDLE 状态播放 IDLE 动画
     ATTACK      // 在攻击逻辑时播放攻击动画, 攻击动画间隔用 IDLE 动画填充

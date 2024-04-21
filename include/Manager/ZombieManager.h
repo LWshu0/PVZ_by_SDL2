@@ -17,11 +17,6 @@ class MapManager;
 class BulletManager;
 class PlantManager;
 
-enum ZombieType {
-    ZombieNormal,
-    MaxZombieType
-};
-
 class ZombieManager {
 protected:
     /**************************
