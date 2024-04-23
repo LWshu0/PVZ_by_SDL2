@@ -81,11 +81,14 @@ int CardManager::initilizeManagers(
 int CardManager::renderCard()
 {
     SDL_Rect dst_rect{ 0, 0, 100, 200 };
-    SDL_Rect dst_rect2{ 200, 0, 100, 200 };
+    SDL_Rect dst_rect2{ 200, 0, 50, 70 };
     SDL_QueryTexture(m_plantImageTexture[0], NULL, NULL, &dst_rect.w, &dst_rect.h);
-    SDL_QueryTexture(m_plantCardTexture[0], NULL, NULL, &dst_rect2.w, &dst_rect2.h);
+    // SDL_QueryTexture(m_plantCardTexture[0], NULL, NULL, &dst_rect2.w, &dst_rect2.h);
     SDL_RenderCopy(m_renderer, m_plantImageTexture[0], NULL, &dst_rect);
     SDL_RenderCopy(m_renderer, m_plantCardTexture[0], NULL, &dst_rect2);
+    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+    SDL_RenderDrawRect(m_renderer, &dst_rect);
+    SDL_RenderDrawRect(m_renderer, &dst_rect2);
     return 0;
 }
 

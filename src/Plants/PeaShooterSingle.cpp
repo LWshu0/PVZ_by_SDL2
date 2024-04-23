@@ -78,12 +78,12 @@ int PeaShooterSingle::render()
     
     if (AnimState::R_ATTACK != m_playingAnimState && is_blinking)
     {
-        renderTrack(17);
+        renderTrack(17, getOffset(17));
         if (isPlayEnd(17)) is_blinking = false;
     }
     if (AnimState::R_ATTACK == m_playingAnimState)
     {
-        renderTrack(16);
+        renderTrack(16, getOffset(16));
         if (isPlayEnd(15)) changeAnimState(AnimState::R_IDLE);
     }
     showAABB();
@@ -182,20 +182,19 @@ int PeaShooterSingle::changeToStatic()
 {
     changeAnimState(AnimState::R_IDLE);
     restartTrack();
-    setPlayPosition(SDL_FPoint{ 0.0f, 0.0f });
+    setPlayPosition(SDL_FPoint{ -8.0f, -10.0f });
     return 0;
 }
 
 int PeaShooterSingle::getAnimRange(float& width, float& height)
 {
-    width = 100.0f;
-    height = 100.0f;
+    width = 70.0f;
+    height = 70.0f;
     return 0;
 }
 
 int PeaShooterSingle::renderToTexture()
 {    
-    // gotoTrack(0);
     // body
     renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
