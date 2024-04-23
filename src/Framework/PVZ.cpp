@@ -9,6 +9,7 @@
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
+#include "Manager/CardManager.h"
 #include "Manager/SceneManager.h"
 
 #define FLUSH_DELAY 1000 / 45
@@ -30,6 +31,7 @@ std::shared_ptr<BulletManager> bullet_manager;
 std::shared_ptr<PlantManager> plant_manager;
 std::shared_ptr<ZombieManager> zombie_manager;
 std::shared_ptr<TaskManager> task_manager;
+std::shared_ptr<CardManager> card_manager;
 std::shared_ptr<SceneManager> scene_manager;
 
 SpinLock handle_update_render_spinlock;
@@ -102,12 +104,14 @@ int main(int argc, char* args[])
     plant_manager = std::make_shared<PlantManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
     zombie_manager = std::make_shared<ZombieManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer);
     task_manager = std::make_shared<TaskManager>(pvz_timer);
-    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager, zombie_manager, task_manager);
+    card_manager = std::make_shared<CardManager>(pvz_renderer, pvz_timer, pvz_camera, texture_res);
+    scene_manager = std::make_shared<SceneManager>(pvz_renderer, texture_res, pvz_camera, pvz_timer, map_manager, bullet_manager, plant_manager, zombie_manager, task_manager, card_manager);
 
     // 关联管理者
     plant_manager->initilizeManagers(map_manager, bullet_manager, zombie_manager);
     zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
     task_manager->initilizeManagers(map_manager, zombie_manager);
+    card_manager->initilizeManagers(map_manager, plant_manager);
 
     std::thread render_thread(RenderThread);
 
@@ -174,6 +178,7 @@ int main(int argc, char* args[])
     plant_manager->releaseManagers();
     zombie_manager->releaseManagers();
     task_manager->releaseManagers();
+    card_manager->releaseManagers();
 
     SDL_DestroyRenderer(pvz_renderer);
     SDL_DestroyWindow(pvz_window);

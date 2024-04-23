@@ -58,6 +58,19 @@ public:
     void releaseManagers();
 
     ~PlantManager();
+
+    // 根据植物类型枚举获取 loader
+    inline std::shared_ptr<AnimLoader> getPlantAnimLoader(int plant_type)
+    {
+        return plant_type == PlantType::MaxPlantType ? nullptr : m_animLoader[plant_type];
+    }
+
+    // 根据植物类型枚举获取 plant 模板
+    inline std::shared_ptr<PlantObject> getPlantTemplate(int plant_type)
+    {
+        return plant_type == PlantType::MaxPlantType ? nullptr : m_plantTemplate[plant_type];
+    }
+
     // 测试
     int changeAllTo(PlantState state);
 };

@@ -26,7 +26,8 @@ public:
         std::shared_ptr<BulletManager> bulletManager,
         std::shared_ptr<PlantManager> plantManager,
         std::shared_ptr<ZombieManager> zombieManager,
-        std::shared_ptr<TaskManager> taskManager
+        std::shared_ptr<TaskManager> taskManager,
+        std::shared_ptr<CardManager> cardManager
     );
 
     int handleEvent(SDL_Event& event);

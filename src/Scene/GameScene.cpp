@@ -4,6 +4,7 @@
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
+#include "Manager/CardManager.h"
 
 GameScene::GameScene(
     SDL_Renderer* renderer,
@@ -14,14 +15,16 @@ GameScene::GameScene(
     std::shared_ptr<BulletManager> bulletManager,
     std::shared_ptr<PlantManager> plantManager,
     std::shared_ptr<ZombieManager> zombieManager,
-    std::shared_ptr<TaskManager> taskManager
+    std::shared_ptr<TaskManager> taskManager,
+    std::shared_ptr<CardManager> cardManager
 ) :
     SceneObject(renderer, timer, camera, res),
     m_mapManager(mapManager),
     m_bulletManager(bulletManager),
     m_plantManager(plantManager),
     m_zombieManager(zombieManager),
-    m_taskManager(taskManager)
+    m_taskManager(taskManager),
+    m_cardManager(cardManager)
 {
 
 }
@@ -77,6 +80,7 @@ int GameScene::renderScene()
     m_plantManager->renderPlants();
     m_zombieManager->renderZombie();
     m_bulletManager->renderBullets();
+    m_cardManager->renderCard();
     return 0;
 }
 

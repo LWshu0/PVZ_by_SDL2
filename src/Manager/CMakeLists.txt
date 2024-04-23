@@ -12,4 +12,6 @@ target_link_libraries(zombiemanager PUBLIC plantmanager)
 
 add_library(taskmanager OBJECT TaskManager.cpp)
 
+add_library(cardmanager OBJECT CardManager.cpp)
+
 add_library(scenemanager OBJECT SceneManager.cpp)

@@ -8,6 +8,7 @@ class BulletManager;
 class PlantManager;
 class ZombieManager;
 class TaskManager;
+class CardManager;
 
 class GameScene : public SceneObject {
 protected:
@@ -17,7 +18,7 @@ protected:
     std::shared_ptr<PlantManager> m_plantManager;
     std::shared_ptr<ZombieManager> m_zombieManager;
     std::shared_ptr<TaskManager> m_taskManager;
-
+    std::shared_ptr<CardManager> m_cardManager;
 public:
     GameScene(
         SDL_Renderer* renderer,
@@ -28,8 +29,9 @@ public:
         std::shared_ptr<BulletManager> bulletManager,
         std::shared_ptr<PlantManager> plantManager,
         std::shared_ptr<ZombieManager> zombieManager,
-        std::shared_ptr<TaskManager> taskManager
-    );
+        std::shared_ptr<TaskManager> taskManager,
+        std::shared_ptr<CardManager> cardManager
+        );
 
     virtual SceneType getType() override;
 
