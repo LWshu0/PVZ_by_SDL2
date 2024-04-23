@@ -134,7 +134,7 @@ int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Time
         m_nextAttackAnimMilliSecond = timer->getTime();
         m_nextFireMilliSecond = timer->getTime() + m_windUpDuration;
         changeAnimState(AnimState::R_ATTACK);
-        SDL_Log("change to attack plant\n");
+        // SDL_Log("change to attack plant\n");
     }
     else
     {
@@ -175,6 +175,31 @@ int PeaShooterSingle::updatePlant(std::shared_ptr<Timer> timer)
             m_nextAttackAnimMilliSecond = m_nextAttackAnimMilliSecond + m_reloadMilliSecond;
         }
     }
+    return 0;
+}
+
+int PeaShooterSingle::changeToStatic()
+{
+    changeAnimState(AnimState::R_IDLE);
+    restartTrack();
+    setPlayPosition(SDL_FPoint{ 0.0f, 0.0f });
+    return 0;
+}
+
+int PeaShooterSingle::getAnimRange(float& width, float& height)
+{
+    width = 100.0f;
+    height = 100.0f;
+    return 0;
+}
+
+int PeaShooterSingle::renderToTexture()
+{    
+    // gotoTrack(0);
+    // body
+    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
+    // 头
+    renderTracks({ 13, 14, 15 }, getOffset(14));
     return 0;
 }
 

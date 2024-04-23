@@ -127,6 +127,10 @@ public:
     int alignTrack(int track_idx, int ref_track_idx);
     int alignTrack(const std::initializer_list<int>& track_idx, int ref_track_idx);
 
+    // 将当前处于播放状态的轨道置于指定的帧位置
+    // dst_frame_idx 为逻辑帧下标, 相对于开始位置的偏移
+    int gotoTrack(int dst_frame_idx);
+
     // 设置 track_idx 号轨道的动画数据
     // 将 track_idx 号轨道按照第 anim_idx 个动画的数据重置到起始帧
     // 同时更改 record 中的起始点和终止点

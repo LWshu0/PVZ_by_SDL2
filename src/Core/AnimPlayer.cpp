@@ -236,6 +236,15 @@ int AnimPlayer::alignTrack(const std::initializer_list<int>& track_idx, int ref_
     return 0;
 }
 
+int AnimPlayer::gotoTrack(int dst_frame_idx)
+{
+    for (auto track_idx : m_playingTrack)
+    {
+        m_trackPlayRecord[track_idx].m_playingFrameIdx = m_trackPlayRecord[track_idx].m_begin + dst_frame_idx;
+    }
+    return 0;
+}
+
 int AnimPlayer::setTrackAnim(int track_idx, int anim_idx)
 {
     m_trackPlayRecord[track_idx].m_begin = m_loader->m_animTracks[anim_idx].begin;

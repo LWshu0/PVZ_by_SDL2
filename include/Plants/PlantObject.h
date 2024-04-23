@@ -85,7 +85,7 @@ public:
     // virtual void setPlayPosition(const SDL_FPoint& point);
 
     inline bool isDead() { return m_HP <= 0; }
-    
+
     // 待实现
     // virtual bool inAttackRange(const SDL_FRect& enemy_aabb) = 0;
 
@@ -100,6 +100,16 @@ public:
 
     // 更新到下一帧的状态
     virtual int updatePlant(std::shared_ptr<Timer> timer) = 0;
+
+    virtual int changeToStatic();
+    // 获取动画的播放范围
+    // render_point 为渲染的位置(想要绘制到一个从 (0, 0) 开始的纹理)
+    // 最小使用多大的纹理可以完全渲染
+    virtual int getAnimRange(float& width, float& height);
+    // 仅在渲染到纹理时使用
+    // 仅可对不需要渲染的模板植物使用
+    // 因内部会修改动画渲染过程
+    virtual int renderToTexture() = 0;
 
     int showAABB();
 

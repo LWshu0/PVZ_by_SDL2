@@ -27,6 +27,10 @@ public:
     virtual BulletType attack(std::shared_ptr<Timer> timer) override;
     virtual int updatePlant(std::shared_ptr<Timer> timer) override;
 
+    virtual int changeToStatic() override;
+    virtual int getAnimRange(float& width, float& height) override;
+    virtual int renderToTexture() override;
+
     ~PeaShooterSingle();
 };
 
