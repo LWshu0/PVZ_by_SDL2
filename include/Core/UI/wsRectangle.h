@@ -8,7 +8,7 @@
 ***************************************************/
 
 class wsRectangle :public wsShape {
-protected:
+public:
     SDL_Rect m_range;
 public:
     wsRectangle(const SDL_Rect& range, SDL_Renderer* renderer);
