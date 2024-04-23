@@ -46,6 +46,15 @@ int MapManager::caculCol(float x)
     return static_cast<int>((x - m_leftMargin) / m_cellWidth);
 }
 
+bool MapManager::isValidCell(int row, int col)
+{
+    // 位置判断
+    if (row < 0 || row >= m_rowNum || col < 0 || col >= m_colNum) return false;
+    // 地形判断
+    if (m_mapRunTime[row][col].m_landForm != MapNode::LandForm::GRASS) return false;
+    return true;
+}
+
 int MapManager::renderMap()
 {
     SDL_FRect map_rect{

@@ -80,6 +80,7 @@ public:
 
     int caculRow(float y);
     int caculCol(float x);
+    bool isValidCell(int row, int col);
 
     int renderMap();
 

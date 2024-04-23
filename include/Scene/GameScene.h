@@ -2,6 +2,7 @@
 #define GAMESCENE_H
 
 #include "SceneObject.h"
+#include "Plants/PlantObject.h"
 
 class MapManager;
 class BulletManager;
@@ -12,6 +13,11 @@ class CardManager;
 
 class GameScene : public SceneObject {
 protected:
+    // 游戏进程
+    bool m_isInGame;
+    int m_cardInHandIdx;            // 正在手中的卡槽编号
+    PlantType m_plantInHandType;    // 正在手中的植物类型
+
     // 游戏对象 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<BulletManager> m_bulletManager;

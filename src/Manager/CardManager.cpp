@@ -92,9 +92,10 @@ CardManager::CardManager(
         content = child->getAttr("cool_ms");
         if (content != "") new_node.m_coolMilliSecond = std::stoi(content);
         new_node.m_lastUseMilliSecond = 0;
+        new_node.m_endble = true;
         m_cardInPool[new_node.m_plantType] = new_node;
     }
-    // 初始化卡池中的卡片
+    // 初始化卡槽中的卡片
     clearCardSlot();
 }
 
@@ -165,23 +166,92 @@ int CardManager::initilizeManagers(
 
 void CardManager::clearCardSlot()
 {
-    if (m_cardInSlot.size() != m_cardSlotNum)
+    m_cardInSlot.clear();
+}
+
+PlantType CardManager::pickupCard(int card_slot_idx)
+{
+    if (card_slot_idx >= 0
+        && card_slot_idx < m_cardInSlot.size()
+        && m_cardInSlot[card_slot_idx].m_endble
+        && m_timer->getTime() >= m_cardInSlot[card_slot_idx].m_lastUseMilliSecond + m_cardInSlot[card_slot_idx].m_coolMilliSecond)
     {
-        m_cardInSlot.resize(m_cardSlotNum);
+        m_cardInSlot[card_slot_idx].m_endble = false;
+        SDL_Log("pick a card: %d\n", card_slot_idx);
+        return m_cardInSlot[card_slot_idx].m_plantType;
     }
-    for (auto& item : m_cardInSlot)
+    return PlantType::MaxPlantType;
+}
+
+int CardManager::putbackCard(int card_slot_idx)
+{
+    if (card_slot_idx >= 0
+        && card_slot_idx < m_cardInSlot.size()
+        && !m_cardInSlot[card_slot_idx].m_endble)
     {
-        item.m_plantType = PlantType::MaxPlantType;
-        item.m_sunCost = 0;
-        item.m_coolMilliSecond = 0;
-        item.m_lastUseMilliSecond = 0;
+        m_cardInSlot[card_slot_idx].m_endble = true;
+        SDL_Log("put back a card %d\n", card_slot_idx);
+        return 0;
     }
+    return -1;
+}
+
+int CardManager::settleCard(int card_slot_idx)
+{
+    if (card_slot_idx >= 0
+        && card_slot_idx < m_cardInSlot.size())
+    {
+        m_cardInSlot[card_slot_idx].m_endble = true;
+        m_cardInSlot[card_slot_idx].m_lastUseMilliSecond = m_timer->getTime();
+        return card_slot_idx;
+    }
+    return -1;
+}
+
+int CardManager::slot2pool(int card_slot_idx)
+{
+    if (!hasCardInSlot(card_slot_idx)) return -1;
+    PlantType type = m_cardInSlot[card_slot_idx].m_plantType;
+    m_cardInPool[type].m_plantType = type;
+    m_cardInSlot.erase(m_cardInSlot.begin() + card_slot_idx);
+    return 0;
+}
+
+int CardManager::pool2slot(int card_pool_idx)
+{
+    if (!hasCardInPool(card_pool_idx)) return -1;
+    m_cardInSlot.push_back(m_cardInPool[card_pool_idx]);
+    m_cardInPool[card_pool_idx].m_plantType = PlantType::MaxPlantType;
+    return 0;
+}
+
+int CardManager::getSlotIdx(int x, int y)
+{
+    int card_idx = (x - m_slotCardOffsetX) / (m_cardWidth + m_slotCardSepX);
+    if (card_idx >= 0 && card_idx < m_cardInSlot.size()
+        && m_cardRangeInSlot[card_idx].isInShape(x, y))
+    {
+        return card_idx;
+    }
+    return -1;
+}
+
+int CardManager::getPoolIdx(int x, int y)
+{
+    x -= m_poolCardOffsetX;
+    y -= (m_poolCardOffsetY + m_cardSlotRange.h);
+    if (x < 0 || y < 0) return -1;
+    x /= (m_cardWidth + m_poolCardSepX);
+    y /= (m_cardHeight + m_poolCardOffsetY);
+    int card_idx = x * m_poolCardPerRow + y;
+    if (card_idx < m_cardInPool.size()) return card_idx;
+    return -1;
 }
 
 int CardManager::renderCardSlot()
 {
     SDL_RenderCopy(m_renderer, m_cardSlotBK, NULL, &m_cardSlotRange);
-    for (int i = 0; i < m_cardSlotNum;i++)
+    for (int i = 0; i < m_cardInSlot.size();i++)
     {
         if (m_cardInSlot[i].m_plantType == PlantType::MaxPlantType) break;
         SDL_RenderCopy(m_renderer, m_plantCardTexture[m_cardInSlot[i].m_plantType], NULL, &m_cardRangeInSlot[i].m_range);
@@ -194,12 +264,36 @@ int CardManager::renderCardSlot()
     return 0;
 }
 
+int CardManager::renderCardCoolDown()
+{
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 75);
+    for (int i = 0; i < m_cardInSlot.size();i++)
+    {
+        if (m_cardInSlot[i].m_plantType == PlantType::MaxPlantType) break;
+        if (m_timer->getTime() >= m_cardInSlot[i].m_lastUseMilliSecond + m_cardInSlot[i].m_coolMilliSecond) continue;
+        SDL_Rect mask_range{
+            m_cardRangeInSlot[i].m_range.x,
+            m_cardRangeInSlot[i].m_range.y,
+            m_cardRangeInSlot[i].m_range.w,
+            m_cardRangeInSlot[i].m_range.h * (m_cardInSlot[i].m_coolMilliSecond - m_timer->getTime() + m_cardInSlot[i].m_lastUseMilliSecond) / m_cardInSlot[i].m_coolMilliSecond
+        };
+        SDL_RenderFillRect(m_renderer, &mask_range);
+    }
+    return 0;
+}
+
 int CardManager::renderCardPool()
 {
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 75);
     SDL_RenderCopy(m_renderer, m_cardPoolBK, NULL, &m_cardPoolRange);
     for (int i = 0; i < PlantType::MaxPlantType;i++)
     {
+        if(m_cardInPool[i].m_plantType == PlantType::MaxPlantType) continue;
         SDL_RenderCopy(m_renderer, m_plantCardTexture[i], NULL, &m_cardRangeInPool[i].m_range);
+        if (!m_cardInPool[i].m_endble)
+        {
+            SDL_RenderFillRect(m_renderer, &m_cardRangeInPool[i].m_range);
+        }
     }
     // 显示可点击范围
     for (auto i : m_cardRangeInPool)

@@ -21,7 +21,8 @@ struct CardNode { //卡槽卡池节点
     int m_sunCost;                  // 阳关消耗
     uint64_t m_coolMilliSecond;     // 冷却时间
     // 状态
-    uint64_t m_lastUseMilliSecond;  //最后使用时间
+    uint64_t m_lastUseMilliSecond;  // 最后使用时间
+    bool m_endble;                  // 可选择
 };
 
 class CardManager {
@@ -83,12 +84,54 @@ public:
     // 检查卡槽数量是否正确(resize到正确大小) 清空卡槽
     void clearCardSlot();
 
-    int renderCardSlot();
-    int renderCardPool();
+    // 拿起一张卡片 卡片在卡槽中变暗
+    // 返回卡片的植物类型
+    // 失败返回 MAX
+    PlantType pickupCard(int card_slot_idx);
+    // 放回一张卡片到卡槽中
+    // 成功返回 0 ,失败返回 -1
+    int putbackCard(int card_slot_idx);
+    // 将卡片对应的植物安置到场景中
+    // 刷新使用时间 进入冷却
+    // 扣除阳光
+    int settleCard(int card_slot_idx);
+
+    // 卡片在卡槽与卡池之间移动
+    int slot2pool(int card_slot_idx);
+    int pool2slot(int card_pool_idx);
+
+    // 根据坐标返回卡槽编号
+    // 返回 -1 代表该坐标不在任何卡槽卡片范围内
+    int getSlotIdx(int x, int y);
+    // 根据坐标返回卡池编号
+    // 返回 -1 代表该坐标不在任何卡池卡片范围内
+    int getPoolIdx(int x, int y);
+
+    // 判断卡槽是否填满
+    // 填满 or 所有的卡都在卡槽中
+    inline bool isFullSlot()
+    {
+        return m_cardSlotNum == m_cardInSlot.size() || m_cardInPool.size() == m_cardInSlot.size();
+    }
+
+    int renderCardSlot();       // 绘制卡槽
+    int renderCardCoolDown();   // 绘制游戏过程中卡槽的冷却信息
+    int renderCardPool();       // 绘制卡池
 
     void releaseManagers();
 
     ~CardManager();
+
+protected:
+    inline bool hasCardInSlot(int slot_idx)
+    {
+        return m_cardInSlot[slot_idx].m_plantType != PlantType::MaxPlantType;
+    }
+
+    inline bool hasCardInPool(int slot_idx)
+    {
+        return m_cardInPool[slot_idx].m_plantType != PlantType::MaxPlantType;
+    }
 };
 
 
