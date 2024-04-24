@@ -130,7 +130,7 @@ int CardManager::initilizeManagers(
         SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
         SDL_RenderClear(m_renderer);
         // 渲染植物
-        plant->renderToTexture();
+        plant->renderStatic();
         m_plantImageTexture[i] = plant_texture;
         // 创建植物卡片纹理
         SDL_Texture* card_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, card_w, card_h);

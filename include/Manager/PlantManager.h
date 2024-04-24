@@ -41,14 +41,20 @@ public:
         std::shared_ptr<Timer> timer
     );
 
+    // 关联 manager
+    // 因包含循环引用, 后续还需要 releaseManagers
     int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
         std::shared_ptr<BulletManager> bulletManager,
         std::shared_ptr<ZombieManager> zombieManager
     );
 
+    // 根据地图大小(由地图管理者处获得)创建植物数组用于存储植物
+    // 清空所有场上的植物
+    // 预放置的植物设置为 nullptr(将会是半透明渲染的虚影)
     int initilizePlants();
 
+    // 判断给定的 GameObject 是否和 row 行, col 列的植物碰撞
     bool collisionPlant(std::shared_ptr<GameObject> obj, int row, int col);
 
     // 游戏中拿起卡片时, 创建一个植物
@@ -65,13 +71,18 @@ public:
     // 即删除手中的植物
     int putbackPlant();
 
+    // 添加一个植物在指定的行列(不做地形检查)
     int addPlant(PlantType type, int row, int col);
+    // 移除指定位置的植物
     int removePlant(int row, int col);
+    // 对指定位置的植物造成伤害
     int doDamage(int row, int col, int d);
-
+    // 更新所有植物(不包括 m_presettlePlantImage)
     int updatePlants();
+    // 渲染所有植物(包括 m_presettlePlantImage)
+    // 当 m_presettlePlantImage 有效时才渲染(行列不为 -1, 且 m_presettlePlantImage 不为 nullptr)
     int renderPlants();
-
+    // 取消关联 manager 的循环引用
     void releaseManagers();
 
     ~PlantManager();
@@ -83,12 +94,13 @@ public:
     }
 
     // 根据植物类型枚举获取 plant 模板
+    // 在创建卡片纹理时使用, 用以访问指定植物的 renderStatic 函数
     inline std::shared_ptr<PlantObject> getPlantTemplate(int plant_type)
     {
         return plant_type == PlantType::MaxPlantType ? nullptr : m_plantTemplate[plant_type];
     }
 
-    // 测试
+    // 测试(弃用)
     int changeAllTo(PlantState state);
 };
 

@@ -31,6 +31,7 @@ public:
         int maxBullet
     );
 
+    // 添加一个子弹在指定的位置(世界坐标系)
     int addBullet(BulletType type, float x, float y);
 
     // 计算与 other 碰撞的 damage
@@ -38,10 +39,14 @@ public:
     int collisionBullet(GameObject& other);
     int collisionBullet(std::shared_ptr<GameObject> other);
 
+    // 更新所有的子弹
+    // 运动与动画等
     int updateBullets();
 
+    // 渲染所有的子弹
     int renderBullets();
 
+    // 清空子弹 在进入游戏场景中时需要调用该函数
     int clearBullets();
 
     ~BulletManager();

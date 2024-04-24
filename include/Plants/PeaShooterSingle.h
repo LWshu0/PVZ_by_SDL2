@@ -19,7 +19,7 @@ public:
 
     virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) override;
     virtual void setRootPoint(const SDL_FPoint& root_point) override;
-    // 0 -> idel, 1 -> emit
+
     virtual int render() override;
     virtual int changeAnimState(AnimState to_state) override;
 
@@ -29,8 +29,7 @@ public:
 
     virtual int changeToStatic() override;
     virtual int getAnimRange(float& width, float& height) override;
-    virtual int renderToTexture() override;
-    virtual int renderAlpha() override;
+    virtual int renderStatic(uint8_t alpha = 255) override;
 
     ~PeaShooterSingle();
 };

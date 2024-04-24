@@ -217,7 +217,7 @@ int PlantManager::renderPlants()
         && -1 != m_presettleRowIdx
         && -1 != m_presettleColIdx)
     {
-        m_presettlePlantImage->renderAlpha();
+        m_presettlePlantImage->renderStatic(120);
     }
     return 0;
 }

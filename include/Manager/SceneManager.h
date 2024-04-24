@@ -13,9 +13,9 @@ protected:
     std::shared_ptr<Camera> m_camera;                           // 相机
     std::shared_ptr<Timer> m_timer;                             // 游戏时钟
 
-    std::shared_ptr<SceneObject> m_currentScene;
+    std::shared_ptr<SceneObject> m_currentScene;                // 当前所处的场景
 
-    std::vector<std::shared_ptr<SceneObject>> m_sceneTemplate;
+    std::vector<std::shared_ptr<SceneObject>> m_sceneTemplate;  // 所有的场景
 
 public:
     SceneManager(
@@ -31,10 +31,13 @@ public:
         std::shared_ptr<CardManager> cardManager
     );
 
+    // 调用当前场景的处理事件函数
     int handleEvent(SDL_Event& event);
 
+    // 更新当前场景
     int updateScene();
 
+    // 渲染当前的场景
     int renderScene();
 
     ~SceneManager();

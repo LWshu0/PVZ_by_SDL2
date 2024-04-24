@@ -32,18 +32,22 @@ protected:
 public:
     TaskManager(std::shared_ptr<Timer> timer);
 
+    // 关联 manager
+    // 因包含循环引用, 后续还需要 releaseManagers
     int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
         std::shared_ptr<ZombieManager> zombieManager
     );
 
+    // 读入一个特定格式的 xml 文件, 其中包含关卡信息
     int loadTask(const std::string& file_path);
 
     /**
-     * @return int 1 代表关卡结束, 0 代表正在进行关卡, -1 代表出错
+     * @return int 1 代表关卡中所有僵尸出现事件结束, 0 代表正在进行关卡, -1 代表出错
      */
     int updateTask();
 
+    // 取消关联 manager 的循环引用
     void releaseManagers();
 
     ~TaskManager();

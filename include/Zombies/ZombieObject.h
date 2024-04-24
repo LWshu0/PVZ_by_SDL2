@@ -55,24 +55,37 @@ public:
         ZombieState state                   // 僵尸状态
     );
 
+    /**
+     *@brief 根据已有的对象构造一个新的对象, 新对象仅位置与原对象不同
+     *
+     * @param root_point 僵尸的脚部坐标, 该位置用于对齐到地图上僵尸的行走的地面
+     * @return std::shared_ptr<PlantObject> 构造的新对象
+     */
     virtual std::shared_ptr<ZombieObject> cloneZombie(const SDL_FPoint& root_point) = 0;
 
     inline bool isDead() { return m_HP <= 0; }
 
-    // 改变当前帧状态
+    // 改变当前僵尸的状态(ZombieState)
     // 发生改变才会执行 否则直接返回
     virtual int changeZombieState(ZombieState to_state, std::shared_ptr<Timer> timer) = 0;
 
-    // 返回产生的伤害
+    /**
+     *@brief 根据计时器中的时间, 计算这段时间内僵尸对植物造成的伤害
+     * @param timer 游戏时钟
+     * @return int 对植物的伤害值
+     */
     virtual int attack(std::shared_ptr<Timer> timer) = 0;
 
+    // 对僵尸造成伤害, 减少 HP
+    // 如果僵尸死亡将切换到死亡动画(默认)
     virtual int damage(int damege_num);
 
     // 更新到下一帧的状态
     virtual int updateZombie(std::shared_ptr<Timer> timer) = 0;
 
+    // 显示碰撞箱
     int showAABB();
-
+    // 显示阴影
     int showShadow();
 
     ~ZombieObject();

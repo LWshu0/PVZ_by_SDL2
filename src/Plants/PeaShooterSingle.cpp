@@ -27,26 +27,19 @@ PeaShooterSingle::PeaShooterSingle(
     const SDL_FPoint& root_point
 ) :
     PlantObject(
-        loader, camera,                                      // 资源 相机   
-        SDL_FPoint{ root_point.x - 40, root_point.y - 80 }, // 动画播放位置
-        SDL_FPoint{ 20, 0 }, 40, 80,                       // 碰撞箱
-        SDL_FPoint{ 0, 55 }, 80, 30,                       // 阴影
-        1000,                                                // HP
-        PlantState::IDLE,                                    // state
-        3000,                                                // reload 时间
-        (70 - 54) * 1000 / 48.0f                             // windup duration
+        loader, camera,                                         // 资源 相机   
+        SDL_FPoint{ root_point.x - 40, root_point.y - 80 },     // 动画播放位置
+        SDL_FPoint{ 20, 0 }, 40, 80,                            // 碰撞箱
+        SDL_FPoint{ 0, 55 }, 80, 30,                            // 阴影
+        1000,                                                   // HP
+        PlantState::IDLE,                                       // state
+        3000,                                                   // reload 时间
+        (70 - 54) * 1000 / 48.0f                                // windup duration(第54帧攻击动画开始, 第70帧执行攻击逻辑, 攻击动画帧率为 48 fps)
     ),
     is_blinking(false),
     last_blink_ms(0),
     delta_blink_ms(5000)
 {
-    // float default_attack_fps = 48.0f;
-    // uint64_t attack_logic_ms = (79 - 54) * 1000 / default_attack_fps;
-    // if (attack_logic_ms > m_reloadMilliSecond)
-    // {
-    //     default_attack_fps = (79 - 54) * 1000 / m_reloadMilliSecond;
-    //     attack_logic_ms = m_reloadMilliSecond;
-    // }
     // 初始播放的轨道
     setPlayingTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
@@ -68,29 +61,30 @@ std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root
 
 void PeaShooterSingle::setRootPoint(const SDL_FPoint& root_point)
 {
-    setRealPoint(SDL_FPoint{ root_point.x - 40, root_point.y - 80 });
+    setObjectPosition(root_point - SDL_FPoint{ 40.0f, 80.0f });
 }
 
 int PeaShooterSingle::render()
 {
-    // 渲染帧
     // 阴影
     showShadow();
     // 茎 & 叶
     renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
     renderTracks({ 13, 14, 15 }, getOffset(14));
-
+    // 眼睛
     if (AnimState::R_ATTACK != m_playingAnimState && is_blinking)
     {
         renderTrack(17, getOffset(17));
         if (isPlayEnd(17)) is_blinking = false;
     }
+    // 攻击间隔的 IDLE 动画
     if (AnimState::R_ATTACK == m_playingAnimState)
     {
         renderTrack(16, getOffset(16));
         if (isPlayEnd(15)) changeAnimState(AnimState::R_IDLE);
     }
+    // AABB 碰撞箱
     showAABB();
     return 0;
 }
@@ -132,21 +126,19 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
 
 int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Timer> timer)
 {
-    if (to_state == m_state) return 0;
+    if (to_state == m_state) return -1;
     m_state = to_state;
     if (PlantState::ATTACK == to_state)
     {
         m_nextAttackAnimMilliSecond = timer->getTime();
         m_nextFireMilliSecond = timer->getTime() + m_windUpDuration;
         changeAnimState(AnimState::R_ATTACK);
-        // SDL_Log("change to attack plant\n");
     }
     else
     {
         changeAnimState(AnimState::R_IDLE);
     }
-
-    return -1;
+    return 0;
 }
 
 BulletType PeaShooterSingle::attack(std::shared_ptr<Timer> timer)
@@ -176,7 +168,6 @@ int PeaShooterSingle::updatePlant(std::shared_ptr<Timer> timer)
         if (timer->getTime() >= m_nextAttackAnimMilliSecond)
         {
             changeAnimState(AnimState::R_ATTACK);
-            // m_nextFireMilliSecond = m_nextAttackAnimMilliSecond + m_windUpDuration;
             m_nextAttackAnimMilliSecond = m_nextAttackAnimMilliSecond + m_reloadMilliSecond;
         }
     }
@@ -198,21 +189,12 @@ int PeaShooterSingle::getAnimRange(float& width, float& height)
     return 0;
 }
 
-int PeaShooterSingle::renderToTexture()
+int PeaShooterSingle::renderStatic(uint8_t alpha)
 {
     // body
-    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
+    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 }, SDL_FPoint{ 0.0f, 0.0f }, alpha);
     // 头
-    renderTracks({ 13, 14, 15 }, getOffset(14));
-    return 0;
-}
-
-int PeaShooterSingle::renderAlpha()
-{
-    // body
-    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 }, SDL_FPoint{ 0.0f, 0.0f }, 200);
-    // 头
-    renderTracks({ 13, 14, 15 }, getOffset(14), 200);
+    renderTracks({ 13, 14, 15 }, getOffset(14), alpha);
     return 0;
 }
 

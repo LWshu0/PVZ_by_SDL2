@@ -54,13 +54,11 @@ Zombie::Zombie(
         SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
         SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
         SDL_FPoint{ 10, 100 }, 80, 30,                       // 阴影
-        200,                                                // HP
+        200,                                                 // HP
         ZombieState::Zombie_IDLE
     )
 {
     // 初始化播放的轨道
-    // restartTrack(11);
-    // setTrackAnim(11, 5);
     setPlayingTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
         { 6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6 }

@@ -47,7 +47,7 @@ int ZombieManager::initilizeZombie()
 int ZombieManager::addZombie(ZombieType type, int row, int col)
 {
     if (row < 0 || row >= m_mapManager->getRow()
-        || col < 0  // 可从屏幕外起始
+        || col < 0  // 不可从屏幕左侧起始, 可从屏幕右侧起始
         || ZombieType::MaxZombieType == type)
     {
         return -1;

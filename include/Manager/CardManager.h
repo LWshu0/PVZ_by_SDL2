@@ -16,7 +16,8 @@
 class MapManager;
 class PlantManager;
 
-struct CardNode { //卡槽卡池节点
+//卡槽卡池节点
+struct CardNode {
     PlantType m_plantType;          // 植物类型
     int m_sunCost;                  // 阳关消耗
     uint64_t m_coolMilliSecond;     // 冷却时间
@@ -45,14 +46,14 @@ protected:
     int m_slotCardSepX;     // 卡槽中相邻卡片之间在 X 方向上的像素数量
 
     /* TextureRes 管理不需要释放 */
-    SDL_Texture* m_cardPoolBK;  // 卡池背景
-    SDL_Rect m_cardPoolRange;   // 卡池范围
+    SDL_Texture* m_cardPoolBK;                  // 卡池背景
+    SDL_Rect m_cardPoolRange;                   // 卡池范围
     std::vector<wsRectangle> m_cardRangeInPool; // 卡池中卡片的范围
-    std::vector<CardNode> m_cardInPool; // 卡池中的卡片
-    SDL_Texture* m_cardSlotBK;  // 卡槽背景
-    SDL_Rect m_cardSlotRange;   // 卡槽范围
+    std::vector<CardNode> m_cardInPool;         // 卡池中的卡片
+    SDL_Texture* m_cardSlotBK;                  // 卡槽背景
+    SDL_Rect m_cardSlotRange;                   // 卡槽范围
     std::vector<wsRectangle> m_cardRangeInSlot; // 卡槽中卡片的范围
-    std::vector<CardNode> m_cardInSlot; // 卡槽中的卡片
+    std::vector<CardNode> m_cardInSlot;         // 卡槽中的卡片
 
     /* card manager 管理需要手动释放 */
     // 植物纹理
@@ -75,7 +76,8 @@ public:
         std::shared_ptr<TextureRes> res
     );
 
-    // 关联 manager 初始化 texture
+    // 关联 manager
+    // 初始化 texture(卡片纹理与植物纹理)
     int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
         std::shared_ptr<PlantManager> plantManager
@@ -91,7 +93,7 @@ public:
     void restartCoolDown();
     // 更新卡槽中的冷却时间等信息
     void updateCardInSlot();
-    
+
     // 拿起一张卡片 卡片在卡槽中变暗
     // 返回卡片的植物类型
     // 失败返回 MAX
