@@ -73,7 +73,8 @@ SceneType GameScene::handleEvent(SDL_Event& event)
                 if (m_mapManager->isValidCell(row, col))
                 {
                     // 安放植物
-                    m_plantManager->addPlant(m_plantInHandType, row, col);
+                    m_plantManager->settlePlant();
+                    // m_plantManager->addPlant(m_plantInHandType, row, col);
                     m_cardManager->settleCard(m_cardInHandIdx);
                     m_cardInHandIdx = -1;
                     m_plantInHandType = PlantType::MaxPlantType;
@@ -84,6 +85,7 @@ SceneType GameScene::handleEvent(SDL_Event& event)
                 m_cardManager->putbackCard(m_cardInHandIdx);
                 m_cardInHandIdx = -1;
                 m_plantInHandType = PlantType::MaxPlantType;
+                m_plantManager->putbackPlant();
             }
         }
         // 是否 pick 卡
@@ -95,6 +97,7 @@ SceneType GameScene::handleEvent(SDL_Event& event)
                 if (m_cardInHandIdx != -1)
                 {
                     m_plantInHandType = m_cardManager->pickupCard(m_cardInHandIdx);
+                    m_plantManager->pickPlant(m_plantInHandType);
                 }
                 else // 尝试收集
                 {
@@ -103,6 +106,13 @@ SceneType GameScene::handleEvent(SDL_Event& event)
 
             }
         }
+    }
+    else if (event.type == SDL_MOUSEMOTION)
+    {
+        // 坐标转换
+        int mouse_motion_x = m_camera->getClickX(event.motion.x);
+        int mouse_motion_y = m_camera->getClickY(event.motion.y);
+        if (m_cardInHandIdx != -1) m_plantManager->presettlePlant(mouse_motion_x, mouse_motion_y);
     }
     return SceneType::Scene_MaxSceneIdx;
 }

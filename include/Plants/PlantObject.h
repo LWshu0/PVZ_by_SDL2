@@ -78,6 +78,7 @@ public:
 
     virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) = 0;
 
+    virtual void setRootPoint(const SDL_FPoint& root_point) = 0;
     // virtual int render(uint64_t now_ms);
     // virtual int changeDamageState(DamageState to_state);
     // virtual int changeAnimState(AnimState to_state);
@@ -110,6 +111,10 @@ public:
     // 仅可对不需要渲染的模板植物使用
     // 因内部会修改动画渲染过程
     virtual int renderToTexture() = 0;
+
+    // 提示放置植物的位置
+    // 半透明绘制 IDLE 状态动画第一帧
+    virtual int renderAlpha() = 0;
 
     int showAABB();
 

@@ -53,6 +53,9 @@ int PlantManager::initilizePlants()
             c = nullptr;
         }
     }
+    m_presettlePlantImage = nullptr;
+    m_presettleRowIdx = -1;
+    m_presettleColIdx = -1;
     return 0;
 }
 
@@ -66,6 +69,61 @@ bool PlantManager::collisionPlant(std::shared_ptr<GameObject> obj, int row, int 
         return false;
     }
     return m_mainPlants[row][col]->collision(obj);
+}
+
+int PlantManager::pickPlant(PlantType type)
+{
+    if (PlantType::MaxPlantType == type) return -1;
+    m_presettleRowIdx = -1;
+    m_presettleColIdx = -1;
+    m_presettlePlantImage = m_plantTemplate[type]->clonePlant(SDL_FPoint{ 0.0f, 0.0f });
+    SDL_Log("plant manager pick a plant: %d\n", type);
+    return 0;
+}
+
+int PlantManager::presettlePlant(int mouse_x, int mouse_y)
+{
+    int row = m_mapManager->caculRow(mouse_y);
+    int col = m_mapManager->caculCol(mouse_x);
+    if (m_mapManager->isValidCell(row, col)
+        && m_mainPlants[row][col] == nullptr)
+    {
+        m_presettleRowIdx = row;
+        m_presettleColIdx = col;
+        float root_x = m_mapManager->getLeftMargin() + col * m_mapManager->getCellWidth();
+        float root_y = m_mapManager->getTopMargin() + row * m_mapManager->getCellHeight();
+        root_x += m_mapManager->getCellWidth() / 2;
+        root_y += m_mapManager->getCellHeight() * 0.8;
+        m_presettlePlantImage->setRootPoint(SDL_FPoint{ root_x,root_y });
+    }
+    else
+    {
+        m_presettleRowIdx = -1;
+        m_presettleColIdx = -1;
+    }
+    return 0;
+}
+
+int PlantManager::settlePlant()
+{
+    if (nullptr == m_presettlePlantImage
+        || -1 == m_presettleRowIdx
+        || -1 == m_presettleColIdx) return -1;
+    m_mainPlants[m_presettleRowIdx][m_presettleColIdx] = m_presettlePlantImage;
+    m_presettlePlantImage = nullptr;
+    m_presettleRowIdx = -1;
+    m_presettleColIdx = -1;
+    SDL_Log("plant manager settle a plant\n");
+    return 0;
+}
+
+int PlantManager::putbackPlant()
+{
+    m_presettlePlantImage = nullptr;
+    m_presettleRowIdx = -1;
+    m_presettleColIdx = -1;
+    SDL_Log("plant manager put back a plant\n");
+    return 0;
 }
 
 int PlantManager::addPlant(PlantType type, int row, int col)
@@ -154,6 +212,12 @@ int PlantManager::renderPlants()
                 m_mainPlants[i][j]->render();
             }
         }
+    }
+    if (nullptr != m_presettlePlantImage
+        && -1 != m_presettleRowIdx
+        && -1 != m_presettleColIdx)
+    {
+        m_presettlePlantImage->renderAlpha();
     }
     return 0;
 }

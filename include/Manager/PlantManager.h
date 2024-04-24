@@ -29,7 +29,10 @@ protected:
     std::shared_ptr<ZombieManager> m_zombieManager;
     // plants in game
     std::vector<std::vector<std::shared_ptr<PlantObject>>> m_mainPlants;
-
+    // 指示植物放置位置
+    // 如果为 nullptr 则没有在手中的植物
+    int m_presettleRowIdx, m_presettleColIdx;   // 预放置植物的位置
+    std::shared_ptr<PlantObject> m_presettlePlantImage;
 public:
     PlantManager(
         SDL_Renderer* renderer,
@@ -47,6 +50,20 @@ public:
     int initilizePlants();
 
     bool collisionPlant(std::shared_ptr<GameObject> obj, int row, int col);
+
+    // 游戏中拿起卡片时, 创建一个植物
+    // 存放在 m_presettlePlantImage 中
+    // 如果手中已有植物 返回 -1, 成功则返回 0
+    int pickPlant(PlantType type);
+    // 预放置植物到指定的行列
+    // 仅修改 m_presettlePlantImage 的位置
+    int presettlePlant(int mouse_x, int mouse_y);
+    // 安置手中的植物到地图中指定位置, m_presettlePlantImage 指向的
+    // 安置后 m_presettlePlantImage 置为 nullptr
+    int settlePlant();
+    // 将植物放回卡槽中后, m_presettlePlantImage 置为 nullptr
+    // 即删除手中的植物
+    int putbackPlant();
 
     int addPlant(PlantType type, int row, int col);
     int removePlant(int row, int col);

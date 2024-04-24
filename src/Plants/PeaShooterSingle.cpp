@@ -66,6 +66,11 @@ std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root
     return std::make_shared<PeaShooterSingle>(m_loader, m_camera, root_point);
 }
 
+void PeaShooterSingle::setRootPoint(const SDL_FPoint& root_point)
+{
+    m_realtimeScreenPoint = SDL_FPoint{ root_point.x - 40, root_point.y - 80 };
+}
+
 int PeaShooterSingle::render()
 {
     // 渲染帧
@@ -75,7 +80,7 @@ int PeaShooterSingle::render()
     renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
     renderTracks({ 13, 14, 15 }, getOffset(14));
-    
+
     if (AnimState::R_ATTACK != m_playingAnimState && is_blinking)
     {
         renderTrack(17, getOffset(17));
@@ -140,7 +145,7 @@ int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Time
     {
         changeAnimState(AnimState::R_IDLE);
     }
-    
+
     return -1;
 }
 
@@ -194,11 +199,20 @@ int PeaShooterSingle::getAnimRange(float& width, float& height)
 }
 
 int PeaShooterSingle::renderToTexture()
-{    
+{
     // body
     renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
     renderTracks({ 13, 14, 15 }, getOffset(14));
+    return 0;
+}
+
+int PeaShooterSingle::renderAlpha()
+{
+    // body
+    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 }, SDL_FPoint{ 0.0f, 0.0f }, 200);
+    // 头
+    renderTracks({ 13, 14, 15 }, getOffset(14), 200);
     return 0;
 }
 

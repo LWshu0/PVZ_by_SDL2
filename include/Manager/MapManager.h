@@ -78,10 +78,12 @@ public:
     inline int getTime(int row, int col) { return m_mapRunTime[row][col].m_time; }
     inline int getLandForm(int row, int col) { return m_mapRunTime[row][col].m_landForm; }
 
+    // 给定坐标位置, 计算所处的行列
     int caculRow(float y);
     int caculCol(float x);
+    // 判断一个格子是否可以添加植物
     bool isValidCell(int row, int col);
-
+    
     int renderMap();
 
     ~MapManager();
