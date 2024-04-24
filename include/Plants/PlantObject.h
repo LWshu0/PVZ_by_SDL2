@@ -78,6 +78,10 @@ public:
 
     virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) = 0;
 
+    // 修改动画播放的位置
+    // 根据动画播放的位置修改其他一系列位置参数
+    void setRealPoint(const SDL_FPoint& real_point);
+    // 设置根部的位置
     virtual void setRootPoint(const SDL_FPoint& root_point) = 0;
     // virtual int render(uint64_t now_ms);
     // virtual int changeDamageState(DamageState to_state);

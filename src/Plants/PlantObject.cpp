@@ -58,6 +58,16 @@ PlantObject::PlantObject(
     m_shadow = m_loader->m_imageRes->getTextureFrom("images/plantshadow.png");
 }
 
+void PlantObject::setRealPoint(const SDL_FPoint& real_point)
+{
+    m_realtimeScreenPoint = real_point;
+    m_aabb.x = m_realtimeScreenPoint.x + m_offsetAABB.x;
+    m_aabb.y = m_realtimeScreenPoint.y + m_offsetAABB.y;
+    m_shadowRange.x = m_realtimeScreenPoint.x + m_offsetShadow.x;
+    m_shadowRange.y = m_realtimeScreenPoint.y + m_offsetShadow.y;
+    
+}
+
 int PlantObject::damage(int damege_num)
 {
     m_HP -= damege_num;

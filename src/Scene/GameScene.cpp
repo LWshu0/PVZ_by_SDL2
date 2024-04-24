@@ -121,11 +121,11 @@ SceneType GameScene::handleEvent(SDL_Event& event)
 
 int GameScene::updateScene()
 {
-    // m_taskManager->updateTask();
+    m_taskManager->updateTask();
     m_plantManager->updatePlants();
-    // m_bulletManager->updateBullets();
-    // m_zombieManager->updateZombie();
-    // m_zombieManager->attackPlants();
+    m_bulletManager->updateBullets();
+    m_zombieManager->updateZombie();
+    m_zombieManager->attackPlants();
     m_cardManager->updateCardInSlot();
     return 0;
 }
@@ -140,8 +140,8 @@ int GameScene::renderScene()
 {
     m_mapManager->renderMap();
     m_plantManager->renderPlants();
-    // m_zombieManager->renderZombie();
-    // m_bulletManager->renderBullets();
+    m_zombieManager->renderZombie();
+    m_bulletManager->renderBullets();
     m_cardManager->renderCardSlot();
     if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)
     {

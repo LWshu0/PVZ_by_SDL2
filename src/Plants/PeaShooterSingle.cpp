@@ -68,7 +68,7 @@ std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root
 
 void PeaShooterSingle::setRootPoint(const SDL_FPoint& root_point)
 {
-    m_realtimeScreenPoint = SDL_FPoint{ root_point.x - 40, root_point.y - 80 };
+    setRealPoint(SDL_FPoint{ root_point.x - 40, root_point.y - 80 });
 }
 
 int PeaShooterSingle::render()
