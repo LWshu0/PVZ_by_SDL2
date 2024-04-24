@@ -91,7 +91,7 @@ CardManager::CardManager(
         if (content != "") new_node.m_sunCost = std::stoi(content);
         content = child->getAttr("cool_ms");
         if (content != "") new_node.m_coolMilliSecond = std::stoi(content);
-        new_node.m_lastUseMilliSecond = 0;
+        new_node.m_rmCoolMilliSecond = new_node.m_coolMilliSecond;
         new_node.m_endble = true;
         m_cardInPool[new_node.m_plantType] = new_node;
     }
@@ -169,12 +169,29 @@ void CardManager::clearCardSlot()
     m_cardInSlot.clear();
 }
 
+void CardManager::restartCoolDown()
+{
+    for (auto& card : m_cardInSlot)
+    {
+        card.m_rmCoolMilliSecond = card.m_coolMilliSecond;
+    }
+}
+
+void CardManager::updateCardInSlot()
+{
+    for (auto& card : m_cardInSlot)
+    {
+        if (card.m_rmCoolMilliSecond <= m_timer->getDeltaTime()) card.m_rmCoolMilliSecond = 0;
+        else card.m_rmCoolMilliSecond -= m_timer->getDeltaTime();
+    }
+}
+
 PlantType CardManager::pickupCard(int card_slot_idx)
 {
     if (card_slot_idx >= 0
         && card_slot_idx < m_cardInSlot.size()
         && m_cardInSlot[card_slot_idx].m_endble
-        && m_timer->getTime() >= m_cardInSlot[card_slot_idx].m_lastUseMilliSecond + m_cardInSlot[card_slot_idx].m_coolMilliSecond)
+        && 0 == m_cardInSlot[card_slot_idx].m_rmCoolMilliSecond)
     {
         m_cardInSlot[card_slot_idx].m_endble = false;
         SDL_Log("pick a card: %d\n", card_slot_idx);
@@ -202,7 +219,7 @@ int CardManager::settleCard(int card_slot_idx)
         && card_slot_idx < m_cardInSlot.size())
     {
         m_cardInSlot[card_slot_idx].m_endble = true;
-        m_cardInSlot[card_slot_idx].m_lastUseMilliSecond = m_timer->getTime();
+        m_cardInSlot[card_slot_idx].m_rmCoolMilliSecond = m_cardInSlot[card_slot_idx].m_coolMilliSecond;
         return card_slot_idx;
     }
     return -1;
@@ -270,12 +287,12 @@ int CardManager::renderCardCoolDown()
     for (int i = 0; i < m_cardInSlot.size();i++)
     {
         if (m_cardInSlot[i].m_plantType == PlantType::MaxPlantType) break;
-        if (m_timer->getTime() >= m_cardInSlot[i].m_lastUseMilliSecond + m_cardInSlot[i].m_coolMilliSecond) continue;
+        if (0 == m_cardInSlot[i].m_rmCoolMilliSecond) continue;
         SDL_Rect mask_range{
             m_cardRangeInSlot[i].m_range.x,
             m_cardRangeInSlot[i].m_range.y,
             m_cardRangeInSlot[i].m_range.w,
-            m_cardRangeInSlot[i].m_range.h * (m_cardInSlot[i].m_coolMilliSecond - m_timer->getTime() + m_cardInSlot[i].m_lastUseMilliSecond) / m_cardInSlot[i].m_coolMilliSecond
+            m_cardRangeInSlot[i].m_range.h* (int)(m_cardInSlot[i].m_rmCoolMilliSecond) / (int)(m_cardInSlot[i].m_coolMilliSecond)
         };
         SDL_RenderFillRect(m_renderer, &mask_range);
     }

@@ -69,8 +69,11 @@ SceneType GameScene::handleEvent(SDL_Event& event)
             {
                 if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试安防植物
                 {
-                    int row = m_mapManager->caculRow(event.button.y);
-                    int col = m_mapManager->caculCol(event.button.x);
+                    // 坐标转换
+                    int mouse_click_x = m_camera->getClickX(event.button.x);
+                    int  mouse_click_y = m_camera->getClickY(event.button.y);
+                    int row = m_mapManager->caculRow(mouse_click_y);
+                    int col = m_mapManager->caculCol(mouse_click_x);
                     if (m_mapManager->isValidCell(row, col))
                     {
                         // 安放植物
@@ -144,6 +147,7 @@ int GameScene::updateScene()
     // m_bulletManager->updateBullets();
     // m_zombieManager->updateZombie();
     // m_zombieManager->attackPlants();
+    if(m_isInGame) m_cardManager->updateCardInSlot();
     return 0;
 }
 
@@ -166,6 +170,11 @@ int GameScene::renderScene()
     }
     else
     {
+        if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)
+        {
+            // 渲染手中植物
+            // 预放置位置虚影
+        }
         m_cardManager->renderCardCoolDown();
     }
     return 0;

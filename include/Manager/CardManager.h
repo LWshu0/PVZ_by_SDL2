@@ -21,7 +21,7 @@ struct CardNode { //卡槽卡池节点
     int m_sunCost;                  // 阳关消耗
     uint64_t m_coolMilliSecond;     // 冷却时间
     // 状态
-    uint64_t m_lastUseMilliSecond;  // 最后使用时间
+    uint64_t m_rmCoolMilliSecond;   // 距离冷却完成所需的时间
     bool m_endble;                  // 可选择
 };
 
@@ -81,9 +81,13 @@ public:
         std::shared_ptr<PlantManager> plantManager
     );
 
-    // 检查卡槽数量是否正确(resize到正确大小) 清空卡槽
+    // 清空卡槽
     void clearCardSlot();
-
+    // 重新开始冷却卡槽
+    void restartCoolDown();
+    // 更新卡槽中的冷却时间等信息
+    void updateCardInSlot();
+    
     // 拿起一张卡片 卡片在卡槽中变暗
     // 返回卡片的植物类型
     // 失败返回 MAX
