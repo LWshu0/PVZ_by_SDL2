@@ -22,7 +22,9 @@ SceneManager::SceneManager(
     // 主界面
     std::shared_ptr<AnimLoader> main_scene_loader = std::make_shared<AnimLoader>("reanim/SelectorScreen.reanim", renderer, res);
     m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>(renderer, timer, camera, res, main_scene_loader);
-    // 游戏界面
+    // 选卡界面
+    m_sceneTemplate[SceneType::Scene_SelectCardScene] = std::make_shared<SelectCardScene>(renderer, timer, camera, res, mapManager, cardManager);
+        // 游戏界面
     m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(renderer, timer, camera, res, mapManager, bulletManager, plantManager, zombieManager, taskManager, cardManager);
     // ...
 

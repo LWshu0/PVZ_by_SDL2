@@ -3,6 +3,7 @@
 #include "Core/Timer.h"
 #include "Core/Camera.h"
 #include "Scene/MainScene.h"
+#include "Scene/SelectCardScene.h"
 #include "Scene/GameScene.h"
 
 class SceneManager {

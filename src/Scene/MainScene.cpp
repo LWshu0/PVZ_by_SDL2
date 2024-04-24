@@ -87,7 +87,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_StartAdventure] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_StartAdventure] = 34;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_StartAdventure] = m_textureRes->getTextureFrom("reanim/SelectorScreen_StartAdventure_Highlight.png");
-        m_jumpSceneType[MainSceneButtonType::MainSceneButton_StartAdventure] = SceneType::Scene_GameScene;
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_StartAdventure] = SceneType::Scene_SelectCardScene;
     }
     /****************************************************************************/
     {
@@ -103,7 +103,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_MiniGame] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_MiniGame] = 26;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_MiniGame] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Survival_highlight.png");
-        m_jumpSceneType[MainSceneButtonType::MainSceneButton_MiniGame] = SceneType::Scene_GameScene;
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_MiniGame] = SceneType::Scene_SelectCardScene;
     }
     /****************************************************************************/
     {
@@ -119,7 +119,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Challenge] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Challenge] = 28;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Challenge] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Challenges_highlight.png");
-        m_jumpSceneType[MainSceneButtonType::MainSceneButton_Challenge] = SceneType::Scene_GameScene;
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_Challenge] = SceneType::Scene_SelectCardScene;
     }
     /****************************************************************************/
     {
@@ -134,7 +134,7 @@ MainScene::MainScene(
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Survival] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Survival] = 30;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Survival] = m_textureRes->getTextureFrom("reanim/SelectorScreen_vasebreaker_highlight.png");
-        m_jumpSceneType[MainSceneButtonType::MainSceneButton_Survival] = SceneType::Scene_GameScene;
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_Survival] = SceneType::Scene_SelectCardScene;
     }
 
 }
@@ -180,6 +180,8 @@ int MainScene::changeAnimState(AnimState to_state)
 int MainScene::enterScene()
 {
     SDL_Log("enter main scene\n");
+    // 相机位置
+    SceneObject::m_camera->setPosition(0.0f, 0.0f);
     // 初始化动画
     m_playingAnimState = AnimState::R_ANIM1;
     setPlayingTrack(

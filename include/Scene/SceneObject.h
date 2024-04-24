@@ -11,6 +11,7 @@
 
 enum SceneType {
     Scene_MainScene,
+    Scene_SelectCardScene,
     Scene_GameScene,
     Scene_MaxSceneIdx
 };

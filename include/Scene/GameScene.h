@@ -14,7 +14,6 @@ class CardManager;
 class GameScene : public SceneObject {
 protected:
     // 游戏进程
-    bool m_isInGame;
     int m_cardInHandIdx;            // 正在手中的卡槽编号
     PlantType m_plantInHandType;    // 正在手中的植物类型
 
