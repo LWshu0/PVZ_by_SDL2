@@ -83,6 +83,10 @@ public:
 
     // 清空卡槽
     void clearCardSlot();
+    // 初始化卡池中的植物类型
+    // 在再次进入选卡界面时调用
+    // 因为选卡仅更改卡片植物类型
+    void resetCardPool();
     // 重新开始冷却卡槽
     void restartCoolDown();
     // 更新卡槽中的冷却时间等信息

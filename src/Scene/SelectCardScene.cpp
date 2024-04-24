@@ -28,6 +28,7 @@ int SelectCardScene::enterScene()
     SceneObject::m_camera->setPosition(0.0f, 0.0f);
     m_mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
     m_cardManager->clearCardSlot();
+    m_cardManager->resetCardPool();
     return 0;
 }
 

@@ -114,7 +114,7 @@ int CardManager::initilizeManagers(
     SDL_Texture* card_bk = m_textureRes->getTextureFrom("images/SeedPacket_Larger.png");
     int card_w = 0, card_h = 0;
     SDL_QueryTexture(card_bk, NULL, NULL, &card_w, &card_h);
-    for (int i = PlantType::PlantPeaShooter1; i < PlantType::MaxPlantType; i++)
+    for (int i = 0; i < PlantType::MaxPlantType; i++)
     {
         // 创建植物预览图片纹理
         // 设置植物状态 获取需要的纹理大小
@@ -167,6 +167,14 @@ int CardManager::initilizeManagers(
 void CardManager::clearCardSlot()
 {
     m_cardInSlot.clear();
+}
+
+void CardManager::resetCardPool()
+{
+    for (int i = 0;i < PlantType::MaxPlantType;i++)
+    {
+        m_cardInPool[i].m_plantType = static_cast<PlantType>(i);
+    }
 }
 
 void CardManager::restartCoolDown()
