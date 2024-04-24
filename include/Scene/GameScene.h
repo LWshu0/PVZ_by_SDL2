@@ -16,7 +16,7 @@ protected:
     // 游戏进程
     int m_cardInHandIdx;            // 正在手中的卡槽编号
     PlantType m_plantInHandType;    // 正在手中的植物类型
-
+    int m_mousePositionX, m_mousePositionY; // 鼠标移动的位置
     // 游戏对象 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<BulletManager> m_bulletManager;

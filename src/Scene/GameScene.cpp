@@ -110,9 +110,11 @@ SceneType GameScene::handleEvent(SDL_Event& event)
     else if (event.type == SDL_MOUSEMOTION)
     {
         // 坐标转换
-        int mouse_motion_x = m_camera->getClickX(event.motion.x);
-        int mouse_motion_y = m_camera->getClickY(event.motion.y);
-        if (m_cardInHandIdx != -1) m_plantManager->presettlePlant(mouse_motion_x, mouse_motion_y);
+        m_mousePositionX = event.motion.x;
+        m_mousePositionY = event.motion.y;
+        int mousePositionX = m_camera->getClickX(event.motion.x);
+        int mousePositionY = m_camera->getClickY(event.motion.y);
+        if (m_cardInHandIdx != -1) m_plantManager->presettlePlant(mousePositionX, mousePositionY);
     }
     return SceneType::Scene_MaxSceneIdx;
 }
@@ -144,7 +146,8 @@ int GameScene::renderScene()
     if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)
     {
         // 渲染手中植物
-        // 预放置位置虚影
+        m_cardManager->renderCardInHand(m_plantInHandType, m_mousePositionX, m_mousePositionY);
+        // 预放置位置虚影(在 m_plantManager->renderPlants() 中实现)
     }
     m_cardManager->renderCardCoolDown();
     return 0;

@@ -125,6 +125,7 @@ public:
     int renderCardSlot();       // 绘制卡槽
     int renderCardCoolDown();   // 绘制游戏过程中卡槽的冷却信息
     int renderCardPool();       // 绘制卡池
+    int renderCardInHand(PlantType type, int mouse_x, int mouse_y);     // 绘制手中的植物纹理
 
     void releaseManagers();
 

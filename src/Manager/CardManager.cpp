@@ -275,11 +275,16 @@ int CardManager::getPoolIdx(int x, int y)
 
 int CardManager::renderCardSlot()
 {
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 75);
     SDL_RenderCopy(m_renderer, m_cardSlotBK, NULL, &m_cardSlotRange);
     for (int i = 0; i < m_cardInSlot.size();i++)
     {
         if (m_cardInSlot[i].m_plantType == PlantType::MaxPlantType) break;
         SDL_RenderCopy(m_renderer, m_plantCardTexture[m_cardInSlot[i].m_plantType], NULL, &m_cardRangeInSlot[i].m_range);
+        if (!m_cardInSlot[i].m_endble)
+        {
+            SDL_RenderFillRect(m_renderer, &m_cardRangeInSlot[i].m_range);
+        }
     }
     // 显示可点击范围
     for (auto i : m_cardRangeInSlot)
@@ -300,7 +305,7 @@ int CardManager::renderCardCoolDown()
             m_cardRangeInSlot[i].m_range.x,
             m_cardRangeInSlot[i].m_range.y,
             m_cardRangeInSlot[i].m_range.w,
-            m_cardRangeInSlot[i].m_range.h* (int)(m_cardInSlot[i].m_rmCoolMilliSecond) / (int)(m_cardInSlot[i].m_coolMilliSecond)
+            m_cardRangeInSlot[i].m_range.h * (int)(m_cardInSlot[i].m_rmCoolMilliSecond) / (int)(m_cardInSlot[i].m_coolMilliSecond)
         };
         SDL_RenderFillRect(m_renderer, &mask_range);
     }
@@ -313,7 +318,7 @@ int CardManager::renderCardPool()
     SDL_RenderCopy(m_renderer, m_cardPoolBK, NULL, &m_cardPoolRange);
     for (int i = 0; i < PlantType::MaxPlantType;i++)
     {
-        if(m_cardInPool[i].m_plantType == PlantType::MaxPlantType) continue;
+        if (m_cardInPool[i].m_plantType == PlantType::MaxPlantType) continue;
         SDL_RenderCopy(m_renderer, m_plantCardTexture[i], NULL, &m_cardRangeInPool[i].m_range);
         if (!m_cardInPool[i].m_endble)
         {
@@ -325,6 +330,16 @@ int CardManager::renderCardPool()
     {
         i.renderShape();
     }
+    return 0;
+}
+
+int CardManager::renderCardInHand(PlantType type, int mouse_x, int mouse_y)
+{
+    if (type == PlantType::MaxPlantType) return -1;
+    int tex_w, tex_h;
+    SDL_QueryTexture(m_plantImageTexture[type], NULL, NULL, &tex_w, &tex_h);
+    SDL_Rect rect{ mouse_x - tex_w / 2, mouse_y - tex_h, tex_w, tex_h };
+    SDL_RenderCopy(m_renderer, m_plantImageTexture[type], NULL, &rect);
     return 0;
 }
 
