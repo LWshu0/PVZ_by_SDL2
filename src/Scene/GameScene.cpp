@@ -52,6 +52,8 @@ int GameScene::enterScene()
     // if (0 == plant_manager->removePlant(1, 1)) { SDL_Log("remove plant at (1, 1)\n"); }
 
     // if (0 == m_zombieManager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
+    // 相机位置
+    SceneObject::m_camera->setPosition(210, 0.0f);
     return 0;
 }
 

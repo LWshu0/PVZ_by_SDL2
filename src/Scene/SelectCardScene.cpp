@@ -24,11 +24,11 @@ SceneType SelectCardScene::getType()
 int SelectCardScene::enterScene()
 {
     SDL_Log("enter select card scene\n");
-    // 相机位置
-    SceneObject::m_camera->setPosition(0.0f, 0.0f);
     m_mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
     m_cardManager->clearCardSlot();
     m_cardManager->resetCardPool();
+    // 相机位置 在地图初始化之后
+    SceneObject::m_camera->setPosition(m_mapManager->getWidth() - 800, 0.0f);
     return 0;
 }
 
