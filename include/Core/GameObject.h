@@ -21,6 +21,8 @@ public:
     virtual bool collision(std::shared_ptr<GameObject> other);
     virtual bool collision(const GameObject& other);
 
+    bool inObject(int x, int y);
+    bool inObject(float x, float y);
     inline SDL_FPoint getAABBPosition() { return SDL_FPoint{ m_aabb.x, m_aabb.y }; }
     inline SDL_FPoint getRootPosition() { return SDL_FPoint{ m_aabb.x + m_aabb.w / 2, m_aabb.y }; }
 

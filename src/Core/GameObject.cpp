@@ -25,6 +25,23 @@ bool GameObject::collision(const GameObject& other)
         || other.m_aabb.y > this->m_aabb.y + this->m_aabb.h) return false;
     return true;
 }
+bool GameObject::inObject(int x, int y)
+{
+    if (this->m_aabb.x > x
+        || x > this->m_aabb.x + this->m_aabb.w) return false;
+    if (this->m_aabb.y > y
+        || y > this->m_aabb.y + this->m_aabb.h) return false;
+    return true;
+}
+
+bool GameObject::inObject(float x, float y)
+{
+    if (this->m_aabb.x > x
+        || x > this->m_aabb.x + this->m_aabb.w) return false;
+    if (this->m_aabb.y > y
+        || y > this->m_aabb.y + this->m_aabb.h) return false;
+    return true;
+}
 
 GameObject::~GameObject()
 {}

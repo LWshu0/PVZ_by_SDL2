@@ -1,5 +1,7 @@
 add_subdirectory(Core)
 
+add_subdirectory(Collection)
+
 add_subdirectory(Map)
 
 add_subdirectory(Bullet)
