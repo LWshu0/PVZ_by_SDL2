@@ -53,7 +53,7 @@ int GameScene::enterScene()
 
     // if (0 == m_zombieManager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
     // 相机位置
-    SceneObject::m_camera->setPosition(210, 0.0f);
+    SceneObject::m_camera->setPosition(210.0f, 0.0f);
     return 0;
 }
 
@@ -121,7 +121,7 @@ SceneType GameScene::handleEvent(SDL_Event& event)
     return SceneType::Scene_MaxSceneIdx;
 }
 
-int GameScene::updateScene()
+SceneType GameScene::updateScene()
 {
     m_taskManager->updateTask();
     m_plantManager->updatePlants();
@@ -129,7 +129,7 @@ int GameScene::updateScene()
     m_zombieManager->updateZombie();
     m_zombieManager->attackPlants();
     m_cardManager->updateCardInSlot();
-    return 0;
+    return SceneType::Scene_MaxSceneIdx;
 }
 
 int GameScene::exitScene()

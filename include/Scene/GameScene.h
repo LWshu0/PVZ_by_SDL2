@@ -44,7 +44,7 @@ public:
 
     virtual SceneType handleEvent(SDL_Event& event) override;
 
-    virtual int updateScene() override;
+    virtual SceneType updateScene() override;
 
     virtual int exitScene() override;
 

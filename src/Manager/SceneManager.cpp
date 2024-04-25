@@ -24,6 +24,8 @@ SceneManager::SceneManager(
     m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>(renderer, timer, camera, res, main_scene_loader);
     // 选卡界面
     m_sceneTemplate[SceneType::Scene_SelectCardScene] = std::make_shared<SelectCardScene>(renderer, timer, camera, res, mapManager, cardManager);
+    // 选卡到游戏的过渡界面
+    m_sceneTemplate[SceneType::Scene_Select2GameScene] = std::make_shared<Select2Game>(renderer, timer, camera, res, mapManager);
         // 游戏界面
     m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(renderer, timer, camera, res, mapManager, bulletManager, plantManager, zombieManager, taskManager, cardManager);
     // ...
@@ -47,7 +49,15 @@ int SceneManager::handleEvent(SDL_Event& event)
 
 int SceneManager::updateScene()
 {
-    return m_currentScene->updateScene();
+
+    SceneType next_scene = m_currentScene->updateScene();
+    if (next_scene != SceneType::Scene_MaxSceneIdx)
+    {
+        m_currentScene->exitScene();
+        m_currentScene = m_sceneTemplate[next_scene];
+        m_currentScene->enterScene();
+    }
+    return 0;
 }
 
 int SceneManager::renderScene()

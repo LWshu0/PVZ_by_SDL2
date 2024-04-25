@@ -12,6 +12,7 @@
 enum SceneType {
     Scene_MainScene,                // 游戏主界面
     Scene_SelectCardScene,          // 开始游戏后的选卡界面
+    Scene_Select2GameScene,         // 选卡界面到游戏界面的过渡界面
     Scene_GameScene,                // 游戏过程中的界面
     Scene_MaxSceneIdx               // 最大的界面数量(代表无效界面)
 };
@@ -42,10 +43,12 @@ public:
     virtual int enterScene() = 0;
 
     // 场景处理用户输入的事件
+    // 返回跳转的场景
     virtual SceneType handleEvent(SDL_Event& event) = 0;
 
     // 更新场景以及场景内的物体
-    virtual int updateScene() = 0;
+    // 返回跳转的场景
+    virtual SceneType updateScene() = 0;
 
     // 退出场景执行的操作
     virtual int exitScene() = 0;

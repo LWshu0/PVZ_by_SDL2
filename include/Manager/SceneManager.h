@@ -4,6 +4,7 @@
 #include "Core/Camera.h"
 #include "Scene/MainScene.h"
 #include "Scene/SelectCardScene.h"
+#include "Scene/Select2Game.h"
 #include "Scene/GameScene.h"
 
 class SceneManager {

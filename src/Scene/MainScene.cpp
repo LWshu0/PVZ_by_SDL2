@@ -253,7 +253,7 @@ SceneType MainScene::handleEvent(SDL_Event& event)
     return SceneType::Scene_MaxSceneIdx;
 }
 
-int MainScene::updateScene()
+SceneType MainScene::updateScene()
 {
     updatePlayingFrameIdx(m_timer->getTime());
     switch (m_playingAnimState)
@@ -274,7 +274,7 @@ int MainScene::updateScene()
         break;
     }
 
-    return 0;
+    return SceneType::Scene_MaxSceneIdx;
 }
 
 int MainScene::exitScene()

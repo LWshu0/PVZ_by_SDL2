@@ -1,26 +1,21 @@
-#ifndef SELECTCARDSCENE_H
-#define SELECTCARDSCENE_H
+#ifndef SELECT2GAME_H
+#define SELECT2GAME_H
 
 #include "SceneObject.h"
-#include "Plants/PlantObject.h"
 
 class MapManager;
-class CardManager;
 
-class SelectCardScene : public SceneObject {
+class Select2Game :public SceneObject {
 protected:
-
     // 游戏对象 manager
     std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<CardManager> m_cardManager;
 public:
-    SelectCardScene(
+    Select2Game(
         SDL_Renderer* renderer,
         std::shared_ptr<Timer> timer,
         std::shared_ptr<Camera> camera,
         std::shared_ptr<TextureRes> res,
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<CardManager> cardManager
+        std::shared_ptr<MapManager> mapManager
     );
 
     virtual SceneType getType() override;
@@ -34,11 +29,8 @@ public:
     virtual int exitScene() override;
 
     virtual int renderScene() override;
-    
-    ~SelectCardScene();
+
+    ~Select2Game();
 };
-
-
-
 
 #endif
