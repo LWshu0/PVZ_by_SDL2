@@ -10,8 +10,9 @@ SceneManager::SceneManager(
     std::shared_ptr<PlantManager> plantManager,
     std::shared_ptr<ZombieManager> zombieManager,
     std::shared_ptr<TaskManager> taskManager,
-    std::shared_ptr<CardManager> cardManager
-) :
+    std::shared_ptr<CardManager> cardManager,
+    std::shared_ptr<CollectionManager> collectionManager
+    ) :
     m_renderer(renderer),
     m_textureRes(res),
     m_camera(camera),
@@ -27,7 +28,7 @@ SceneManager::SceneManager(
     // 选卡到游戏的过渡界面
     m_sceneTemplate[SceneType::Scene_Select2GameScene] = std::make_shared<Select2Game>(renderer, timer, camera, res, mapManager);
         // 游戏界面
-    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(renderer, timer, camera, res, mapManager, bulletManager, plantManager, zombieManager, taskManager, cardManager);
+    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(renderer, timer, camera, res, mapManager, bulletManager, plantManager, zombieManager, taskManager, cardManager, collectionManager);
     // ...
 
     // 设置初始界面

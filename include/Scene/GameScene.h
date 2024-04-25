@@ -10,6 +10,7 @@ class PlantManager;
 class ZombieManager;
 class TaskManager;
 class CardManager;
+class CollectionManager;
 
 class GameScene : public SceneObject {
 protected:
@@ -17,6 +18,11 @@ protected:
     int m_cardInHandIdx;                    // 正在手中的卡槽编号
     PlantType m_plantInHandType;            // 正在手中的植物类型
     int m_mousePositionX, m_mousePositionY; // 鼠标移动的位置
+
+    // 阳光产生间隔
+    uint64_t m_dropSunIntervalTime;         // 随机阳光掉落的时间间隔
+    uint64_t m_dropSunCountDown;            // 产生随机阳光的倒计时
+    
     // 游戏对象 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<BulletManager> m_bulletManager;
@@ -24,6 +30,7 @@ protected:
     std::shared_ptr<ZombieManager> m_zombieManager;
     std::shared_ptr<TaskManager> m_taskManager;
     std::shared_ptr<CardManager> m_cardManager;
+    std::shared_ptr<CollectionManager> m_collectionManager;
 public:
     GameScene(
         SDL_Renderer* renderer,
@@ -35,7 +42,8 @@ public:
         std::shared_ptr<PlantManager> plantManager,
         std::shared_ptr<ZombieManager> zombieManager,
         std::shared_ptr<TaskManager> taskManager,
-        std::shared_ptr<CardManager> cardManager
+        std::shared_ptr<CardManager> cardManager,
+        std::shared_ptr<CollectionManager> collectionManager
         );
 
     virtual SceneType getType() override;

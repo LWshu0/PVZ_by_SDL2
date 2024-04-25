@@ -1,4 +1,5 @@
 #include "Manager/CollectionManager.h"
+#include "Manager/MapManager.h"
 
 CollectionManager::CollectionManager(
     SDL_Renderer* renderer,
@@ -13,13 +14,20 @@ CollectionManager::CollectionManager(
     m_timer(timer)
 {
     m_collectionTemplate.resize(CollectionType::CollectionMaxNum);
-    // 定义运动方式
-    m_dropMotion = std::make_shared<MotionSpeed>(0.0f, 20.0f);
+
     // 阳光
     std::shared_ptr<AnimLoader> sun_loader = std::make_shared<AnimLoader>("reanim/Sun.reanim", renderer, texture_res);
     m_collectionTemplate[CollectionType::Collection_Sun] = std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader, camera);
     // ...
     m_collectionItems.resize(maxCollection);
+}
+
+int CollectionManager::initilizeManagers(
+    std::shared_ptr<MapManager> mapManager
+)
+{
+    m_mapManager = mapManager;
+    return 0;
 }
 
 int CollectionManager::addCollection(CollectionType type, int x, int y)
@@ -30,8 +38,26 @@ int CollectionManager::addCollection(CollectionType type, int x, int y)
         if (ptr == nullptr)
         {
             ptr = m_collectionTemplate[type]->cloneCollection(x, y);
-            ptr->setMotion(m_dropMotion);
+            ptr->setMotion(std::make_shared<MotionSpeed>(0.0f, 20.0f));
             SDL_Log("CollectionManager::addCollection add a collection\n");
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int CollectionManager::randomDropSun()
+{
+    float width = m_mapManager->getRightMargin() - m_mapManager->getLeftMargin() - 100.0f;
+    float gene_x = m_mapManager->getLeftMargin() + width * rand() / RAND_MAX;
+    uint64_t lifetime = 3000 + 10000 * rand() / RAND_MAX;
+    for (auto& ptr : m_collectionItems)
+    {
+        if (ptr == nullptr)
+        {
+            ptr = m_collectionTemplate[CollectionType::Collection_Sun]->cloneCollection(gene_x, 0.0f);
+            ptr->setMotion(std::make_shared<MotionSpeedLimitTime>(0.0f, 40.0f, lifetime));
+            SDL_Log("CollectionManager::randomDropSun add a sun\n");
             return 0;
         }
     }
@@ -112,6 +138,11 @@ int CollectionManager::collectCollection()
         }
     }
     return 0;
+}
+
+void CollectionManager::releaseManagers()
+{
+    m_mapManager = nullptr;
 }
 
 CollectionManager::~CollectionManager()

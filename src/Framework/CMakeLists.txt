@@ -9,6 +9,7 @@ target_link_libraries(PVZ PUBLIC
     zombies zombiemanager
     taskmanager
     cardmanager
+    collection collectionmanager
     scene scenemanager
     ui
 )

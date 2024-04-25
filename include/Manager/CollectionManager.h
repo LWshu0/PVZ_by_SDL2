@@ -4,6 +4,8 @@
 #include "Collection/CollectionObject.h"
 #include "Collection/Sun.h"
 
+class MapManager;
+
 class CollectionManager
 {
 protected:
@@ -14,12 +16,14 @@ protected:
     std::shared_ptr<Timer> m_timer;                                         // 游戏时钟
     std::vector<std::shared_ptr<CollectionObject>> m_collectionTemplate;    // 子弹模板
 
-    std::shared_ptr<ObjectMotion> m_dropMotion;
     // 游戏中的掉落物
     std::vector<std::shared_ptr<CollectionObject>> m_collectionItems;
 
     // 数据记录
     int m_sunNum;
+
+    // 关联 manager
+    std::shared_ptr<MapManager> m_mapManager;
 
 public:
     CollectionManager(
@@ -30,7 +34,15 @@ public:
         int maxCollection
     );
 
+    // 关联 manager
+    // 初始化 texture(卡片纹理与植物纹理)
+    int initilizeManagers(
+        std::shared_ptr<MapManager> mapManager
+    );
+
     int addCollection(CollectionType type, int x, int y);
+
+    int randomDropSun();
 
     int clickCollection(int mouse_x, int mouse_y);
     
@@ -41,6 +53,8 @@ public:
     int clearCollection();
 
     int collectCollection();
+
+    void releaseManagers();
 
     ~CollectionManager();
 };

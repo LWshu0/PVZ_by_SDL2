@@ -1,5 +1,9 @@
 #include "Collection/Sun.h"
-
+/*
+0: Sun3 -> range: [0, 12] total: [0, 12]
+1: Sun2 -> range: [0, 12] total: [0, 12]
+2: Sun1 -> range: [0, 12] total: [0, 12]
+*/
 Sun::Sun(
     const SDL_FRect& aabb,
     std::shared_ptr<AnimLoader> loader,

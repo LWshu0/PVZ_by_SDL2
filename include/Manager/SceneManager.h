@@ -29,8 +29,9 @@ public:
         std::shared_ptr<PlantManager> plantManager,
         std::shared_ptr<ZombieManager> zombieManager,
         std::shared_ptr<TaskManager> taskManager,
-        std::shared_ptr<CardManager> cardManager
-    );
+        std::shared_ptr<CardManager> cardManager,
+        std::shared_ptr<CollectionManager> collectionManager
+        );
 
     // 调用当前场景的处理事件函数
     int handleEvent(SDL_Event& event);

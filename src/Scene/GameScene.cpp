@@ -5,6 +5,7 @@
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
 #include "Manager/CardManager.h"
+#include "Manager/CollectionManager.h"
 
 GameScene::GameScene(
     SDL_Renderer* renderer,
@@ -16,17 +17,20 @@ GameScene::GameScene(
     std::shared_ptr<PlantManager> plantManager,
     std::shared_ptr<ZombieManager> zombieManager,
     std::shared_ptr<TaskManager> taskManager,
-    std::shared_ptr<CardManager> cardManager
-) :
+    std::shared_ptr<CardManager> cardManager,
+    std::shared_ptr<CollectionManager> collectionManager
+    ) :
     SceneObject(renderer, timer, camera, res),
     m_cardInHandIdx(-1),
     m_plantInHandType(PlantType::MaxPlantType),
+    m_dropSunIntervalTime(5000),
     m_mapManager(mapManager),
     m_bulletManager(bulletManager),
     m_plantManager(plantManager),
     m_zombieManager(zombieManager),
     m_taskManager(taskManager),
-    m_cardManager(cardManager)
+    m_cardManager(cardManager),
+    m_collectionManager(collectionManager)
 {
 
 }
@@ -46,6 +50,7 @@ int GameScene::enterScene()
     m_zombieManager->initilizeZombie();
     m_bulletManager->clearBullets();
     m_taskManager->loadTask("task/1-1-1.xml");
+    m_collectionManager->clearCollection();
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
@@ -104,6 +109,7 @@ SceneType GameScene::handleEvent(SDL_Event& event)
                 else // 尝试收集
                 {
                     // todo ...
+                    m_collectionManager->clickCollection(event.button.x, event.button.y);
                 }
 
             }
@@ -129,12 +135,23 @@ SceneType GameScene::updateScene()
     m_zombieManager->updateZombie();
     m_zombieManager->attackPlants();
     m_cardManager->updateCardInSlot();
+    m_collectionManager->updateCollection();
+    if (m_dropSunCountDown <= m_timer->getDeltaTime())
+    {
+        m_dropSunCountDown = m_dropSunIntervalTime;
+        m_collectionManager->randomDropSun();
+    }
+    else
+    {
+        m_dropSunCountDown -= m_timer->getDeltaTime();
+    }
     return SceneType::Scene_MaxSceneIdx;
 }
 
 int GameScene::exitScene()
 {
     SDL_Log("exit game scene\n");
+    m_collectionManager->collectCollection();
     return 0;
 }
 
@@ -152,6 +169,7 @@ int GameScene::renderScene()
         // 预放置位置虚影(在 m_plantManager->renderPlants() 中实现)
     }
     m_cardManager->renderCardCoolDown();
+    m_collectionManager->renderCollection();
     return 0;
 }
 
