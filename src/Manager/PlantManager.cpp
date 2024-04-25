@@ -191,7 +191,7 @@ int PlantManager::updatePlants()
                 BulletType bullet_type = m_mainPlants[i][j]->attack(m_timer);
                 if (BulletType::MaxBulletType != bullet_type)
                 {
-                    m_bulletManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y);
+                    m_bulletManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
                 }
 
                 m_mainPlants[i][j]->updatePlant(m_timer);

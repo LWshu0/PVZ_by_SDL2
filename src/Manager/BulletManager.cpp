@@ -19,6 +19,7 @@ BulletManager::BulletManager(
     m_bulletTemplate[BulletType::BulletPea] = std::make_shared<Pea>(
         m_renderer,
         m_textureRes->getTextureFrom("images/ProjectilePea.png"),
+        m_textureRes->getTextureFrom("images/plantshadow.png"),
         m_camera, 0.0f, 0.0f);
     m_bulletTemplate[BulletType::BulletPea]->setMotion(std::make_shared<MotionSpeed>(200.0f, 0.0f));
     // 

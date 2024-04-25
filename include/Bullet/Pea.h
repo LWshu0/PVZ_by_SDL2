@@ -11,7 +11,8 @@ protected:
 public:
     Pea(
         SDL_Renderer* renderer,
-        SDL_Texture* texture,
+        SDL_Texture* bullet_texture,
+        SDL_Texture* shadow_texture,
         std::shared_ptr<Camera> camera,
         float x, float y
     );

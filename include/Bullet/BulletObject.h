@@ -18,16 +18,30 @@ protected:
 
     // 子弹属性
     int m_damage;
+
+    // 子弹影子
+    SDL_Texture* m_shadow;
+    SDL_FPoint m_offsetShadow;
+    float m_shadowWidth;
+    float m_shadowHeight;
 public:
     BulletObject(
         SDL_Renderer* renderer,
         std::shared_ptr<Camera> camera,
         const SDL_FRect& aabb,
+        SDL_Texture* shadow,
+        const SDL_FPoint& offsetShadow,
+        float shadowWidth,
+        float shadowHeight,
         int dam
     ) :
         GameObject(aabb),
         m_renderer(renderer),
         m_camera(camera),
+        m_shadow(shadow),
+        m_offsetShadow(offsetShadow),
+        m_shadowWidth(shadowWidth),
+        m_shadowHeight(shadowHeight),
         m_damage(dam)
     {}
 
