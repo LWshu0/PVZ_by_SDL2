@@ -34,6 +34,7 @@ protected:
     std::shared_ptr<PlantManager> m_plantManager;
 
     // zombies in game
+    int m_zombieNum;
     std::vector<std::shared_ptr<ZombieObject>> m_zombies;
 
 public:
@@ -63,6 +64,10 @@ public:
     // 其中 left_x 和 right_x 都是世界坐标系下的坐标
     bool hasZombieBetween(int row, float left_x, float right_x);
 
+    inline bool hasZombie() { return m_zombieNum > 0; }
+
+    bool hasZombieInHouse();
+    
     // 僵尸移动
     // 与子弹的碰撞检测, 并减少僵尸生命值
     int updateZombie();

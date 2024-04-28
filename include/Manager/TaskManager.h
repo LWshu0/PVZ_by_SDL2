@@ -47,6 +47,8 @@ public:
      */
     int updateTask();
 
+    inline bool isFinish() { return m_taskPointer >= m_taskRecord.size(); }
+
     // 取消关联 manager 的循环引用
     void releaseManagers();
 

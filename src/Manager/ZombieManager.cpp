@@ -15,7 +15,8 @@ ZombieManager::ZombieManager(
     m_timer(timer),
     m_mapManager(nullptr),
     m_bulletManager(nullptr),
-    m_plantManager(nullptr)
+    m_plantManager(nullptr),
+    m_zombieNum(0)
 {
     m_zombies.resize(10);
     m_zombieTemplate.resize(ZombieType::MaxZombieType);
@@ -39,6 +40,7 @@ int ZombieManager::initilizeManagers(
 
 int ZombieManager::initilizeZombie()
 {
+    m_zombieNum = 0;
     m_zombies.clear();
     m_zombies.resize(10);
     return 0;
@@ -60,6 +62,7 @@ int ZombieManager::addZombie(ZombieType type, int row, int col)
         root_x += m_mapManager->getCellWidth() / 2;
         root_y += m_mapManager->getCellHeight() * 0.8;
         m_zombies[i] = m_zombieTemplate[type]->cloneZombie(SDL_FPoint{ root_x, root_y });
+        m_zombieNum += 1;
         return 0;
     }
     return -1;
@@ -72,6 +75,20 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
         if (nullptr == m_zombies[i]) continue;
         int rowIdx = m_mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
         if (rowIdx == row && (m_zombies[i]->m_aabb.x >= left_x && m_zombies[i]->m_aabb.x <= right_x))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ZombieManager::hasZombieInHouse()
+{
+    float house_margin = m_camera->getClickX(0);
+    for (int i = 0;i < m_zombies.size();i++)
+    {
+        if (nullptr == m_zombies[i]) continue;
+        if (m_zombies[i]->m_aabb.x + m_zombies[i]->m_aabb.w < house_margin)
         {
             return true;
         }
@@ -92,6 +109,7 @@ int ZombieManager::updateZombie()
         if (m_zombies[i]->isDead())
         {
             m_zombies[i] = nullptr;
+            m_zombieNum -= 1;
         }
     }
     return 0;

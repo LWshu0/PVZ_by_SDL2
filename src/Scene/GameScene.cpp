@@ -146,6 +146,16 @@ SceneType GameScene::updateScene()
     {
         m_dropSunCountDown -= m_timer->getDeltaTime();
     }
+    if (m_taskManager->isFinish() && !m_zombieManager->hasZombie())
+    {
+        // win
+        return SceneType::Scene_MainScene;
+    }
+    else if (m_zombieManager->hasZombieInHouse())
+    {
+        // lose
+        return SceneType::Scene_MainScene;
+    }
     return SceneType::Scene_MaxSceneIdx;
 }
 
