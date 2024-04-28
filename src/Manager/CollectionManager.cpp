@@ -11,7 +11,8 @@ CollectionManager::CollectionManager(
     m_renderer(renderer),
     m_textureRes(texture_res),
     m_camera(camera),
-    m_timer(timer)
+    m_timer(timer),
+    m_sunNum(50)
 {
     m_collectionTemplate.resize(CollectionType::CollectionMaxNum);
 

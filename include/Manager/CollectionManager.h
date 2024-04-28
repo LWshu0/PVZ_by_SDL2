@@ -40,6 +40,9 @@ public:
         std::shared_ptr<MapManager> mapManager
     );
 
+    inline void setSunNum(int sum_num) { m_sunNum = sum_num; }
+    inline int getSunNum() { return m_sunNum; }
+    
     int addCollection(CollectionType type, int x, int y);
 
     int randomDropSun();

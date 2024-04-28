@@ -16,6 +16,7 @@
 
 class MapManager;
 class PlantManager;
+class CollectionManager;
 
 //卡槽卡池节点
 struct CardNode {
@@ -56,6 +57,9 @@ protected:
     std::vector<wsRectangle> m_cardRangeInSlot; // 卡槽中卡片的范围
     std::vector<CardNode> m_cardInSlot;         // 卡槽中的卡片
 
+    // 阳光数值的字体
+    Dictionary m_sunFont;
+
     /* card manager 管理需要手动释放 */
     // 植物纹理
     std::vector<SDL_Texture*> m_plantImageTexture;
@@ -68,7 +72,7 @@ protected:
     // 关联 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<PlantManager> m_plantManager;
-
+    std::shared_ptr<CollectionManager> m_collectionManager;
 public:
     CardManager(
         SDL_Renderer* renderer,
@@ -81,7 +85,8 @@ public:
     // 初始化 texture(卡片纹理与植物纹理)
     int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<PlantManager> plantManager
+        std::shared_ptr<PlantManager> plantManager,
+        std::shared_ptr<CollectionManager> collectionManager
     );
 
     // 清空卡槽

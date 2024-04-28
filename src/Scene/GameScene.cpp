@@ -19,7 +19,7 @@ GameScene::GameScene(
     std::shared_ptr<TaskManager> taskManager,
     std::shared_ptr<CardManager> cardManager,
     std::shared_ptr<CollectionManager> collectionManager
-    ) :
+) :
     SceneObject(renderer, timer, camera, res),
     m_cardInHandIdx(-1),
     m_plantInHandType(PlantType::MaxPlantType),
@@ -51,6 +51,7 @@ int GameScene::enterScene()
     m_bulletManager->clearBullets();
     m_taskManager->loadTask("task/1-1-1.xml");
     m_collectionManager->clearCollection();
+    m_collectionManager->setSunNum(50);
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
@@ -152,6 +153,7 @@ int GameScene::exitScene()
 {
     SDL_Log("exit game scene\n");
     m_collectionManager->collectCollection();
+    m_collectionManager->setSunNum(50);
     return 0;
 }
 

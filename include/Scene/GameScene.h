@@ -22,7 +22,7 @@ protected:
     // 阳光产生间隔
     uint64_t m_dropSunIntervalTime;         // 随机阳光掉落的时间间隔
     uint64_t m_dropSunCountDown;            // 产生随机阳光的倒计时
-    
+
     // 游戏对象 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<BulletManager> m_bulletManager;
@@ -44,7 +44,7 @@ public:
         std::shared_ptr<TaskManager> taskManager,
         std::shared_ptr<CardManager> cardManager,
         std::shared_ptr<CollectionManager> collectionManager
-        );
+    );
 
     virtual SceneType getType() override;
 

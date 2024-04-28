@@ -117,7 +117,7 @@ int main(int argc, char* args[])
     plant_manager->initilizeManagers(map_manager, bullet_manager, zombie_manager);
     zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
     task_manager->initilizeManagers(map_manager, zombie_manager);
-    card_manager->initilizeManagers(map_manager, plant_manager);
+    card_manager->initilizeManagers(map_manager, plant_manager, collection_manager);
     collection_manager->initilizeManagers(map_manager);
 
     std::thread render_thread(RenderThread);

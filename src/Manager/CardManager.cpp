@@ -1,5 +1,6 @@
 #include "Manager/CardManager.h"
 #include "Manager/PlantManager.h"
+#include "Manager/CollectionManager.h"
 
 CardManager::CardManager(
     SDL_Renderer* renderer,
@@ -11,6 +12,7 @@ CardManager::CardManager(
     m_timer(timer),
     m_camera(camera),
     m_textureRes(res),
+    m_sunFont(renderer, res, "data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0,0,0,255 }),
     m_cardPoolBK(nullptr),
     m_cardPoolRange{ 0,0,0,0 },
     m_cardSlotBK(nullptr),
@@ -101,18 +103,19 @@ CardManager::CardManager(
 
 int CardManager::initilizeManagers(
     std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<PlantManager> plantManager
+    std::shared_ptr<PlantManager> plantManager,
+    std::shared_ptr<CollectionManager> collectionManager
 )
 {
     m_mapManager = mapManager;
     m_plantManager = plantManager;
+    m_collectionManager = collectionManager;
     if (m_plantManager == nullptr) return -1;
     // 初始化纹理数组为最大 plant 数量
     m_plantCardTexture.resize(PlantType::MaxPlantType);
     m_plantImageTexture.resize(PlantType::MaxPlantType);
 
     SDL_Texture* card_bk = m_textureRes->getTextureFrom("images/SeedPacket_Larger.png");
-    Dictionary dictory(m_renderer, m_textureRes, "data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0,0,0,255 });
     int card_w = 0, card_h = 0;
     SDL_QueryTexture(card_bk, NULL, NULL, &card_w, &card_h);
     for (int i = 0; i < PlantType::MaxPlantType; i++)
@@ -160,7 +163,7 @@ int CardManager::initilizeManagers(
         }
         SDL_RenderCopyF(m_renderer, plant_texture, NULL, &dst_rect);
         // 渲染阳光消耗数量
-        dictory.render(std::to_string(m_cardInPool[i].m_sunCost), card_w * 0.1f, card_h * 0.7f, 1.5f);
+        m_sunFont.render(std::to_string(m_cardInPool[i].m_sunCost), card_w * 0.1f, card_h * 0.7f, 1.5f);
         // 添加到列表存储
         m_plantCardTexture[i] = card_texture;
     }
@@ -290,6 +293,8 @@ int CardManager::renderCardSlot()
             SDL_RenderFillRect(m_renderer, &m_cardRangeInSlot[i].m_range);
         }
     }
+    std::string sunNum = std::to_string(m_collectionManager->getSunNum());
+    m_sunFont.render(sunNum, 15, 57);
     // 显示可点击范围
     for (auto i : m_cardRangeInSlot)
     {
@@ -351,6 +356,7 @@ void CardManager::releaseManagers()
 {
     m_mapManager = nullptr;
     m_plantManager = nullptr;
+    m_collectionManager = nullptr;
 }
 
 CardManager::~CardManager()
