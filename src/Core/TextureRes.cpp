@@ -87,6 +87,59 @@ SDL_Texture* TextureRes::getTextureWithMask(const std::string& _file_path, const
     return m_textures[_file_path];
 }
 
+SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::string& mask_path)
+{
+    SDL_Surface* mask = nullptr;
+    mask = IMG_Load(mask_path.c_str());
+    if (!ToRGBA8888(mask))
+    {
+        SDL_FreeSurface(mask);
+        return nullptr;
+    }
+    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, mask->w, mask->h, 32, SDL_PIXELFORMAT_RGBA8888);
+    if (surface == nullptr)
+    {
+        SDL_Log("TextureRes::getTextureWithMask create surface failed\n");
+        SDL_FreeSurface(mask);
+        return nullptr;
+    }
+    // 锁定表面以获取访问权限
+    if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
+    if (SDL_MUSTLOCK(mask)) SDL_LockSurface(mask);
+    // 实际数据
+    Uint8* pix1 = (Uint8*)surface->pixels;
+    Uint8* pix2 = (Uint8*)mask->pixels;
+    // 逐位相乘
+    size_t length = surface->pitch * surface->h;
+    for (size_t i = 0;i < length;i += 4)
+    {
+        pix1[i] = color.a * (static_cast<float>(pix2[i + 1]) / 255.0f);
+        pix1[i + 1] = color.b * (static_cast<float>(pix2[i + 1]) / 255.0f);
+        pix1[i + 2] = color.g * (static_cast<float>(pix2[i + 1]) / 255.0f);
+        pix1[i + 3] = color.r * (static_cast<float>(pix2[i + 1]) / 255.0f);
+    }
+    // 解锁表面
+    if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
+    if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
+    // 创建纹理
+    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(mask);
+    if (img_texture != NULL)
+    {
+        // 删除旧纹理
+        auto iter = m_textures.find(mask_path);
+        if (iter != m_textures.end()) SDL_DestroyTexture(iter->second);
+        m_textures[mask_path] = img_texture;
+    }
+    else
+    {
+        SDL_Log("failed to create texture from mask %s\n", mask_path.c_str());
+        return nullptr;
+    }
+    return m_textures[mask_path];
+}
+
 SDL_Texture* TextureRes::getReanimTexture(const std::string& reanim_name)
 {
     std::string real_image_name = toReal(reanim_name);

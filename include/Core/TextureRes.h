@@ -37,6 +37,10 @@ public:
     // 要求两者大小必须相同
     SDL_Texture* getTextureWithMask(const std::string& file_path, const std::string& mask_path);
 
+    // 将 mask 赋值颜色后返回纹理
+    // 纹理使用 mask 的路径访问
+    SDL_Texture* getTextureWithMask(const SDL_Color& color, const std::string& mask_path);
+
     // 根据 reanim 图像名称获取纹理
     SDL_Texture* getReanimTexture(const std::string& reanim_name);
 

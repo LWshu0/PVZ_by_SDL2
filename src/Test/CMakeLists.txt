@@ -7,6 +7,9 @@ target_link_libraries(OperatorTest PUBLIC mingw32 SDL2::SDL2main SDL2::SDL2 norm
 add_executable(CollectionTest CollectionTest.cpp)
 target_link_libraries(CollectionTest PUBLIC normal_core sdl_core bullet collection collectionmanager)
 
+add_executable(DictionaryTest DictionaryTest.cpp)
+target_link_libraries(DictionaryTest PUBLIC normal_core sdl_core)
+
 # add_executable(BulletTest BulletTest.cpp)
 # target_link_libraries(BulletTest PUBLIC normal_core sdl_core bullet bulletmanager)
 
