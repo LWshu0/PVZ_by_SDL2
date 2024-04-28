@@ -10,6 +10,7 @@
 #include "Core/TextureRes.h"
 #include "Core/UI/wsRectangle.h"
 #include "Core/XmlLoader.h"
+#include "Core/Dictionary.h"
 
 #include "Plants/PlantObject.h"
 

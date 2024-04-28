@@ -112,6 +112,7 @@ int CardManager::initilizeManagers(
     m_plantImageTexture.resize(PlantType::MaxPlantType);
 
     SDL_Texture* card_bk = m_textureRes->getTextureFrom("images/SeedPacket_Larger.png");
+    Dictionary dictory(m_renderer, m_textureRes, "data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0,0,0,255 });
     int card_w = 0, card_h = 0;
     SDL_QueryTexture(card_bk, NULL, NULL, &card_w, &card_h);
     for (int i = 0; i < PlantType::MaxPlantType; i++)
@@ -158,6 +159,9 @@ int CardManager::initilizeManagers(
             dst_rect.h = new_height;
         }
         SDL_RenderCopyF(m_renderer, plant_texture, NULL, &dst_rect);
+        // 渲染阳光消耗数量
+        dictory.render(std::to_string(m_cardInPool[i].m_sunCost), card_w * 0.1f, card_h * 0.7f, 1.5f);
+        // 添加到列表存储
         m_plantCardTexture[i] = card_texture;
     }
     SDL_SetRenderTarget(m_renderer, NULL);
