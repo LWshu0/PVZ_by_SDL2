@@ -196,6 +196,7 @@ void CardManager::updateCardInSlot()
 {
     for (auto& card : m_cardInSlot)
     {
+        card.m_endble = (card.m_sunCost <= m_collectionManager->getSunNum());
         if (card.m_rmCoolMilliSecond <= m_timer->getDeltaTime()) card.m_rmCoolMilliSecond = 0;
         else card.m_rmCoolMilliSecond -= m_timer->getDeltaTime();
     }
@@ -233,7 +234,8 @@ int CardManager::settleCard(int card_slot_idx)
     if (card_slot_idx >= 0
         && card_slot_idx < m_cardInSlot.size())
     {
-        m_cardInSlot[card_slot_idx].m_endble = true;
+        m_collectionManager->setSunNum(m_collectionManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
+        m_cardInSlot[card_slot_idx].m_endble = m_collectionManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
         m_cardInSlot[card_slot_idx].m_rmCoolMilliSecond = m_cardInSlot[card_slot_idx].m_coolMilliSecond;
         return card_slot_idx;
     }
