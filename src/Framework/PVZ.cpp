@@ -72,7 +72,7 @@ int main(int argc, char* args[])
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
     if (!SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1")) { SDL_Log("error: fail to set SDL_HINT_IME_SHOW_UI"); }
     if (!SDL_SetHint(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT, "1")) { SDL_Log("error: fail to set SDL_HINT_IME_SUPPORT_EXTENDED_TEXT"); }
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+    if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) { SDL_Log("error: fail to set SDL_HINT_RENDER_SCALE_QUALITY"); }
 
     // 创建管理者
     map_manager = std::make_shared<MapManager>();
@@ -160,7 +160,7 @@ int main(int argc, char* args[])
     task_manager->releaseManagers();
     card_manager->releaseManagers();
     collection_manager->releaseManagers();
-    
+
     SDL_DestroyRenderer(GlobalVars::getInstance().renderer);
     SDL_DestroyWindow(GlobalVars::getInstance().window);
     IMG_Quit();

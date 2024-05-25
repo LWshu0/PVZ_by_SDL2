@@ -333,10 +333,3 @@ SDL_FPoint AnimPlayer::getOffset(int track_idx)
     }
     return offsetPoint;
 }
-
-float AnimPlayer::getPlayingX(int track_idx)
-{
-    // if (track_idx < 0 || track_idx >= m_trackPlayRecord.size()) return 0;
-    int playing_frame_idx = m_trackPlayRecord[track_idx].m_playingFrameIdx;
-    return m_loader->m_tracks[track_idx].m_frames[playing_frame_idx].m_x;
-}

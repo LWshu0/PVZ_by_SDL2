@@ -9,38 +9,6 @@
 
 #include "AnimLoader.h"
 
-// enum AnimState {
-//     R_IDLE,     /*  空闲状态, 植物不发射, 僵尸不行走
-//                 *   阳光, 弹幕飞行
-//                 *   界面空闲阶段*/
-//     R_ATTACK,   /*  攻击状态, 植物发射子弹 / 爆炸, 僵尸啃食 / 其他攻击方式
-//                 *   弹幕与僵尸碰撞后碎裂*/
-//     R_SLEEP,    // 植物睡眠状态
-//     R_WALK,     // 僵尸行走状态
-//     R_DEAD,     // 僵尸死亡过程
-//     R_SWIM,     // 僵尸游泳
-
-//     // 多阶段界面动画播放
-
-//     R_ANIM1,    /*进入主界面
-//                 * 僵尸手 出现*/
-//     R_ANIM2,    /*主界面选择冒险
-//                 * 僵尸手静止*/
-//     R_ANIM3,    /*主界面选择小游戏*/
-//     R_ANIM4,    /*主界面选择解密*/
-//     R_ANIM5     /*主界面选择生存*/
-// };
-
-// // 受损程度
-// enum DamageState {
-//     R_Damage1,  // 最完好状态
-//     R_Damage2,  // 
-//     R_Damage3,  //
-//     R_Damage4,  //
-//     R_Damage5,  // 最损坏状态
-//     R_Death     // 需要销毁对象
-// };
-
 // 动画播放器
 // 后根据不同的物体做不同的初始化
 class AnimPlayer {
@@ -169,9 +137,6 @@ protected:
     // 如果使用了参考点 计算偏移距离
     // 否则返回 {0, 0}
     SDL_FPoint getOffset(int track_idx);
-    // 获取轨道当前播放帧的 x 偏移
-    // 仅在僵尸移动时, 用于获取 _ground 轨道的 x 数据, 使移动符合实际
-    float getPlayingX(int track_idx);
 };
 
 #endif
