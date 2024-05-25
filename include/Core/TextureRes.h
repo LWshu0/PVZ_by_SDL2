@@ -11,7 +11,6 @@
 
 class TextureRes {
 protected:
-    SDL_Renderer* m_renderer;
     // 图像路径到纹理的映射
     std::map<std::string, SDL_Texture*> m_textures;
     // Reanim 图像名称到真实图像名称的映射
@@ -21,11 +20,16 @@ protected:
     // reanim 物体名(大写)到真实物体名(大小写混合)的映射
     std::map<std::string, std::string> m_objName;
 public:
+    TextureRes() = default;
     // 给定渲染器
     // 资源映射文件路径 
     // 图片资源文件夹路径 如图片路径为 res/image/a.png, 需要传入 res/image
     TextureRes(
-        SDL_Renderer* renderer,
+        const std::string& xml_path,
+        const std::string& image_path
+    );
+
+    void initilize(
         const std::string& xml_path,
         const std::string& image_path
     );

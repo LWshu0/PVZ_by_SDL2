@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "SDL.h"
-#include "TextureRes.h"
 
 struct CharListNode {
     std::string m_charValue = "";
@@ -16,16 +15,12 @@ struct CharListNode {
 
 class Dictionary {
 protected:
-    SDL_Renderer* m_renderer;
-    std::shared_ptr<TextureRes> m_textureRes;
 
     SDL_Texture* m_wordTable;
     std::vector<CharListNode> m_charList;
 
 public:
     Dictionary(
-        SDL_Renderer* renderer,
-        std::shared_ptr<TextureRes> textureRes,
         const std::string& imageFilePath,
         const std::string& wordFilePath,
         const SDL_Color& color = SDL_Color{ 255,255,255,255 }

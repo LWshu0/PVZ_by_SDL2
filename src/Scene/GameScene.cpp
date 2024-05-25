@@ -8,10 +8,6 @@
 #include "Manager/CollectionManager.h"
 
 GameScene::GameScene(
-    SDL_Renderer* renderer,
-    std::shared_ptr<Timer> timer,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<TextureRes> res,
     std::shared_ptr<MapManager> mapManager,
     std::shared_ptr<BulletManager> bulletManager,
     std::shared_ptr<PlantManager> plantManager,
@@ -20,7 +16,7 @@ GameScene::GameScene(
     std::shared_ptr<CardManager> cardManager,
     std::shared_ptr<CollectionManager> collectionManager
 ) :
-    SceneObject(renderer, timer, camera, res),
+    SceneObject(),
     m_cardInHandIdx(-1),
     m_plantInHandType(PlantType::MaxPlantType),
     m_dropSunIntervalTime(5000),
@@ -59,7 +55,7 @@ int GameScene::enterScene()
 
     // if (0 == m_zombieManager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
     // 相机位置
-    SceneObject::m_camera->setPosition(210.0f, 0.0f);
+    GlobalVars::getInstance().camera.setPosition(210.0f, 0.0f);
     return 0;
 }
 
@@ -74,8 +70,8 @@ SceneType GameScene::handleEvent(SDL_Event& event)
             if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试安防植物
             {
                 // 坐标转换
-                int mouse_click_x = m_camera->getClickX(event.button.x);
-                int  mouse_click_y = m_camera->getClickY(event.button.y);
+                int mouse_click_x = GlobalVars::getInstance().camera.getClickX(event.button.x);
+                int  mouse_click_y = GlobalVars::getInstance().camera.getClickY(event.button.y);
                 int row = m_mapManager->caculRow(mouse_click_y);
                 int col = m_mapManager->caculCol(mouse_click_x);
                 if (m_mapManager->isValidCell(row, col))
@@ -121,8 +117,8 @@ SceneType GameScene::handleEvent(SDL_Event& event)
         // 坐标转换
         m_mousePositionX = event.motion.x;
         m_mousePositionY = event.motion.y;
-        int mousePositionX = m_camera->getClickX(event.motion.x);
-        int mousePositionY = m_camera->getClickY(event.motion.y);
+        int mousePositionX = GlobalVars::getInstance().camera.getClickX(event.motion.x);
+        int mousePositionY = GlobalVars::getInstance().camera.getClickY(event.motion.y);
         if (m_cardInHandIdx != -1) m_plantManager->presettlePlant(mousePositionX, mousePositionY);
     }
     return SceneType::Scene_MaxSceneIdx;
@@ -137,14 +133,14 @@ SceneType GameScene::updateScene()
     m_zombieManager->attackPlants();
     m_cardManager->updateCardInSlot();
     m_collectionManager->updateCollection();
-    if (m_dropSunCountDown <= m_timer->getDeltaTime())
+    if (m_dropSunCountDown <= GlobalVars::getInstance().timer.getDeltaTime())
     {
         m_dropSunCountDown = m_dropSunIntervalTime;
         m_collectionManager->randomDropSun();
     }
     else
     {
-        m_dropSunCountDown -= m_timer->getDeltaTime();
+        m_dropSunCountDown -= GlobalVars::getInstance().timer.getDeltaTime();
     }
     if (m_taskManager->isFinish() && !m_zombieManager->hasZombie())
     {

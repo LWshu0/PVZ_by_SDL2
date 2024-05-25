@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "Core/Timer.h"
+#include "Core/GlobalVars.h"
 #include "Core/GameObject.h"
 #include "Core/AnimPlayer.h"
 
@@ -31,7 +31,6 @@ public:
 public:
     ZombieObject(
         std::shared_ptr<AnimLoader> loader,
-        std::shared_ptr<Camera> camera,
         const SDL_FPoint& init_point,
         const SDL_FRect& aabb,
         const SDL_FPoint& offset_shadow,
@@ -43,7 +42,6 @@ public:
 
     ZombieObject(
         std::shared_ptr<AnimLoader> loader, // 动画资源
-        std::shared_ptr<Camera> camera,     // 相机
         const SDL_FPoint& init_point,       // 动画播放位置, 后续的偏移以此为参照
         const SDL_FPoint& offset_abbb,      // aabb 偏移
         float aabb_width,                   // 碰撞箱宽度
@@ -67,21 +65,21 @@ public:
 
     // 改变当前僵尸的状态(ZombieState)
     // 发生改变才会执行 否则直接返回
-    virtual int changeZombieState(ZombieState to_state, std::shared_ptr<Timer> timer) = 0;
+    virtual int changeZombieState(ZombieState to_state) = 0;
 
     /**
      *@brief 根据计时器中的时间, 计算这段时间内僵尸对植物造成的伤害
      * @param timer 游戏时钟
      * @return int 对植物的伤害值
      */
-    virtual int attack(std::shared_ptr<Timer> timer) = 0;
+    virtual int attack() = 0;
 
     // 对僵尸造成伤害, 减少 HP
     // 如果僵尸死亡将切换到死亡动画(默认)
     virtual int damage(int damege_num);
 
     // 更新到下一帧的状态
-    virtual int updateZombie(std::shared_ptr<Timer> timer) = 0;
+    virtual int updateZombie() = 0;
 
     // 显示碰撞箱
     int showAABB();

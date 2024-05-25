@@ -1,13 +1,6 @@
 #include "Manager/MapManager.h"
 
-MapManager::MapManager(
-    SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> res,
-    std::shared_ptr<Camera> camera
-) :
-    m_renderer(renderer),
-    m_textureRes(res),
-    m_camera(camera),
+MapManager::MapManager() :
     m_mapWidthPixel(0),
     m_mapHeightPixel(0),
     m_leftMargin(0),
@@ -20,7 +13,7 @@ MapManager::MapManager(
     // 初始化模板数组
     m_mapTemplate.resize(MapType::MaxMapType);
     // 初始化模板
-    m_mapTemplate[MapType::MapGrassDayOneLine] = std::make_shared<GrassDayOneLine>(m_textureRes);
+    m_mapTemplate[MapType::MapGrassDayOneLine] = std::make_shared<GrassDayOneLine>();
 
 }
 
@@ -58,12 +51,12 @@ bool MapManager::isValidCell(int row, int col)
 int MapManager::renderMap()
 {
     SDL_FRect map_rect{
-        m_camera->getRenderX(0.0f),
-        m_camera->getRenderY(0.0f),
+        GlobalVars::getInstance().camera.getRenderX(0.0f),
+        GlobalVars::getInstance().camera.getRenderY(0.0f),
         m_mapWidthPixel,
         m_mapHeightPixel
     };
-    return SDL_RenderCopyF(m_renderer, m_bkTexture, NULL, &map_rect);
+    return SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_bkTexture, NULL, &map_rect);
 }
 
 MapManager::~MapManager()

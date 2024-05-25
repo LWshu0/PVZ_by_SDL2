@@ -10,13 +10,12 @@ protected:
 public:
     Sun(
         const SDL_FRect& aabb,
-        std::shared_ptr<AnimLoader> loader,
-        std::shared_ptr<Camera> camera
+        std::shared_ptr<AnimLoader> loader
     );
     virtual std::shared_ptr<CollectionObject> cloneCollection(float x, float y) override;
 
     virtual CollectionType getType() override;
-    virtual int updateCollection(std::shared_ptr<Timer> timer) override;
+    virtual int updateCollection() override;
     virtual int renderCollection() override;
     ~Sun();
 };

@@ -3,16 +3,7 @@
 #include "Manager/BulletManager.h"
 #include "Manager/PlantManager.h"
 
-ZombieManager::ZombieManager(
-    SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> res,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<Timer> timer
-) :
-    m_renderer(renderer),
-    m_textureRes(res),
-    m_camera(camera),
-    m_timer(timer),
+ZombieManager::ZombieManager() :
     m_mapManager(nullptr),
     m_bulletManager(nullptr),
     m_plantManager(nullptr),
@@ -22,8 +13,8 @@ ZombieManager::ZombieManager(
     m_zombieTemplate.resize(ZombieType::MaxZombieType);
     m_animLoader.resize(ZombieType::MaxZombieType);
     // 普通僵尸
-    m_animLoader[ZombieType::ZombieNormal] = std::make_shared<AnimLoader>("reanim/Zombie.reanim", m_renderer, m_textureRes);
-    m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(m_animLoader[ZombieType::ZombieNormal], m_camera, SDL_FPoint{ 0.0f, 0.0f });
+    m_animLoader[ZombieType::ZombieNormal] = std::make_shared<AnimLoader>("reanim/Zombie.reanim");
+    m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(m_animLoader[ZombieType::ZombieNormal], SDL_FPoint{ 0.0f, 0.0f });
 }
 
 int ZombieManager::initilizeManagers(
@@ -84,7 +75,7 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
 
 bool ZombieManager::hasZombieInHouse()
 {
-    float house_margin = m_camera->getClickX(0);
+    float house_margin = GlobalVars::getInstance().camera.getClickX(0);
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
@@ -102,7 +93,7 @@ int ZombieManager::updateZombie()
     {
         if (nullptr == m_zombies[i]) continue;
         // 移动
-        m_zombies[i]->updateZombie(m_timer);
+        m_zombies[i]->updateZombie();
         // 碰撞检测
         int dam = m_bulletManager->collisionBullet(m_zombies[i]);
         m_zombies[i]->damage(dam);
@@ -124,13 +115,13 @@ int ZombieManager::attackPlants()
         int col = m_mapManager->caculCol(m_zombies[i]->m_aabb.x);
         if (m_plantManager->collisionPlant(m_zombies[i], row, col))
         {
-            m_zombies[i]->changeZombieState(ZombieState::Zombie_ATTACK, m_timer);
-            int dam = m_zombies[i]->attack(m_timer);
+            m_zombies[i]->changeZombieState(ZombieState::Zombie_ATTACK);
+            int dam = m_zombies[i]->attack();
             m_plantManager->doDamage(row, col, dam);
         }
         else
         {
-            m_zombies[i]->changeZombieState(ZombieState::Zombie_WALK, m_timer);
+            m_zombies[i]->changeZombieState(ZombieState::Zombie_WALK);
         }
     }
     return 0;
@@ -161,7 +152,7 @@ int ZombieManager::changeAllTo(ZombieState state)
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
-        if (-1 == m_zombies[i]->changeZombieState(state, m_timer))
+        if (-1 == m_zombies[i]->changeZombieState(state))
         {
             SDL_Log("change failed\n");
         }

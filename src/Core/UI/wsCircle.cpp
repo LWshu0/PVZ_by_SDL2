@@ -1,7 +1,7 @@
 #include "Core/UI/wsCircle.h"
 
-wsCircle::wsCircle(const SDL_Point& center, int radius, SDL_Renderer* renderer) :
-    wsShape(renderer),
+wsCircle::wsCircle(const SDL_Point& center, int radius) :
+    wsShape(),
     m_center(center),
     m_radius(radius)
 {}
@@ -18,10 +18,10 @@ int wsCircle::renderShape()
 {
     if (!m_isValid) return -1;
 
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
     
     // SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
-    return SDL_RenderDrawCircle(m_renderer, m_center.x, m_center.y, m_radius);
+    return SDL_RenderDrawCircle(GlobalVars::getInstance().renderer, m_center.x, m_center.y, m_radius);
     
     return -1;
 }

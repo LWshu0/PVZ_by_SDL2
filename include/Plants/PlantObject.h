@@ -49,7 +49,6 @@ public:
 public:
     PlantObject(
         std::shared_ptr<AnimLoader> loader,
-        std::shared_ptr<Camera> camera,
         const SDL_FPoint& init_point,
         const SDL_FRect& aabb,
         const SDL_FPoint& offset_shadow,
@@ -63,7 +62,6 @@ public:
 
     PlantObject(
         std::shared_ptr<AnimLoader> loader, // 动画资源载入器(内部有完整的动画数据)
-        std::shared_ptr<Camera> camera,     // 游戏相机
         const SDL_FPoint& init_point,       // 动画播放的起始点(左上角)
         const SDL_FPoint& offset_abbb,      // aabb 偏移(相对于 init_point)
         float aabb_width,                   // 碰撞箱宽度
@@ -114,7 +112,7 @@ public:
      * @param timer 游戏时钟
      * @return int 改变成功返回 0, 改变失败(即当前状态与期望状态一致)返回 -1
      */
-    virtual int changePlantState(PlantState to_state, std::shared_ptr<Timer> timer) = 0;
+    virtual int changePlantState(PlantState to_state) = 0;
 
     /**
      *@brief 执行攻击逻辑, 内部需要实现: 当植物处于攻击状态(PlantState::ATTACK)同时当前时间大于等于需要发射的时间时, 返回产生的子弹类型
@@ -122,13 +120,13 @@ public:
      * @param timer 游戏时钟
      * @return BulletType 植物产生的子弹类型, 返回 BulletType::MaxBulletType 代表该时刻不产生子弹
      */
-    virtual BulletType attack(std::shared_ptr<Timer> timer) = 0;
+    virtual BulletType attack() = 0;
 
     // 对植物造成伤害, 使植物 HP 减少
     virtual int damage(int damege_num);
 
     // 更新植物到下一帧的状态
-    virtual int updatePlant(std::shared_ptr<Timer> timer) = 0;
+    virtual int updatePlant() = 0;
 
     /*  将植物的状态改为静止状态(该状态并不在 PlantState 中), 静止状态专门用于显示静态的植物图像.
         同时, 该函数还要设置动画渲染的位置, 使 renderStatic 函数可以把植物图像渲染在纹理中间位置

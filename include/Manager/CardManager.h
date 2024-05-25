@@ -5,9 +5,7 @@
 #include <memory>
 
 #include "SDL.h"
-#include "Core/Timer.h"
-#include "Core/Camera.h"
-#include "Core/TextureRes.h"
+#include "Core/GlobalVars.h"
 #include "Core/UI/wsRectangle.h"
 #include "Core/XmlLoader.h"
 #include "Core/Dictionary.h"
@@ -30,10 +28,6 @@ struct CardNode {
 
 class CardManager {
 protected:
-    SDL_Renderer* m_renderer;
-    std::shared_ptr<Timer> m_timer;
-    std::shared_ptr<Camera> m_camera;
-    std::shared_ptr<TextureRes> m_textureRes;
 
     // 素材位置参数
     int m_cardWidth;        // 卡片像素宽度
@@ -74,12 +68,7 @@ protected:
     std::shared_ptr<PlantManager> m_plantManager;
     std::shared_ptr<CollectionManager> m_collectionManager;
 public:
-    CardManager(
-        SDL_Renderer* renderer,
-        std::shared_ptr<Timer> timer,
-        std::shared_ptr<Camera> camera,
-        std::shared_ptr<TextureRes> res
-    );
+    CardManager();
 
     // 关联 manager
     // 初始化 texture(卡片纹理与植物纹理)

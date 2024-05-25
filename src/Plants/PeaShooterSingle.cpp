@@ -23,11 +23,10 @@
 */
 PeaShooterSingle::PeaShooterSingle(
     std::shared_ptr<AnimLoader> loader,
-    std::shared_ptr<Camera> camera,
     const SDL_FPoint& root_point
 ) :
     PlantObject(
-        loader, camera,                                         // 资源 相机   
+        loader,                                                 // 资源  
         SDL_FPoint{ root_point.x - 40, root_point.y - 80 },     // 动画播放位置
         SDL_FPoint{ 20, 0 }, 40, 80,                            // 碰撞箱
         SDL_FPoint{ 0, 55 }, 80, 30,                            // 阴影
@@ -56,7 +55,7 @@ PeaShooterSingle::PeaShooterSingle(
 
 std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root_point)
 {
-    return std::make_shared<PeaShooterSingle>(m_loader, m_camera, root_point);
+    return std::make_shared<PeaShooterSingle>(m_loader, root_point);
 }
 
 void PeaShooterSingle::setRootPoint(const SDL_FPoint& root_point)
@@ -124,14 +123,14 @@ int PeaShooterSingle::changeAnimState(AnimState to_state)
     return 0;
 }
 
-int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Timer> timer)
+int PeaShooterSingle::changePlantState(PlantState to_state)
 {
     if (to_state == m_state) return -1;
     m_state = to_state;
     if (PlantState::ATTACK == to_state)
     {
-        m_nextAttackAnimMilliSecond = timer->getTime();
-        m_nextFireMilliSecond = timer->getTime() + m_windUpDuration;
+        m_nextAttackAnimMilliSecond = GlobalVars::getInstance().timer.getTime();
+        m_nextFireMilliSecond = GlobalVars::getInstance().timer.getTime() + m_windUpDuration;
         changeAnimState(AnimState::R_ATTACK);
     }
     else
@@ -141,10 +140,10 @@ int PeaShooterSingle::changePlantState(PlantState to_state, std::shared_ptr<Time
     return 0;
 }
 
-BulletType PeaShooterSingle::attack(std::shared_ptr<Timer> timer)
+BulletType PeaShooterSingle::attack()
 {
     if (PlantState::ATTACK != m_state) return BulletType::MaxBulletType;
-    if (timer->getTime() >= m_nextFireMilliSecond)
+    if (GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
     {
         m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;
         return BulletType::BulletPea;
@@ -152,20 +151,20 @@ BulletType PeaShooterSingle::attack(std::shared_ptr<Timer> timer)
     return BulletType::MaxBulletType;
 }
 
-int PeaShooterSingle::updatePlant(std::shared_ptr<Timer> timer)
+int PeaShooterSingle::updatePlant()
 {
     // 更新帧
-    updatePlayingFrameIdx(timer->getTime());
+    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
     // 眨眼
-    if (last_blink_ms + delta_blink_ms < timer->getTime())
+    if (last_blink_ms + delta_blink_ms < GlobalVars::getInstance().timer.getTime())
     {
         is_blinking = true;
-        last_blink_ms = timer->getTime();
+        last_blink_ms = GlobalVars::getInstance().timer.getTime();
     }
     // 攻击动画
     if (PlantState::ATTACK == m_state)
     {
-        if (timer->getTime() >= m_nextAttackAnimMilliSecond)
+        if (GlobalVars::getInstance().timer.getTime() >= m_nextAttackAnimMilliSecond)
         {
             changeAnimState(AnimState::R_ATTACK);
             m_nextAttackAnimMilliSecond = m_nextAttackAnimMilliSecond + m_reloadMilliSecond;

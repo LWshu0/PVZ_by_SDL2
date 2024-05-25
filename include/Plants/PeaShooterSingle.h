@@ -13,7 +13,6 @@ protected:
 public:
     PeaShooterSingle(
         std::shared_ptr<AnimLoader> loader,
-        std::shared_ptr<Camera> camera,
         const SDL_FPoint& root_point
     );
 
@@ -23,9 +22,9 @@ public:
     virtual int render() override;
     virtual int changeAnimState(AnimState to_state) override;
 
-    virtual int changePlantState(PlantState to_state, std::shared_ptr<Timer> timer) override;
-    virtual BulletType attack(std::shared_ptr<Timer> timer) override;
-    virtual int updatePlant(std::shared_ptr<Timer> timer) override;
+    virtual int changePlantState(PlantState to_state) override;
+    virtual BulletType attack() override;
+    virtual int updatePlant() override;
 
     virtual int changeToStatic() override;
     virtual int getAnimRange(float& width, float& height) override;

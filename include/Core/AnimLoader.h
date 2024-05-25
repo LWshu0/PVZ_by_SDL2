@@ -6,19 +6,23 @@
 #include <cmath>
 #include <string>
 #include "SDL.h"
+#include "ExtSDL.h"
 
 #include "TextureRes.h"
 #include "XmlLoader.h"
 
 class AnimFrame {
 public:
+    /*******************
+     *     元数据      *
+     ******************/
     int m_f;                    // 可见性 0 代表不可见, 1 代表可见
     float m_x, m_y;             // 纹理相对于物体坐标系的偏移
     float m_sx, m_sy;           // 坐标轴缩放倍数
     float m_kx, m_ky;           // 坐标轴旋转弧度
     float m_alpha;              // 透明度
     SDL_Texture* m_texture;     // 纹理
-    float m_scale;              // 缩放因子
+    float m_scale;              // 额外的缩放因子(非文件读取, 由程序定义)
     // 预计算纹理顶点位置 绘制时只需对顶点进行平移即可绘制到指定的位置
     // 对应纹理坐标为
     // 0 : {0, 0}
@@ -52,8 +56,8 @@ public:
 
     // 计算缩放指定倍数的顶点位置
     void caculateVertex(float scale);
-    // 根据该帧的数据对一个点进行线性变换
-    int transferPoint(SDL_FPoint& point, float scale);
+    // 根据该帧的元数据对一个点进行线性变换
+    int transferPoint(SDL_FPoint& point);
     // 为该帧设置一个锚点 使得计算偏移时根据锚点计算
     // 锚点不可重复设置
     int setAnchorPoint(const SDL_FPoint& point);
@@ -79,7 +83,6 @@ public:
     void scaleFrames(float scale);
 
     int renderTrack(
-        SDL_Renderer* renderer,
         const SDL_FPoint& dst_point,
         int real_frame_idx,
         SDL_Texture* alter_texture = nullptr,
@@ -87,7 +90,6 @@ public:
     );
 
     int renderTrack(
-        SDL_Renderer* renderer,
         const SDL_FPoint& dst_point,
         int real_frame_idx,
         Uint8 mask_a
@@ -107,10 +109,6 @@ struct Control_Track {
 // 动画数据转换器 从 reanim 文档信息转为可播放的动画信息
 class AnimLoader {
 public:
-    // 渲染器
-    SDL_Renderer* m_renderer;
-    // 图片资源
-    std::shared_ptr<TextureRes> m_imageRes;
     // .reanim 文件路径
     std::string m_reanimFilePath;
     // 动画默认帧率(由文件指定)
@@ -125,8 +123,6 @@ public:
 public:
     AnimLoader(
         const std::string& reanim_path,
-        SDL_Renderer* renderer,
-        std::shared_ptr<TextureRes> image,
         float anim_scale = 1.0f
     );
     

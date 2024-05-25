@@ -7,9 +7,7 @@ class GrassDayOneLine :public MapInitilizer {
 protected:
     
 public:
-    GrassDayOneLine(
-        std::shared_ptr<TextureRes> res
-    );
+    GrassDayOneLine();
     
     virtual ~GrassDayOneLine();
 };

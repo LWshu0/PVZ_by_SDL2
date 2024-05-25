@@ -1,13 +1,23 @@
 #include "Core/Camera.h"
 
-Camera::Camera(float x, float y, float w, float h) :
-    m_x(x),
-    m_y(y),
-    m_width(w),
-    m_height(h),
-    m_bottom(y + h),
-    m_right(x + w)
+Camera::Camera() :
+    m_x(0), m_y(0), m_width(0), m_height(0), m_bottom(0), m_right(0)
 {}
+
+Camera::Camera(float x, float y, float w, float h)
+{
+    initilize(x, y, w, h);
+}
+
+void Camera::initilize(float x, float y, float w, float h)
+{
+    m_x = x;
+    m_y = y;
+    m_width = w;
+    m_height = h;
+    m_bottom = y + h;
+    m_right = x + w;
+}
 
 int Camera::setPosition(float x, float y)
 {

@@ -2,13 +2,13 @@
 #define WSSHAPE_H
 
 #include "SDL.h"
+#include "Core/GlobalVars.h"
 
 class wsShape {
 protected:
     bool m_isValid;
-    SDL_Renderer* m_renderer;
 public:
-    wsShape(SDL_Renderer* renderer);
+    wsShape();
 
     /*将形状渲染到指定的位置*/
     virtual int renderShape() = 0;

@@ -4,9 +4,8 @@
 #include "Core/AnimLoader.h"
 #include "Core/AnimPlayer.h"
 #include "Core/ObjectMotion.h"
-#include "Core/Camera.h"
-#include "Core/Timer.h"
 #include "Core/GameObject.h"
+#include "Core/GlobalVars.h"
 
 enum CollectionType {
     Collection_Sun,
@@ -25,9 +24,9 @@ public:
 
     virtual CollectionType getType() = 0;
 
-    virtual int updateCollection(std::shared_ptr<Timer> timer)
+    virtual int updateCollection()
     {
-        return m_updater->step(this, timer->getDeltaTime());
+        return m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
     }
 
     inline void setMotion(std::shared_ptr<ObjectMotion> motion)

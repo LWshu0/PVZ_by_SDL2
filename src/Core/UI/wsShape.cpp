@@ -1,10 +1,7 @@
 #include "Core/UI/wsShape.h"
 
-wsShape::wsShape(SDL_Renderer* renderer) :
-    m_renderer(renderer)
-{
-    m_isValid = (m_renderer != nullptr);
-}
+wsShape::wsShape() :m_isValid(true)
+{}
 
 wsShape::~wsShape()
 {}

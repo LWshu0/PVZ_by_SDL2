@@ -2,8 +2,7 @@
 #include "Manager/ZombieManager.h"
 #include "Manager/MapManager.h"
 
-TaskManager::TaskManager(std::shared_ptr<Timer> timer) :
-    m_timer(timer),
+TaskManager::TaskManager() :
     m_taskPointer(-1)
 {}
 
@@ -52,7 +51,7 @@ int TaskManager::updateTask()
     // task 错误
     if (m_taskPointer < 0) return -1;
     // 侦测直到等待事件触发
-    uint64_t delta_ms = m_timer->getDeltaTime();    // 剩余时间
+    uint64_t delta_ms = GlobalVars::getInstance().timer.getDeltaTime();    // 剩余时间
     while (m_taskPointer < m_taskRecord.size())
     {
         // prewait

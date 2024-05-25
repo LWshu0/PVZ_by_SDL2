@@ -11,7 +11,7 @@ class wsRectangle :public wsShape {
 public:
     SDL_Rect m_range;
 public:
-    wsRectangle(const SDL_Rect& range, SDL_Renderer* renderer);
+    wsRectangle(const SDL_Rect& range);
 
     virtual int setPosition(int x, int y) override;
 

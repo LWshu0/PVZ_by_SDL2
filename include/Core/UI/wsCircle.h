@@ -12,7 +12,7 @@ protected:
     SDL_Point m_center;
     int m_radius;
 public:
-    wsCircle(const SDL_Point& center, int radius, SDL_Renderer* renderer);
+    wsCircle(const SDL_Point& center, int radius);
 
     virtual int setPosition(int x, int y) override;
     

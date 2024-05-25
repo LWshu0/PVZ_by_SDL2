@@ -3,16 +3,7 @@
 #include "Manager/BulletManager.h"
 #include "Manager/ZombieManager.h"
 
-PlantManager::PlantManager(
-    SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> res,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<Timer> timer
-) :
-    m_renderer(renderer),
-    m_textureRes(res),
-    m_camera(camera),
-    m_timer(timer),
+PlantManager::PlantManager() :
     m_mapManager(nullptr),
     m_bulletManager(nullptr),
     m_zombieManager(nullptr)
@@ -20,11 +11,11 @@ PlantManager::PlantManager(
     m_plantTemplate.resize(PlantType::MaxPlantType);
     m_animLoader.resize(PlantType::MaxPlantType);
     // 豌豆射手
-    m_animLoader[PlantType::PlantPeaShooter1] = std::make_shared<AnimLoader>("reanim/PeaShooterSingle.reanim", m_renderer, m_textureRes);
+    m_animLoader[PlantType::PlantPeaShooter1] = std::make_shared<AnimLoader>("reanim/PeaShooterSingle.reanim");
     m_animLoader[PlantType::PlantPeaShooter1]->Attach(14, SDL_FPoint{ 32.0f, 63.0f }, 8, SDL_FPoint{ 11.0f, 6.0f });
     m_animLoader[PlantType::PlantPeaShooter1]->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     m_animLoader[PlantType::PlantPeaShooter1]->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
-    m_plantTemplate[PlantType::PlantPeaShooter1] = std::make_shared<PeaShooterSingle>(m_animLoader[PlantType::PlantPeaShooter1], m_camera, SDL_FPoint{ 0.0f, 0.0f });
+    m_plantTemplate[PlantType::PlantPeaShooter1] = std::make_shared<PeaShooterSingle>(m_animLoader[PlantType::PlantPeaShooter1], SDL_FPoint{ 0.0f, 0.0f });
 
 }
 
@@ -182,19 +173,19 @@ int PlantManager::updatePlants()
             {
                 if (m_zombieManager->hasZombieBetween(i, m_mainPlants[i][j]->m_aabb.x, m_mapManager->getRightMargin()))
                 {
-                    m_mainPlants[i][j]->changePlantState(PlantState::ATTACK, m_timer);
+                    m_mainPlants[i][j]->changePlantState(PlantState::ATTACK);
                 }
                 else
                 {
-                    m_mainPlants[i][j]->changePlantState(PlantState::IDLE, m_timer);
+                    m_mainPlants[i][j]->changePlantState(PlantState::IDLE);
                 }
-                BulletType bullet_type = m_mainPlants[i][j]->attack(m_timer);
+                BulletType bullet_type = m_mainPlants[i][j]->attack();
                 if (BulletType::MaxBulletType != bullet_type)
                 {
                     m_bulletManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
                 }
 
-                m_mainPlants[i][j]->updatePlant(m_timer);
+                m_mainPlants[i][j]->updatePlant();
             }
         }
     }
@@ -240,7 +231,7 @@ int PlantManager::changeAllTo(PlantState state)
         {
             if (nullptr != m_mainPlants[i][j])
             {
-                m_mainPlants[i][j]->changePlantState(state, m_timer);
+                m_mainPlants[i][j]->changePlantState(state);
             }
         }
     }

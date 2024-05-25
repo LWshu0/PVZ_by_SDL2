@@ -22,7 +22,6 @@ struct TaskEvent
 
 class TaskManager {
 protected:
-    std::shared_ptr<Timer> m_timer;         // 游戏时钟
     int m_taskPointer;                      // 当前所在的记录下标
     std::vector<TaskEvent> m_taskRecord;    // 关卡记录
 
@@ -30,7 +29,7 @@ protected:
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<ZombieManager> m_zombieManager;
 public:
-    TaskManager(std::shared_ptr<Timer> timer);
+    TaskManager();
 
     // 关联 manager
     // 因包含循环引用, 后续还需要 releaseManagers

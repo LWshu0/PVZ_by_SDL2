@@ -1,7 +1,7 @@
 #include "Core/UI/wsRectangle.h"
 
-wsRectangle::wsRectangle(const SDL_Rect& range, SDL_Renderer* renderer) :
-    wsShape(renderer),
+wsRectangle::wsRectangle(const SDL_Rect& range) :
+    wsShape(),
     m_range(range)
 {}
 
@@ -15,8 +15,8 @@ int wsRectangle::setPosition(int x, int y)
 int wsRectangle::renderShape()
 {
     if (!m_isValid) return -1;
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    return SDL_RenderDrawRect(m_renderer, &m_range);
+    SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
+    return SDL_RenderDrawRect(GlobalVars::getInstance().renderer, &m_range);
 }
 
 bool wsRectangle::isInShape(int x, int y)

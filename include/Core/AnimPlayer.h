@@ -8,7 +8,6 @@
 #include "SDL.h"
 
 #include "AnimLoader.h"
-#include "Camera.h"
 
 enum AnimState {
     R_IDLE,     /*  空闲状态, 植物不发射, 僵尸不行走
@@ -48,8 +47,6 @@ class AnimPlayer {
 protected:
     // 动画数据
     std::shared_ptr<AnimLoader> m_loader;
-    // 相机
-    std::shared_ptr<Camera> m_camera;
     // 动画播放状态
 
     // 物体显示的屏幕坐标原点
@@ -83,7 +80,6 @@ protected:
 public:
     AnimPlayer(
         std::shared_ptr<AnimLoader> loader,
-        std::shared_ptr<Camera> camera,
         const SDL_FPoint& init_point,
         AnimState anim_state = AnimState::R_IDLE,
         DamageState damage_state = DamageState::R_Damage1

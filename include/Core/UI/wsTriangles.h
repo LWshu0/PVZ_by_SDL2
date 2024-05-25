@@ -16,8 +16,7 @@ protected:
 public:
     wsTriangles(
         std::vector<SDL_FPoint>& points,
-        std::vector<int>& idxes,
-        SDL_Renderer* renderer
+        std::vector<int>& idxes
     );
 
     virtual int setPosition(int x, int y) override;

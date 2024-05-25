@@ -46,11 +46,10 @@
 
 Zombie::Zombie(
     std::shared_ptr<AnimLoader> loader,
-    std::shared_ptr<Camera> camera,
     const SDL_FPoint& root_point
 ) :
     ZombieObject(
-        loader, camera,                                      // 资源 相机   
+        loader,                                              // 资源
         SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
         SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
         SDL_FPoint{ 10, 100 }, 80, 30,                       // 阴影
@@ -71,7 +70,7 @@ Zombie::Zombie(
 
 std::shared_ptr<ZombieObject> Zombie::cloneZombie(const SDL_FPoint& root_point)
 {
-    return std::make_shared<Zombie>(m_loader, m_camera, root_point);
+    return std::make_shared<Zombie>(m_loader, root_point);
 }
 
 int Zombie::render()
@@ -137,7 +136,7 @@ int Zombie::changeAnimState(AnimState to_state)
     return 0;
 }
 
-int Zombie::changeZombieState(ZombieState to_state, std::shared_ptr<Timer> timer)
+int Zombie::changeZombieState(ZombieState to_state)
 {
     if (to_state == m_state) return -1;
     m_state = to_state;
@@ -156,16 +155,16 @@ int Zombie::changeZombieState(ZombieState to_state, std::shared_ptr<Timer> timer
     return 0;
 }
 
-int Zombie::attack(std::shared_ptr<Timer> timer)
+int Zombie::attack()
 {
     return 1;
 }
 
-int Zombie::updateZombie(std::shared_ptr<Timer> timer)
+int Zombie::updateZombie()
 {
     // 更新帧
-    updatePlayingFrameIdx(timer->getTime());
-    if (isUpdateAt(11, timer->getTime()))
+    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
+    if (isUpdateAt(11, GlobalVars::getInstance().timer.getTime()))
     {
         if (isPlayBegin(11))
         {

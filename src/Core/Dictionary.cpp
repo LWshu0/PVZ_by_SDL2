@@ -1,16 +1,13 @@
 #include "Core/Dictionary.h"
+#include "Core/GlobalVars.h"
 
 Dictionary::Dictionary(
-    SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> textureRes,
     const std::string& imageFilePath,
     const std::string& wordFilePath,
     const SDL_Color& color
-    ) :
-    m_renderer(renderer),
-    m_textureRes(textureRes)
+)
 {
-    m_wordTable = m_textureRes->getTextureWithMask(color, imageFilePath);
+    m_wordTable = GlobalVars::getInstance().textureRes.getTextureWithMask(color, imageFilePath);
     m_charList.clear();
     // 读取文件
     std::fstream file(wordFilePath);
@@ -70,7 +67,7 @@ int Dictionary::render(const std::string& str, int x, int y, float scale)
         src = m_charList[idx].m_charRect;
         dst.w = src.w * scale;
         dst.h = src.h * scale;
-        SDL_RenderCopy(m_renderer, m_wordTable, &src, &dst);
+        SDL_RenderCopy(GlobalVars::getInstance().renderer, m_wordTable, &src, &dst);
         dst.x += m_charList[idx].m_charWidth * scale;
         // next u8 char
         i += char_width;

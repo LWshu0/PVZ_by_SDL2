@@ -11,10 +11,6 @@ protected:
     std::shared_ptr<MapManager> m_mapManager;
 public:
     Select2Game(
-        SDL_Renderer* renderer,
-        std::shared_ptr<Timer> timer,
-        std::shared_ptr<Camera> camera,
-        std::shared_ptr<TextureRes> res,
         std::shared_ptr<MapManager> mapManager
     );
 

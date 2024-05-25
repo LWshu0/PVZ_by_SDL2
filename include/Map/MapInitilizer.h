@@ -2,7 +2,7 @@
 #define MAPINITILIZER_H
 
 #include <vector>
-#include "Core/TextureRes.h"
+#include "Core/GlobalVars.h"
 
 struct MapNode {
     enum Time {

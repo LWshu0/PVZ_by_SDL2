@@ -14,10 +14,12 @@ private:
     float m_right;
 
 public:
+    Camera();
     Camera(float x, float y, float w, float h);
 
+    void initilize(float x, float y, float w, float h);
+    
     int setPosition(float x, float y);
-
     int move(float offset_x, float offset_y);
 
     inline float getRenderX(float x) { return x - m_x; }

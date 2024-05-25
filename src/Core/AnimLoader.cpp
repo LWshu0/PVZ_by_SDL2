@@ -1,4 +1,5 @@
 #include "Core/AnimLoader.h"
+#include "Core/GlobalVars.h"
 
 AnimFrame::AnimFrame(
     int m_f,
@@ -70,7 +71,7 @@ void AnimFrame::caculateVertex(float scale)
     m_point[3] = SDL_FPoint{ T_00 * tex_width + T_01 * tex_height + T_02, T_10 * tex_width + T_11 * tex_height + T_12 };
 }
 
-int AnimFrame::transferPoint(SDL_FPoint& point, float scale)
+int AnimFrame::transferPoint(SDL_FPoint& point)
 {
     if (m_f < 0) return -1;
     /** 变换矩阵
@@ -78,12 +79,12 @@ int AnimFrame::transferPoint(SDL_FPoint& point, float scale)
      *  sx*sin(kx)  sy*cos(ky)   y
      *  0           0            1
      */
-    float T_00 = scale * m_sx * cosf(m_kx);
-    float T_01 = scale * m_sy * -sinf(m_ky);
-    float T_02 = scale * m_x;
-    float T_10 = scale * m_sx * sinf(m_kx);
-    float T_11 = scale * m_sy * cosf(m_ky);
-    float T_12 = scale * m_y;
+    float T_00 = m_scale * m_sx * cosf(m_kx);
+    float T_01 = m_scale * m_sy * -sinf(m_ky);
+    float T_02 = m_scale * m_x;
+    float T_10 = m_scale * m_sx * sinf(m_kx);
+    float T_11 = m_scale * m_sy * cosf(m_ky);
+    float T_12 = m_scale * m_y;
     point = SDL_FPoint{ T_00 * point.x + T_01 * point.y + T_02, T_10 * point.x + T_11 * point.y + T_12 };
     return 0;
 }
@@ -93,14 +94,14 @@ int AnimFrame::setAnchorPoint(const SDL_FPoint& point)
     if (m_enableRefer) return -1;
     m_enableRefer = true;
     m_anchorPoint = point;
-    transferPoint(m_anchorPoint, m_scale);
+    transferPoint(m_anchorPoint);
     return 0;
 }
 
 int AnimFrame::addReferPoint(const SDL_FPoint& point)
 {
     m_referPoint.push_back(point);
-    transferPoint(m_referPoint.back(), m_scale);
+    transferPoint(m_referPoint.back());
     return m_referPoint.size() - 1;
 }
 
@@ -137,7 +138,6 @@ void AnimTrack::scaleFrames(float scale)
 }
 
 int AnimTrack::renderTrack(
-    SDL_Renderer* renderer,
     const SDL_FPoint& dst_point,
     int real_frame_idx,
     SDL_Texture* alter_texture,
@@ -182,11 +182,10 @@ int AnimTrack::renderTrack(
     //     last_frame_X = m_frames[real_frame_idx].m_point[0].x + dst_point.x;
     // }
     int index[] = { 0, 2, 1, 1, 2, 3 };
-    return SDL_RenderGeometry(renderer, render_texture, vertices, 4, index, 6);
+    return SDL_RenderGeometry(GlobalVars::getInstance().renderer, render_texture, vertices, 4, index, 6);
 }
 
 int AnimTrack::renderTrack(
-    SDL_Renderer* renderer,
     const SDL_FPoint& dst_point,
     int real_frame_idx,
     Uint8 mask_a
@@ -214,17 +213,13 @@ int AnimTrack::renderTrack(
             {255, 255, 255, mask_a}, {1, 1} }
     };
     int index[] = { 0, 2, 1, 1, 2, 3 };
-    return SDL_RenderGeometry(renderer, m_frames[real_frame_idx].m_texture, vertices, 4, index, 6);
+    return SDL_RenderGeometry(GlobalVars::getInstance().renderer, m_frames[real_frame_idx].m_texture, vertices, 4, index, 6);
 }
 
 AnimLoader::AnimLoader(
     const std::string& reanim_path,
-    SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> image,
     float anim_scale
 ) :
-    m_renderer(renderer),
-    m_imageRes(image),
     m_reanimFilePath(reanim_path),
     m_fps(0.0f),
     m_anim_num(0)
@@ -326,7 +321,7 @@ int AnimLoader::GetFrame(const std::string& _reanim_str)
         if (reanim_str.substr(start + 2, end - start - 2) != tag) return -1;    // 反标签出错
         if ("i" == tag)
         {
-            new_frame.SetImg(m_imageRes->getReanimTexture(content));
+            new_frame.SetImg(GlobalVars::getInstance().textureRes.getReanimTexture(content));
         }
         else if ("f" == tag)
         {

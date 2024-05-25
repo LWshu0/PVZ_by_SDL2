@@ -10,11 +10,7 @@ class CollectionManager
 {
 protected:
     // 不可变
-    SDL_Renderer* m_renderer;                                               // 渲染器
-    std::shared_ptr<TextureRes> m_textureRes;                               // 纹理资源
-    std::shared_ptr<Camera> m_camera;                                       // 相机
-    std::shared_ptr<Timer> m_timer;                                         // 游戏时钟
-    std::vector<std::shared_ptr<CollectionObject>> m_collectionTemplate;    // 子弹模板
+    std::vector<std::shared_ptr<CollectionObject>> m_collectionTemplate;    // 掉落物模板
 
     // 游戏中的掉落物
     std::vector<std::shared_ptr<CollectionObject>> m_collectionItems;
@@ -27,10 +23,6 @@ protected:
 
 public:
     CollectionManager(
-        SDL_Renderer* renderer,
-        std::shared_ptr<TextureRes> texture_res,
-        std::shared_ptr<Camera> camera,
-        std::shared_ptr<Timer> timer,
         int maxCollection
     );
 

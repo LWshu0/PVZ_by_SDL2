@@ -51,14 +51,10 @@ fps: 20
 47: woodsign3 -> range: [13, 78] total: [0, 705]
 */
 MainScene::MainScene(
-    SDL_Renderer* renderer,
-    std::shared_ptr<Timer> timer,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<TextureRes> res,
     std::shared_ptr<AnimLoader> loader
 ) :
-    SceneObject(renderer, timer, camera, res),
-    AnimPlayer(loader, camera, SDL_FPoint{ 0.0f, 0.0f }, AnimState::R_ANIM1, DamageState::R_Damage1),
+    SceneObject(),
+    AnimPlayer(loader, SDL_FPoint{ 0.0f, 0.0f }, AnimState::R_ANIM1, DamageState::R_Damage1),
     m_hoverButtonIdx(MainSceneButtonType::MainScene_MaxButtonNum)
 {
     m_buttonRange.resize(MainSceneButtonType::MainScene_MaxButtonNum);
@@ -83,10 +79,10 @@ MainScene::MainScene(
             SDL_FPoint{ (base_point.x + 240.0f), (base_point.y + 57.0f) }
         };
         std::vector<int> idx{ 0,1,2,1,3,2 ,4,5,6,5,7,6 };
-        m_buttonRange[MainSceneButtonType::MainSceneButton_StartAdventure] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonRange[MainSceneButtonType::MainSceneButton_StartAdventure] = std::make_unique<wsTriangles>(points, idx);
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_StartAdventure] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_StartAdventure] = 34;
-        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_StartAdventure] = m_textureRes->getTextureFrom("reanim/SelectorScreen_StartAdventure_Highlight.png");
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_StartAdventure] = GlobalVars::getInstance().textureRes.getTextureFrom("reanim/SelectorScreen_StartAdventure_Highlight.png");
         m_jumpSceneType[MainSceneButtonType::MainSceneButton_StartAdventure] = SceneType::Scene_SelectCardScene;
     }
     /****************************************************************************/
@@ -99,10 +95,10 @@ MainScene::MainScene(
             SDL_FPoint{  (base_point.x + 292.0f),  (base_point.y + 127.0f) }
         };
         std::vector<int> idx{ 0,1,2,1,3,2 };
-        m_buttonRange[MainSceneButtonType::MainSceneButton_MiniGame] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonRange[MainSceneButtonType::MainSceneButton_MiniGame] = std::make_unique<wsTriangles>(points, idx);
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_MiniGame] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_MiniGame] = 26;
-        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_MiniGame] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Survival_highlight.png");
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_MiniGame] = GlobalVars::getInstance().textureRes.getTextureFrom("reanim/SelectorScreen_Survival_highlight.png");
         m_jumpSceneType[MainSceneButtonType::MainSceneButton_MiniGame] = SceneType::Scene_SelectCardScene;
     }
     /****************************************************************************/
@@ -115,10 +111,10 @@ MainScene::MainScene(
             SDL_FPoint{  (base_point.x + 265.0f),  (base_point.y + 119.0f) }
         };
         std::vector<int> idx{ 0,1,2,1,3,2 };
-        m_buttonRange[MainSceneButtonType::MainSceneButton_Challenge] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonRange[MainSceneButtonType::MainSceneButton_Challenge] = std::make_unique<wsTriangles>(points, idx);
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Challenge] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Challenge] = 28;
-        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Challenge] = m_textureRes->getTextureFrom("reanim/SelectorScreen_Challenges_highlight.png");
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Challenge] = GlobalVars::getInstance().textureRes.getTextureFrom("reanim/SelectorScreen_Challenges_highlight.png");
         m_jumpSceneType[MainSceneButtonType::MainSceneButton_Challenge] = SceneType::Scene_SelectCardScene;
     }
     /****************************************************************************/
@@ -130,10 +126,10 @@ MainScene::MainScene(
             SDL_FPoint{  (base_point.x + 260.0f),  (base_point.y + 59.0f) },
             SDL_FPoint{  (base_point.x + 251.0f),  (base_point.y + 116.0f) } };
         std::vector<int> idx{ 0,1,2,1,3,2 };
-        m_buttonRange[MainSceneButtonType::MainSceneButton_Survival] = std::make_unique<wsTriangles>(points, idx, m_renderer);
+        m_buttonRange[MainSceneButtonType::MainSceneButton_Survival] = std::make_unique<wsTriangles>(points, idx);
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_Survival] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_Survival] = 30;
-        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Survival] = m_textureRes->getTextureFrom("reanim/SelectorScreen_vasebreaker_highlight.png");
+        m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_Survival] = GlobalVars::getInstance().textureRes.getTextureFrom("reanim/SelectorScreen_vasebreaker_highlight.png");
         m_jumpSceneType[MainSceneButtonType::MainSceneButton_Survival] = SceneType::Scene_SelectCardScene;
     }
 
@@ -181,7 +177,7 @@ int MainScene::enterScene()
 {
     SDL_Log("enter main scene\n");
     // 相机位置
-    SceneObject::m_camera->setPosition(0.0f, 0.0f);
+    GlobalVars::getInstance().camera.setPosition(0.0f, 0.0f);
     // 初始化动画
     m_playingAnimState = AnimState::R_ANIM1;
     setPlayingTrack(
@@ -255,7 +251,7 @@ SceneType MainScene::handleEvent(SDL_Event& event)
 
 SceneType MainScene::updateScene()
 {
-    updatePlayingFrameIdx(m_timer->getTime());
+    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
     switch (m_playingAnimState)
     {
     case AnimState::R_ANIM1:

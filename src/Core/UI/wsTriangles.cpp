@@ -2,10 +2,9 @@
 
 wsTriangles::wsTriangles(
     std::vector<SDL_FPoint>& points,
-    std::vector<int>& idxes,
-    SDL_Renderer* renderer
+    std::vector<int>& idxes
 ) :
-    wsShape(renderer)
+    wsShape()
 {
 
     for (auto& point : points)
@@ -41,10 +40,10 @@ int wsTriangles::renderShape()
     if (!m_isValid) return -1;
     for (int ii = 0;ii < m_idxes.size();ii += 3)
     {
-        SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-        SDL_RenderDrawLineF(m_renderer, m_points[m_idxes[ii]].x, m_points[m_idxes[ii]].y, m_points[m_idxes[ii + 1]].x, m_points[m_idxes[ii + 1]].y);
-        SDL_RenderDrawLineF(m_renderer, m_points[m_idxes[ii]].x, m_points[m_idxes[ii]].y, m_points[m_idxes[ii + 2]].x, m_points[m_idxes[ii + 2]].y);
-        SDL_RenderDrawLineF(m_renderer, m_points[m_idxes[ii + 2]].x, m_points[m_idxes[ii + 2]].y, m_points[m_idxes[ii + 1]].x, m_points[m_idxes[ii + 1]].y);
+        SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
+        SDL_RenderDrawLineF(GlobalVars::getInstance().renderer, m_points[m_idxes[ii]].x, m_points[m_idxes[ii]].y, m_points[m_idxes[ii + 1]].x, m_points[m_idxes[ii + 1]].y);
+        SDL_RenderDrawLineF(GlobalVars::getInstance().renderer, m_points[m_idxes[ii]].x, m_points[m_idxes[ii]].y, m_points[m_idxes[ii + 2]].x, m_points[m_idxes[ii + 2]].y);
+        SDL_RenderDrawLineF(GlobalVars::getInstance().renderer, m_points[m_idxes[ii + 2]].x, m_points[m_idxes[ii + 2]].y, m_points[m_idxes[ii + 1]].x, m_points[m_idxes[ii + 1]].y);
     }
     return 0;
 }

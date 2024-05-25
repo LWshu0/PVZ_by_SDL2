@@ -2,23 +2,15 @@
 #include "Manager/MapManager.h"
 
 CollectionManager::CollectionManager(
-    SDL_Renderer* renderer,
-    std::shared_ptr<TextureRes> texture_res,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<Timer> timer,
     int maxCollection
 ) :
-    m_renderer(renderer),
-    m_textureRes(texture_res),
-    m_camera(camera),
-    m_timer(timer),
     m_sunNum(50)
 {
     m_collectionTemplate.resize(CollectionType::CollectionMaxNum);
 
     // 阳光
-    std::shared_ptr<AnimLoader> sun_loader = std::make_shared<AnimLoader>("reanim/Sun.reanim", renderer, texture_res);
-    m_collectionTemplate[CollectionType::Collection_Sun] = std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader, camera);
+    std::shared_ptr<AnimLoader> sun_loader = std::make_shared<AnimLoader>("reanim/Sun.reanim");
+    m_collectionTemplate[CollectionType::Collection_Sun] = std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader);
     // ...
     m_collectionItems.resize(maxCollection);
 }
@@ -67,8 +59,8 @@ int CollectionManager::randomDropSun()
 
 int CollectionManager::clickCollection(int mouse_x, int mouse_y)
 {
-    float real_x = m_camera->getClickX(mouse_x);
-    float real_y = m_camera->getClickY(mouse_y);
+    float real_x = GlobalVars::getInstance().camera.getClickX(mouse_x);
+    float real_y = GlobalVars::getInstance().camera.getClickY(mouse_y);
     for (auto& ptr : m_collectionItems)
     {
         if (ptr != nullptr && ptr->inObject(real_x, real_y))
@@ -94,7 +86,7 @@ int CollectionManager::updateCollection()
     {
         if (ptr != nullptr)
         {
-            ptr->updateCollection(m_timer);
+            ptr->updateCollection();
         }
     }
     return 0;

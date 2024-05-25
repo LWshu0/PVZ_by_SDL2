@@ -26,10 +26,6 @@ protected:
     std::vector<SceneType> m_jumpSceneType;         // 点击按钮跳转的页面
 public:
     MainScene(
-        SDL_Renderer* renderer,
-        std::shared_ptr<Timer> timer,
-        std::shared_ptr<Camera> camera,
-        std::shared_ptr<TextureRes> res,
         std::shared_ptr<AnimLoader> loader
     );
 

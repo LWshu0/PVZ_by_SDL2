@@ -1,13 +1,17 @@
 #include "Core/TextureRes.h"
+#include "Core/GlobalVars.h"
 
 TextureRes::TextureRes(
-    SDL_Renderer* renderer,
     const std::string& xml_path,
     const std::string& image_path
-) :
-    m_renderer(renderer),
-    m_imageRootPath(image_path)
+)
 {
+    initilize(xml_path, image_path);
+}
+
+void TextureRes::initilize(const std::string& xml_path, const std::string& image_path)
+{
+    m_imageRootPath = image_path;
     buildObjName();
     XmlLoader loader;
     if (-1 != loader.Import(xml_path))
@@ -25,7 +29,7 @@ SDL_Texture* TextureRes::getTextureFrom(const std::string& file_path)
 {
     if (m_textures.find(file_path) == m_textures.end())
     {
-        SDL_Texture* img_texture = IMG_LoadTexture(m_renderer, file_path.c_str());
+        SDL_Texture* img_texture = IMG_LoadTexture(GlobalVars::getInstance().renderer, file_path.c_str());
         if (img_texture != NULL)
         {
             m_textures[file_path] = img_texture;
@@ -69,7 +73,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const std::string& _file_path, const
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
     if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
     // 创建纹理
-    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(GlobalVars::getInstance().renderer, surface);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(mask);
     if (img_texture != NULL)
@@ -122,7 +126,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::s
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
     if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
     // 创建纹理
-    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(GlobalVars::getInstance().renderer, surface);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(mask);
     if (img_texture != NULL)
@@ -150,7 +154,7 @@ SDL_Texture* TextureRes::getReanimTexture(const std::string& reanim_name)
     }
     else
     {
-        SDL_Texture* img_texture = IMG_LoadTexture(m_renderer, image_path.c_str());
+        SDL_Texture* img_texture = IMG_LoadTexture(GlobalVars::getInstance().renderer, image_path.c_str());
         if (img_texture != NULL)
         {
             m_textures[image_path] = img_texture;

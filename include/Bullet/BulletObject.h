@@ -1,8 +1,8 @@
 #ifndef BULLETOBJECT_H
 #define BULLETOBJECT_H
-#include "Core/Camera.h"
 #include "Core/GameObject.h"
 #include "Core/ObjectMotion.h"
+#include "Core/GlobalVars.h"
 #include <memory>
 
 enum BulletType {
@@ -12,8 +12,6 @@ enum BulletType {
 
 class BulletObject :public GameObject {
 protected:
-    SDL_Renderer* m_renderer;                   // 渲染器
-    std::shared_ptr<Camera> m_camera;           // 相机
     std::shared_ptr<ObjectMotion> m_updater;    // 子弹更新器(用于控制子弹的运动轨迹)
 
     // 子弹属性
@@ -26,8 +24,6 @@ protected:
     float m_shadowHeight;
 public:
     BulletObject(
-        SDL_Renderer* renderer,
-        std::shared_ptr<Camera> camera,
         const SDL_FRect& aabb,
         SDL_Texture* shadow,
         const SDL_FPoint& offsetShadow,
@@ -36,8 +32,6 @@ public:
         int dam
     ) :
         GameObject(aabb),
-        m_renderer(renderer),
-        m_camera(camera),
         m_shadow(shadow),
         m_offsetShadow(offsetShadow),
         m_shadowWidth(shadowWidth),
@@ -50,9 +44,9 @@ public:
     virtual std::shared_ptr<BulletObject> cloneBullet(float x, float y) = 0;
 
     // 更新子弹的位置等状态
-    virtual int updateBullet(uint64_t delta_ms)
+    virtual int updateBullet()
     {
-        return m_updater->step(this, delta_ms);
+        return m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
     }
 
     // 设置子弹的运动更新器

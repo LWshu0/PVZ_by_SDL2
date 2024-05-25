@@ -15,10 +15,6 @@ protected:
     std::shared_ptr<CardManager> m_cardManager;
 public:
     SelectCardScene(
-        SDL_Renderer* renderer,
-        std::shared_ptr<Timer> timer,
-        std::shared_ptr<Camera> camera,
-        std::shared_ptr<TextureRes> res,
         std::shared_ptr<MapManager> mapManager,
         std::shared_ptr<CardManager> cardManager
     );

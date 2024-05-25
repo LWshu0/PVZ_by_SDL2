@@ -2,13 +2,9 @@
 #include "Manager/MapManager.h"
 
 Select2Game::Select2Game(
-    SDL_Renderer* renderer,
-    std::shared_ptr<Timer> timer,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<TextureRes> res,
     std::shared_ptr<MapManager> mapManager
 ) :
-    SceneObject(renderer, timer, camera, res),
+    SceneObject(),
     m_mapManager(mapManager)
 {}
 
@@ -30,9 +26,9 @@ SceneType Select2Game::handleEvent(SDL_Event& event)
 
 SceneType Select2Game::updateScene()
 {
-    float delta_x = 0.3f * m_timer->getDeltaTime();
-    m_camera->setPosition(m_camera->getX() - delta_x, m_camera->getY());
-    if (m_camera->getX() <= 210.0f)
+    float delta_x = 0.3f * GlobalVars::getInstance().timer.getDeltaTime();
+    GlobalVars::getInstance().camera.setPosition(GlobalVars::getInstance().camera.getX() - delta_x, GlobalVars::getInstance().camera.getY());
+    if (GlobalVars::getInstance().camera.getX() <= 210.0f)
     {
         return SceneType::Scene_GameScene;
     }

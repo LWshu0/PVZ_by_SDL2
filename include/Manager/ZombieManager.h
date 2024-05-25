@@ -4,10 +4,8 @@
 #include <vector>
 #include <memory>
 
-#include "Core/TextureRes.h"
+#include "Core/GlobalVars.h"
 #include "Core/AnimLoader.h"
-#include "Core/Camera.h"
-#include "Core/Timer.h"
 
 #include "Zombies/ZombieObject.h"
 #include "Zombies/Zombie.h"
@@ -21,10 +19,6 @@ protected:
     /**************************
     *    初始化后不可变成员   *
     **************************/
-    SDL_Renderer* m_renderer;                                       // 渲染器
-    std::shared_ptr<TextureRes> m_textureRes;                       // 纹理资源
-    std::shared_ptr<Camera> m_camera;                               // 相机
-    std::shared_ptr<Timer> m_timer;                                 // 游戏时钟
     std::vector<std::shared_ptr<AnimLoader>> m_animLoader;          // 僵尸动画资源
     std::vector<std::shared_ptr<ZombieObject>> m_zombieTemplate;    // 僵尸模板
 
@@ -38,12 +32,7 @@ protected:
     std::vector<std::shared_ptr<ZombieObject>> m_zombies;
 
 public:
-    ZombieManager(
-        SDL_Renderer* renderer,
-        std::shared_ptr<TextureRes> res,
-        std::shared_ptr<Camera> camera,
-        std::shared_ptr<Timer> timer
-    );
+    ZombieManager();
 
     // 关联 manager
     // 因包含循环引用, 后续还需要 releaseManagers

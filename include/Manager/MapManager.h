@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <memory>
-#include "Core/TextureRes.h"
-#include "Core/Camera.h"
+#include "Core/GlobalVars.h"
 #include "Map/MapInitilizer.h"
 #include "Map/GrassDayOneLine.h"
 
@@ -20,9 +19,6 @@ protected:
     *    初始化后不可变   *
     *    与渲染相关       *
     **********************/
-    SDL_Renderer* m_renderer;
-    std::shared_ptr<TextureRes> m_textureRes;
-    std::shared_ptr<Camera> m_camera;
     std::vector<std::shared_ptr<MapInitilizer>> m_mapTemplate;
     /********************
     *   地图管理变量    *
@@ -50,11 +46,7 @@ protected:
     // 二维数组
     std::vector<std::vector<MapNode>> m_mapRunTime;
 public:
-    MapManager(
-        SDL_Renderer* renderer,
-        std::shared_ptr<TextureRes> res,
-        std::shared_ptr<Camera> camera
-    );
+    MapManager();
 
     int setMap(
         float width,
@@ -83,7 +75,7 @@ public:
     int caculCol(float x);
     // 判断一个格子是否可以添加植物
     bool isValidCell(int row, int col);
-    
+
     int renderMap();
 
     ~MapManager();

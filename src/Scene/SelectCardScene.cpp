@@ -3,14 +3,10 @@
 #include "Manager/CardManager.h"
 
 SelectCardScene::SelectCardScene(
-    SDL_Renderer* renderer,
-    std::shared_ptr<Timer> timer,
-    std::shared_ptr<Camera> camera,
-    std::shared_ptr<TextureRes> res,
     std::shared_ptr<MapManager> mapManager,
     std::shared_ptr<CardManager> cardManager
 ) :
-    SceneObject(renderer, timer, camera, res),
+    SceneObject(),
     m_mapManager(mapManager),
     m_cardManager(cardManager)
 {}
@@ -28,7 +24,7 @@ int SelectCardScene::enterScene()
     m_cardManager->clearCardSlot();
     m_cardManager->resetCardPool();
     // 相机位置 在地图初始化之后
-    SceneObject::m_camera->setPosition(m_mapManager->getWidth() - 800, 0.0f);
+    GlobalVars::getInstance().camera.setPosition(m_mapManager->getWidth() - 800, 0.0f);
     return 0;
 }
 
