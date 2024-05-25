@@ -93,7 +93,7 @@ int BulletManager::renderBullets()
     for (auto& ptr : m_bullets)
     {
         if (nullptr == ptr) continue;
-        ptr->renderBullet();
+        ptr->render();
     }
     return 0;
 }

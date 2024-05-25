@@ -26,6 +26,9 @@ public:
     inline SDL_FPoint getAABBPosition() { return SDL_FPoint{ m_aabb.x, m_aabb.y }; }
     inline SDL_FPoint getRootPosition() { return SDL_FPoint{ m_aabb.x + m_aabb.w / 2, m_aabb.y }; }
 
+    // 渲染物体
+    virtual int render() = 0;
+
     virtual ~GameObject();
 };
 

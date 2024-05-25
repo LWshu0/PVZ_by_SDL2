@@ -9,23 +9,23 @@ Sun::Sun(
     std::shared_ptr<AnimLoader> loader
 ) :
     CollectionObject(aabb),
-    AnimPlayer(
+    m_animPlayer(
         loader,
         SDL_FPoint{ aabb.x + aabb.w / 2 , aabb.y + aabb.h / 2 }   // 渲染位置
     )
 {
-    setPlayingTrack(
+    m_animPlayer.setPlayingTrack(
         { 0, 1, 2 },
         0
     );
-    restartTrack(
+    m_animPlayer.restartTrack(
         { 0, 1, 2 }
     );
 }
 
 std::shared_ptr<CollectionObject> Sun::cloneCollection(float x, float y)
 {
-    return std::make_shared<Sun>(SDL_FRect{ x, y, m_aabb.w, m_aabb.h }, m_loader);
+    return std::make_shared<Sun>(SDL_FRect{ x, y, m_aabb.w, m_aabb.h }, m_animPlayer.getAnimLoader());
 }
 
 CollectionType Sun::getType()
@@ -35,15 +35,15 @@ CollectionType Sun::getType()
 
 int Sun::updateCollection()
 {
-    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
+    m_animPlayer.updatePlayingFrameIdx();
     m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
-    setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
+    m_animPlayer.setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
     return 0;
 }
 
-int Sun::renderCollection()
+int Sun::render()
 {
-    render();
+    m_animPlayer.render();
     SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
     SDL_FRect render_aabb = m_aabb;
     render_aabb.x = GlobalVars::getInstance().camera.getRenderX(m_aabb.x);

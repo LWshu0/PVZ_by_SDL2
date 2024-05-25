@@ -5,7 +5,7 @@
 #include "Core/UI/wsTriangles.h"
 #include "Scene/SceneObject.h"
 
-class MainScene:public SceneObject, public AnimPlayer
+class MainScene:public SceneObject
 {
 protected:
     // 定义按钮
@@ -16,7 +16,16 @@ protected:
         MainSceneButton_Survival,
         MainScene_MaxButtonNum
     };
+    enum MainSceneState {
+        EnterScene,     // 墓碑升起
+        WoodDrop,       // 告示牌掉落
+        Idle            // 空闲
+    } m_state;
+
     std::vector<std::unique_ptr<wsShape>> m_buttonRange;
+
+    // 主界面动画播放器
+    AnimPlayer m_animPlayer;
 
     int m_hoverButtonIdx;                           // 当前 hover 的按钮编号
     int m_clickButtonIdx;                           // 当前 click 的按钮编号
@@ -31,8 +40,6 @@ public:
 
     virtual SceneType getType() override;
 
-    virtual int changeAnimState(AnimState to_state) override;
-
     virtual int enterScene() override;
 
     virtual SceneType handleEvent(SDL_Event& event) override;
@@ -46,6 +53,8 @@ public:
     ~MainScene();
 
 protected:
+    // 修改动画状态
+    int setAnimState(MainSceneState to_state);
     // 必需传入一个枚举
     inline bool isValidButton(int enum_type) { return enum_type != MainSceneButtonType::MainScene_MaxButtonNum; }
     // 按钮是否是 hover 状态

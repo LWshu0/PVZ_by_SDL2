@@ -98,7 +98,7 @@ int CollectionManager::renderCollection()
     {
         if (ptr != nullptr)
         {
-            ptr->renderCollection();
+            ptr->render();
         }
     }
     return 0;

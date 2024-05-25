@@ -16,7 +16,7 @@ public:
     );
 
     virtual std::shared_ptr<BulletObject> cloneBullet(float x, float y) override;
-    virtual int renderBullet() override;
+    virtual int render() override;
     virtual ~Pea() {};
 };
 

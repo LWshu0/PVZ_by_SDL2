@@ -31,7 +31,7 @@ PeaShooterSingle::PeaShooterSingle(
         SDL_FPoint{ 20, 0 }, 40, 80,                            // 碰撞箱
         SDL_FPoint{ 0, 55 }, 80, 30,                            // 阴影
         1000,                                                   // HP
-        PlantState::IDLE,                                       // state
+        PlantState::Plant_IDLE,                                 // state
         3000,                                                   // reload 时间
         (70 - 54) * 1000 / 48.0f                                // windup duration(第54帧攻击动画开始, 第70帧执行攻击逻辑, 攻击动画帧率为 48 fps)
     ),
@@ -40,22 +40,22 @@ PeaShooterSingle::PeaShooterSingle(
     delta_blink_ms(5000)
 {
     // 初始播放的轨道
-    setPlayingTrack(
+    m_animPlayer.setPlayingTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
     );
-    setFPS(
+    m_animPlayer.setFPS(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
         14.0f
     );
-    restartTrack(
+    m_animPlayer.restartTrack(
         { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 }
     );
 }
 
 std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root_point)
 {
-    return std::make_shared<PeaShooterSingle>(m_loader, root_point);
+    return std::make_shared<PeaShooterSingle>(m_animPlayer.getAnimLoader(), root_point);
 }
 
 void PeaShooterSingle::setRootPoint(const SDL_FPoint& root_point)
@@ -68,84 +68,78 @@ int PeaShooterSingle::render()
     // 阴影
     showShadow();
     // 茎 & 叶
-    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
+    m_animPlayer.renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 });
     // 头
-    renderTracks({ 13, 14, 15 }, getOffset(14));
+    m_animPlayer.renderTrackGroup({ 13, 14, 15 }, 14);
     // 眼睛
-    if (AnimState::R_ATTACK != m_playingAnimState && is_blinking)
+    if (PlantState::Plant_ATTACK != m_state && is_blinking)
     {
-        renderTrack(17, getOffset(17));
-        if (isPlayEnd(17)) is_blinking = false;
+        m_animPlayer.renderTrack(17);
+        if (m_animPlayer.isPlayEnd(17)) is_blinking = false;
     }
     // 攻击间隔的 IDLE 动画
-    if (AnimState::R_ATTACK == m_playingAnimState)
+    if (PlantState::Plant_ATTACK == m_state)
     {
-        renderTrack(16, getOffset(16));
-        if (isPlayEnd(15)) changeAnimState(AnimState::R_IDLE);
+        m_animPlayer.renderTrack(16);
+        if (m_animPlayer.isPlayEnd(15)) setPlantState(PlantState::Plant_IDLE);
     }
     // AABB 碰撞箱
     showAABB();
     return 0;
 }
 
-int PeaShooterSingle::changeAnimState(AnimState to_state)
+int PeaShooterSingle::setPlantState(PlantState to_state)
 {
-    if (to_state == m_playingAnimState) return 0;
-    m_playingAnimState = to_state;
-    if (AnimState::R_ATTACK == m_playingAnimState)
+    if (to_state == m_state) return -1;
+    if (PlantState::Plant_ATTACK == to_state)
     {
-        setPlayingTrack(
+        // 进入攻击状态前进行时间检查 是否可以进入攻击状态
+        if (m_nextAttackAnimMilliSecond > GlobalVars::getInstance().timer.getTime()) return -1;
+        // 进入成功 设置为攻击状态
+        m_nextAttackAnimMilliSecond = GlobalVars::getInstance().timer.getTime() + m_reloadMilliSecond;
+        m_nextFireMilliSecond = GlobalVars::getInstance().timer.getTime() + m_windUpDuration;
+        // 设置攻击动画
+        m_animPlayer.setPlayingTrack(
             { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
             { 0, 0, 0, 0, 0, 0, 0,  0,  2,  2,  2,  2,  7 }
         );
-        setFPS(
+        m_animPlayer.setFPS(
             { 13, 14, 15, 16 },
             48.0f
         );
-        restartTrack(
+        m_animPlayer.restartTrack(
             { 13, 14, 15, 16 }
         );
     }
-    else
+    else    // 进入 IDLE 状态动画
     {
-        setPlayingTrack(
+        m_animPlayer.setPlayingTrack(
             { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
             { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
         );
-        setFPS(
+        m_animPlayer.setFPS(
             { 13, 14, 15, 16 },
             14.0f
         );
-        restartTrack(
+        m_animPlayer.restartTrack(
             { 13, 14, 15, 16 }
         );
     }
+    m_state = to_state;
     return 0;
 }
 
-int PeaShooterSingle::changePlantState(PlantState to_state)
+bool PeaShooterSingle::inAttackRange(const SDL_FRect& enemy_aabb)
 {
-    if (to_state == m_state) return -1;
-    m_state = to_state;
-    if (PlantState::ATTACK == to_state)
-    {
-        m_nextAttackAnimMilliSecond = GlobalVars::getInstance().timer.getTime();
-        m_nextFireMilliSecond = GlobalVars::getInstance().timer.getTime() + m_windUpDuration;
-        changeAnimState(AnimState::R_ATTACK);
-    }
-    else
-    {
-        changeAnimState(AnimState::R_IDLE);
-    }
-    return 0;
+    return enemy_aabb.x >= m_aabb.x;
 }
 
 BulletType PeaShooterSingle::attack()
 {
-    if (PlantState::ATTACK != m_state) return BulletType::MaxBulletType;
+    if (PlantState::Plant_ATTACK != m_state) return BulletType::MaxBulletType;
     if (GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
     {
-        m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;
+        m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;    // 防止在攻击动画播放完成前多次返回子弹
         return BulletType::BulletPea;
     }
     return BulletType::MaxBulletType;
@@ -154,30 +148,31 @@ BulletType PeaShooterSingle::attack()
 int PeaShooterSingle::updatePlant()
 {
     // 更新帧
-    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
+    m_animPlayer.updatePlayingFrameIdx();
     // 眨眼
     if (last_blink_ms + delta_blink_ms < GlobalVars::getInstance().timer.getTime())
     {
         is_blinking = true;
         last_blink_ms = GlobalVars::getInstance().timer.getTime();
     }
-    // 攻击动画
-    if (PlantState::ATTACK == m_state)
-    {
-        if (GlobalVars::getInstance().timer.getTime() >= m_nextAttackAnimMilliSecond)
-        {
-            changeAnimState(AnimState::R_ATTACK);
-            m_nextAttackAnimMilliSecond = m_nextAttackAnimMilliSecond + m_reloadMilliSecond;
-        }
-    }
     return 0;
 }
 
 int PeaShooterSingle::changeToStatic()
 {
-    changeAnimState(AnimState::R_IDLE);
-    restartTrack();
-    setPlayPosition(SDL_FPoint{ -8.0f, -10.0f });
+    m_animPlayer.setPlayingTrack(
+        { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
+        { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  2,  7 }
+    );
+    m_animPlayer.setFPS(
+        { 13, 14, 15, 16 },
+        14.0f
+    );
+    m_animPlayer.restartTrack(
+        { 13, 14, 15, 16 }
+    );
+    m_animPlayer.restartTrack();
+    m_animPlayer.setPlayPosition(SDL_FPoint{ -8.0f, -10.0f });
     return 0;
 }
 
@@ -191,9 +186,9 @@ int PeaShooterSingle::getAnimRange(float& width, float& height)
 int PeaShooterSingle::renderStatic(uint8_t alpha)
 {
     // body
-    renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 }, SDL_FPoint{ 0.0f, 0.0f }, alpha);
+    m_animPlayer.renderTracks({ 4, 5, 6, 7, 8, 9, 10, 11 }, alpha);
     // 头
-    renderTracks({ 13, 14, 15 }, getOffset(14), alpha);
+    m_animPlayer.renderTracks({ 13, 14, 15 }, alpha);
     return 0;
 }
 

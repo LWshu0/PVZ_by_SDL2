@@ -173,11 +173,11 @@ int PlantManager::updatePlants()
             {
                 if (m_zombieManager->hasZombieBetween(i, m_mainPlants[i][j]->m_aabb.x, m_mapManager->getRightMargin()))
                 {
-                    m_mainPlants[i][j]->changePlantState(PlantState::ATTACK);
+                    m_mainPlants[i][j]->setPlantState(PlantState::Plant_ATTACK);
                 }
                 else
                 {
-                    m_mainPlants[i][j]->changePlantState(PlantState::IDLE);
+                    m_mainPlants[i][j]->setPlantState(PlantState::Plant_IDLE);
                 }
                 BulletType bullet_type = m_mainPlants[i][j]->attack();
                 if (BulletType::MaxBulletType != bullet_type)
@@ -231,7 +231,7 @@ int PlantManager::changeAllTo(PlantState state)
         {
             if (nullptr != m_mainPlants[i][j])
             {
-                m_mainPlants[i][j]->changePlantState(state);
+                m_mainPlants[i][j]->setPlantState(state);
             }
         }
     }

@@ -10,12 +10,13 @@ ZombieObject::ZombieObject(
     int HP,
     ZombieState state
 ) :
-    AnimPlayer(loader, init_point),
     GameObject(aabb),
     m_HP(HP),
     m_state(state),
+    m_referenceScreenPoint(init_point),
     m_offsetAABB(SDL_FPoint{ aabb.x - init_point.x, aabb.y - init_point.y }),
     m_offsetShadow(offset_shadow),
+    m_animPlayer(loader, init_point),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
 {
     m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
@@ -33,12 +34,12 @@ ZombieObject::ZombieObject(
     int HP,
     ZombieState state
 ) :
-    AnimPlayer(loader, init_point),
     GameObject(SDL_FRect{ init_point.x + offset_abbb.x, init_point.y + offset_abbb.y, aabb_width, aabb_height }),
     m_HP(HP),
     m_state(state),
     m_offsetAABB(offset_abbb),
     m_offsetShadow(offset_shadow),
+    m_animPlayer(loader, init_point),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
 {
     m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
@@ -47,10 +48,6 @@ ZombieObject::ZombieObject(
 int ZombieObject::damage(int damege_num)
 {
     m_HP -= damege_num;
-    if (m_HP <= 0)
-    {
-        changeAnimState(AnimState::R_DEAD);
-    }
     return 0;
 }
 

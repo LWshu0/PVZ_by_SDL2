@@ -58,19 +58,19 @@ Zombie::Zombie(
     )
 {
     // 初始化播放的轨道
-    setPlayingTrack(
+    m_animPlayer.setPlayingTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
         { 6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6 }
 
     );
-    restartTrack(
+    m_animPlayer.restartTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
     );
 }
 
 std::shared_ptr<ZombieObject> Zombie::cloneZombie(const SDL_FPoint& root_point)
 {
-    return std::make_shared<Zombie>(m_loader, root_point);
+    return std::make_shared<Zombie>(m_animPlayer.getAnimLoader(), root_point);
 }
 
 int Zombie::render()
@@ -79,20 +79,20 @@ int Zombie::render()
     // 阴影
     showShadow();
 
-    renderTracks({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 });
+    m_animPlayer.renderTracks({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 });
 
     showAABB();
 
     return 0;
 }
 
-int Zombie::changeAnimState(AnimState to_state)
+int Zombie::setZombieState(ZombieState to_state)
 {
-    if (to_state == m_playingAnimState) return 0;
-    m_playingAnimState = to_state;
-    if (AnimState::R_ATTACK == m_playingAnimState)
+    if (to_state == m_state) return -1;
+    switch (to_state)
     {
-        setPlayingTrack(
+    case ZombieState::Zombie_ATTACK:
+        m_animPlayer.setPlayingTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
             { 8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8 }
         );
@@ -100,58 +100,39 @@ int Zombie::changeAnimState(AnimState to_state)
         //     { 13, 14, 15, 16 },
         //     48.0f
         // );
-        restartTrack(
+        m_animPlayer.restartTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
         );
-    }
-    else if (AnimState::R_WALK == m_playingAnimState)
-    {
+        break;
+    case ZombieState::Zombie_WALK:
         // 4 or 5
-        setPlayingTrack(
+        m_animPlayer.setPlayingTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38, 11 },
             { 5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 }
         );
         // alignTrack({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }, 11);
-        setFPS(
-            {12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38, 11},
+        m_animPlayer.setFPS(
+            { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38, 11 },
             14.0f
         );
-        restartTrack(
+        m_animPlayer.restartTrack(
             { 11, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
         );
-        m_referenceScreenPoint.x = m_realtimeScreenPoint.x - 9.8f;
-    }
-    else    // IDLE
-    {
+        m_referenceScreenPoint.x = m_animPlayer.getPlayPosition().x - 9.8f;
+        break;
+    default:
         // 6 or 7
-        setPlayingTrack(
+        m_animPlayer.setPlayingTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
             { 6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6 }
 
         );
-        restartTrack(
+        m_animPlayer.restartTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
         );
+        break;
     }
-    return 0;
-}
-
-int Zombie::changeZombieState(ZombieState to_state)
-{
-    if (to_state == m_state) return -1;
     m_state = to_state;
-    if (ZombieState::Zombie_ATTACK == to_state)
-    {
-        changeAnimState(AnimState::R_ATTACK);
-    }
-    else if (ZombieState::Zombie_WALK == to_state)
-    {
-        changeAnimState(AnimState::R_WALK);
-    }
-    else
-    {
-        changeAnimState(AnimState::R_IDLE);
-    }
     return 0;
 }
 
@@ -163,17 +144,18 @@ int Zombie::attack()
 int Zombie::updateZombie()
 {
     // 更新帧
-    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
-    if (isUpdateAt(11, GlobalVars::getInstance().timer.getTime()))
+    m_animPlayer.updatePlayingFrameIdx();
+    if (m_animPlayer.isUpdateAt(11, GlobalVars::getInstance().timer.getTime()))
     {
-        if (isPlayBegin(11))
+        if (m_animPlayer.isPlayBegin(11))
         {
             m_referenceScreenPoint.x -= 49.8f;
         }
-        int playing_ground_frame = m_trackPlayRecord[11].m_playingFrameIdx;
-        m_realtimeScreenPoint.x = m_referenceScreenPoint.x - m_loader->m_tracks[11].m_frames[playing_ground_frame].m_x;
-        m_aabb.x = m_realtimeScreenPoint.x + m_offsetAABB.x;
-        m_shadowRange.x = m_realtimeScreenPoint.x + m_offsetShadow.x;
+        SDL_FPoint anim_playing_point = m_animPlayer.getPlayPosition();
+        anim_playing_point.x = m_referenceScreenPoint.x - m_animPlayer.getPlayingFrame(11).m_x;
+        m_animPlayer.setPlayPosition(anim_playing_point);
+        m_aabb.x = anim_playing_point.x + m_offsetAABB.x;
+        m_shadowRange.x = anim_playing_point.x + m_offsetShadow.x;
     }
     return 0;
 }

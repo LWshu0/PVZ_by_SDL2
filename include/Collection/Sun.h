@@ -3,8 +3,10 @@
 
 #include "CollectionObject.h"
 
-class Sun :public CollectionObject, public AnimPlayer {
+class Sun :public CollectionObject {
 protected:
+    AnimPlayer m_animPlayer;
+
     uint64_t m_movetimeMilliSecond;
     uint64_t m_lifetimeMilliSecond;
 public:
@@ -16,7 +18,7 @@ public:
 
     virtual CollectionType getType() override;
     virtual int updateCollection() override;
-    virtual int renderCollection() override;
+    virtual int render() override;
     ~Sun();
 };
 

@@ -30,7 +30,7 @@ std::shared_ptr<BulletObject> Pea::cloneBullet(float x, float y)
     return new_one;
 }
 
-int Pea::renderBullet()
+int Pea::render()
 {
     SDL_FRect tex_rect{ GlobalVars::getInstance().camera.getRenderX(m_aabb.x), GlobalVars::getInstance().camera.getRenderY(m_aabb.y), (float)m_textureWidth, (float)m_textureHeight };
     SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_texture, NULL, &tex_rect);

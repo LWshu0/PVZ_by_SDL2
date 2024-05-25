@@ -57,9 +57,6 @@ public:
     // 返回子弹的伤害
     inline int getDamage() { return m_damage; }
 
-    // 渲染子弹(可能有动画)
-    virtual int renderBullet() = 0;
-
     virtual ~BulletObject() {};
 };
 

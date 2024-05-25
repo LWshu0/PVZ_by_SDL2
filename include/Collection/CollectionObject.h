@@ -34,8 +34,6 @@ public:
         m_updater = motion;
     }
 
-    virtual int renderCollection() = 0;
-
     virtual ~CollectionObject() {};
 };
 

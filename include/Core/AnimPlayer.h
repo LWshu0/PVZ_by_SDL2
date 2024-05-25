@@ -9,37 +9,37 @@
 
 #include "AnimLoader.h"
 
-enum AnimState {
-    R_IDLE,     /*  空闲状态, 植物不发射, 僵尸不行走
-                *   阳光, 弹幕飞行
-                *   界面空闲阶段*/
-    R_ATTACK,   /*  攻击状态, 植物发射子弹 / 爆炸, 僵尸啃食 / 其他攻击方式
-                *   弹幕与僵尸碰撞后碎裂*/
-    R_SLEEP,    // 植物睡眠状态
-    R_WALK,     // 僵尸行走状态
-    R_DEAD,     // 僵尸死亡过程
-    R_SWIM,     // 僵尸游泳
+// enum AnimState {
+//     R_IDLE,     /*  空闲状态, 植物不发射, 僵尸不行走
+//                 *   阳光, 弹幕飞行
+//                 *   界面空闲阶段*/
+//     R_ATTACK,   /*  攻击状态, 植物发射子弹 / 爆炸, 僵尸啃食 / 其他攻击方式
+//                 *   弹幕与僵尸碰撞后碎裂*/
+//     R_SLEEP,    // 植物睡眠状态
+//     R_WALK,     // 僵尸行走状态
+//     R_DEAD,     // 僵尸死亡过程
+//     R_SWIM,     // 僵尸游泳
 
-    // 多阶段界面动画播放
+//     // 多阶段界面动画播放
 
-    R_ANIM1,    /*进入主界面
-                * 僵尸手 出现*/
-    R_ANIM2,    /*主界面选择冒险
-                * 僵尸手静止*/
-    R_ANIM3,    /*主界面选择小游戏*/
-    R_ANIM4,    /*主界面选择解密*/
-    R_ANIM5     /*主界面选择生存*/
-};
+//     R_ANIM1,    /*进入主界面
+//                 * 僵尸手 出现*/
+//     R_ANIM2,    /*主界面选择冒险
+//                 * 僵尸手静止*/
+//     R_ANIM3,    /*主界面选择小游戏*/
+//     R_ANIM4,    /*主界面选择解密*/
+//     R_ANIM5     /*主界面选择生存*/
+// };
 
-// 受损程度
-enum DamageState {
-    R_Damage1,  // 最完好状态
-    R_Damage2,  // 
-    R_Damage3,  //
-    R_Damage4,  //
-    R_Damage5,  // 最损坏状态
-    R_Death     // 需要销毁对象
-};
+// // 受损程度
+// enum DamageState {
+//     R_Damage1,  // 最完好状态
+//     R_Damage2,  // 
+//     R_Damage3,  //
+//     R_Damage4,  //
+//     R_Damage5,  // 最损坏状态
+//     R_Death     // 需要销毁对象
+// };
 
 // 动画播放器
 // 后根据不同的物体做不同的初始化
@@ -47,20 +47,10 @@ class AnimPlayer {
 protected:
     // 动画数据
     std::shared_ptr<AnimLoader> m_loader;
-    // 动画播放状态
 
     // 物体显示的屏幕坐标原点
-    // 僵尸的移动是由动画定义的, 需要在动画更新时设置该位置
-    // 植物是静止的, 该值等于 init_screen_point
     SDL_FPoint m_realtimeScreenPoint;
-    // 僵尸移动动画的参考点, 每次动画循环更改该点一次
-    // 植物并不需要该点
-    SDL_FPoint m_referenceScreenPoint;
 
-    // 动画播放状态
-    AnimState m_playingAnimState;
-    // 物体受损程度
-    DamageState m_damageState;
     // m_loader 中的每个轨道当前正在播放的状态
     struct TrackPlayRecord {
         uint64_t m_lastMilliSecond = 0;
@@ -75,27 +65,31 @@ protected:
         Uint8 m_maskB = 255;
     };
     std::vector<AnimPlayer::TrackPlayRecord> m_trackPlayRecord;
-    // 需要播放的轨道
+    // 需要更新的轨道
     std::vector<int> m_playingTrack;
 public:
     AnimPlayer(
         std::shared_ptr<AnimLoader> loader,
-        const SDL_FPoint& init_point,
-        AnimState anim_state = AnimState::R_IDLE,
-        DamageState damage_state = DamageState::R_Damage1
+        const SDL_FPoint& init_point
     );
     // 动画播放控制
 
     /*  调用 render 之前需要先 updatePlayingFrameIdx 更新当前需要渲染的帧下标
      *  如果不更新, 动画将停留在起始帧 */
-    int updatePlayingFrameIdx(uint64_t now_ms);
+    int updatePlayingFrameIdx();
 
     // 渲染指定轨道
-    int renderTrack(int track_idx, const SDL_FPoint& offset = SDL_FPoint{ 0.0f, 0.0f });
+    int renderTrack(int track_idx, SDL_FPoint ext_offset = SDL_FPoint{ 0.0f, 0.0f }); // 在动画偏移的基础上额外进行一个偏移
     int renderTrack(int track_idx, Uint8 mask_a);
-    // 将输入的轨道偏移 offset 渲染
-    int renderTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset = SDL_FPoint{ 0.0f, 0.0f });
-    int renderTracks(const std::initializer_list<int>& track_idx, const SDL_FPoint& offset, Uint8 mask_a);
+
+    // 将输入的轨道偏移 offset_ext 渲染
+    int renderTracks(const std::initializer_list<int>& track_idx);
+    int renderTracks(const std::initializer_list<int>& track_idx, Uint8 mask_a);
+
+    // 将一些轨道视为一组, 按照同一个轨道的参数计算偏移并渲染
+    int renderTrackGroup(const std::initializer_list<int>& track_idx, int mainTrack_idx);
+    int renderTrackGroup(const std::initializer_list<int>& track_idx, int mainTrack_idx, Uint8 mask_a);
+
     // 在设定的动画播放位置渲染正在播放的所有轨道
     virtual int render();
 
@@ -125,7 +119,7 @@ public:
 
     // 将当前处于播放状态的轨道置于指定的帧位置
     // dst_frame_idx 为逻辑帧下标, 相对于开始位置的偏移
-    int gotoTrack(int dst_frame_idx);
+    int gotoFrame(int dst_frame_idx);
 
     // 设置 track_idx 号轨道的动画数据
     // 将 track_idx 号轨道按照第 anim_idx 个动画的数据重置到起始帧
@@ -135,14 +129,12 @@ public:
     int setFPS(int track_idx, float fps);
     int setFPS(const std::initializer_list<int>& track_idx, float fps);
 
-    /**************************************
-    *    animation state transition       *
-    ***************************************/
-    // 受损状态转移
-    virtual int changeDamageState(DamageState to_state);
-    // 动画状态转移
-    virtual int changeAnimState(AnimState to_state);
-
+    // 获取轨道正在播放的帧
+    inline const AnimFrame& getPlayingFrame(int track_idx)
+    {
+        return m_loader->m_tracks[track_idx].m_frames[m_trackPlayRecord[track_idx].m_playingFrameIdx];
+    }
+    inline std::shared_ptr<AnimLoader> getAnimLoader() { return m_loader; }
     // 动画播放位置
     inline SDL_FPoint getPlayPosition()
     {

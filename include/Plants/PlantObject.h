@@ -15,12 +15,14 @@ enum PlantType {
 };
 
 enum PlantState {
-    IDLE,       // IDLE 状态播放 IDLE 动画
-    ATTACK      // 在攻击逻辑时播放攻击动画, 攻击动画间隔用 IDLE 动画填充
+    Plant_IDLE,         // IDLE 状态播放 IDLE 动画
+    Plant_ATTACK,       // 在攻击逻辑时播放攻击动画
+    Plant_DEAD,         // 植物死亡状态, 播放死亡动画
+    Plant_DELETE        // 植物删除状态, 其对象可以被销毁
 };
 
-class PlantObject : public GameObject, public AnimPlayer {
-public:
+class PlantObject : public GameObject {
+protected:
     // 植物属性
     int m_HP;
     PlantState m_state;                     // 植物当前的状态
@@ -43,6 +45,8 @@ public:
     SDL_FPoint m_offsetAABB;    // 动画播放位置到aabb位置的偏移量
     SDL_FPoint m_offsetShadow;  // 动画播放位置到阴影位置的偏移量
 
+    // 动画
+    AnimPlayer m_animPlayer;
     // 植物影子
     SDL_Texture* m_shadow;
     SDL_FRect m_shadowRange;
@@ -97,33 +101,35 @@ public:
      */
     virtual void setRootPoint(const SDL_FPoint& root_point) = 0;
 
+    /**
+     *@brief 改变当前植物状态, 同时适当的变换动画状态. 如果当前植物状态与要改变的植物状态相同,
+     *       则直接返回, 不做任何更改
+     * @param to_state 要改变的植物状态
+     * @return int 改变成功返回 0, 改变失败(即当前状态与期望状态一致)返回 -1
+     */
+    virtual int setPlantState(PlantState to_state) = 0;
+
     // 判断植物是否死亡, 即 HP 小于等于 0
     inline bool isDead() { return m_HP <= 0; }
 
-    // 待实现
-    // virtual bool inAttackRange(const SDL_FRect& enemy_aabb) = 0;
-
-    // 
-    // 发生改变才会执行 否则直接返回
     /**
-     *@brief 改变当前植物状态, 同时适当的变换动画状态(changeAnimState 函数). 如果当前植物状态与要改变的植物状态相同,
-     *       则直接返回, 不做任何更改
-     * @param to_state 要改变的植物状态
-     * @param timer 游戏时钟
-     * @return int 改变成功返回 0, 改变失败(即当前状态与期望状态一致)返回 -1
+     *@brief 判断敌人是否处于自己的攻击范围内
+     * 
+     * @param enemy_aabb 敌人的 AABB 包围盒
+     * @return true 如果在攻击范围内
+     * @return false 如果不在攻击范围内
      */
-    virtual int changePlantState(PlantState to_state) = 0;
+    virtual bool inAttackRange(const SDL_FRect& enemy_aabb) = 0;
 
     /**
      *@brief 执行攻击逻辑, 内部需要实现: 当植物处于攻击状态(PlantState::ATTACK)同时当前时间大于等于需要发射的时间时, 返回产生的子弹类型
      * 
-     * @param timer 游戏时钟
      * @return BulletType 植物产生的子弹类型, 返回 BulletType::MaxBulletType 代表该时刻不产生子弹
      */
     virtual BulletType attack() = 0;
 
     // 对植物造成伤害, 使植物 HP 减少
-    virtual int damage(int damege_num);
+    virtual void damage(int damege_num);
 
     // 更新植物到下一帧的状态
     virtual int updatePlant() = 0;
@@ -133,14 +139,14 @@ public:
         每个植物都可以自定义一个合适的动画状态与渲染位置, 使得贴图更为美观, 实用.
         例如: 植物卡片上的静态贴图, 鼠标拿起卡片时跟随鼠标移动的贴图, 将要放置的植物在地图上的虚影
     */
-    virtual int changeToStatic();
+    virtual int changeToStatic() = 0;
 
-    /*  获取静态状态下动画的播放范围的宽度和高度, 这个范围一般会大于有效的动画范围(按照默认实现)
+    /*  获取静态状态下动画的播放范围的宽度和高度, 这个范围一般应该大于有效的动画范围
         使用这个函数获取的大小去创建一个纹理, 该纹理必需可以渲染动画帧中所有的元素
         每个植物应该重写该函数使得获取的大小刚好稍大于能容纳所有元素的最小范围
         p.s. 卡片管理者使用该函数确定需要创建的纹理大小
     */
-    virtual int getAnimRange(float& width, float& height);
+    virtual int getAnimRange(float& width, float& height) = 0;
 
     /*  渲染静态状态下的植物图像(一般为 IDLE 状态的第一帧)
         1. 该函数将植物图像渲染到一个纹理上, 用于在游戏中拿起卡片时, 植物图像跟随鼠标移动

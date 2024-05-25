@@ -54,7 +54,8 @@ MainScene::MainScene(
     std::shared_ptr<AnimLoader> loader
 ) :
     SceneObject(),
-    AnimPlayer(loader, SDL_FPoint{ 0.0f, 0.0f }, AnimState::R_ANIM1, DamageState::R_Damage1),
+    m_animPlayer(loader, SDL_FPoint{ 0.0f, 0.0f }),
+    m_state(MainSceneState::EnterScene),
     m_hoverButtonIdx(MainSceneButtonType::MainScene_MaxButtonNum)
 {
     m_buttonRange.resize(MainSceneButtonType::MainScene_MaxButtonNum);
@@ -140,38 +141,7 @@ SceneType MainScene::getType()
     return SceneType::Scene_MainScene;
 }
 
-int MainScene::changeAnimState(AnimState to_state)
-{
-    if (m_playingAnimState == to_state) return 0;
-    m_playingAnimState = to_state;
-    switch (m_playingAnimState)
-    {
-    case AnimState::R_ANIM1:
-        setPlayingTrack(
-            { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 },
-            0
-        );
-        restartTrack();
-        break;
-    case AnimState::R_ANIM2:
-        setPlayingTrack(
-            { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47 },
-            1
-        );
-        restartTrack();
-        break;
-    case AnimState::R_ANIM3:
-        setPlayingTrack(
-            { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47 },
-            { 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  3,  3,  3,  3,  3,  3,  3,  1,  1,  1,  2,  2,  2 }
-        );
-        restartTrack();
-        break;
-    default:
-        break;
-    }
-    return 0;
-}
+
 
 int MainScene::enterScene()
 {
@@ -179,18 +149,17 @@ int MainScene::enterScene()
     // 相机位置
     GlobalVars::getInstance().camera.setPosition(0.0f, 0.0f);
     // 初始化动画
-    m_playingAnimState = AnimState::R_ANIM1;
-    setPlayingTrack(
+    m_animPlayer.setPlayingTrack(
         { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 },
         0
     );
-    restartTrack();
+    m_animPlayer.restartTrack();
     // 初始化按钮状态
     m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
     m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
     for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
     {
-        m_trackPlayRecord[m_buttonTrackIdx[button_idx]].m_alterTexture = nullptr;
+        m_animPlayer.setTrackTexture(m_buttonTrackIdx[button_idx], nullptr);
     }
     return 0;
 }
@@ -198,7 +167,7 @@ int MainScene::enterScene()
 SceneType MainScene::handleEvent(SDL_Event& event)
 {
     // 动画播放完成后才开始处理事件
-    if (m_playingAnimState == AnimState::R_ANIM1) return SceneType::Scene_MaxSceneIdx;
+    if (m_state == MainSceneState::EnterScene) return SceneType::Scene_MaxSceneIdx;
 
     switch (event.type)
     {
@@ -232,13 +201,13 @@ SceneType MainScene::handleEvent(SDL_Event& event)
         // 原来 hover 着一个按钮 需要 dehover 更换了按钮
         if (isValidButton(m_hoverButtonIdx))
         {
-            m_trackPlayRecord[m_buttonTrackIdx[m_hoverButtonIdx]].m_alterTexture = nullptr;
+            m_animPlayer.setTrackTexture(m_buttonTrackIdx[m_hoverButtonIdx], nullptr);
             m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
         }
         // 如果当前 hover 了一个按钮, 变换形态
         if (isValidButton(button_idx))
         {
-            m_trackPlayRecord[m_buttonTrackIdx[button_idx]].m_alterTexture = m_buttonHoverTexture[button_idx];
+            m_animPlayer.setTrackTexture(m_buttonTrackIdx[button_idx], m_buttonHoverTexture[button_idx]);
             m_hoverButtonIdx = button_idx;
         }
         break;
@@ -251,19 +220,19 @@ SceneType MainScene::handleEvent(SDL_Event& event)
 
 SceneType MainScene::updateScene()
 {
-    updatePlayingFrameIdx(GlobalVars::getInstance().timer.getTime());
-    switch (m_playingAnimState)
+    m_animPlayer.updatePlayingFrameIdx();
+    switch (m_state)
     {
-    case AnimState::R_ANIM1:
-        if (isPlayEnd(14))
+    case MainSceneState::EnterScene:
+        if (m_animPlayer.isPlayEnd(14))
         {
-            changeAnimState(AnimState::R_ANIM2);
+            setAnimState(MainSceneState::WoodDrop);
         }
         break;
-    case AnimState::R_ANIM2:
-        if (isPlayEnd(44))
+    case MainSceneState::WoodDrop:
+        if (m_animPlayer.isPlayEnd(44))
         {
-            changeAnimState(AnimState::R_ANIM3);
+            setAnimState(MainSceneState::Idle);
         }
         break;
     default:
@@ -283,21 +252,21 @@ int MainScene::renderScene()
 {
     // render();
     // 背景 
-    renderTracks({ 14, 21, 22, 23 });
+    m_animPlayer.renderTracks({ 14, 21, 22, 23 });
     // 按钮阴影 31/33
-    renderTracks({ 25, 27, 29, 33 });
+    m_animPlayer.renderTracks({ 25, 27, 29, 33 });
     // 按钮 32/34
     for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
     {
-        if (button_idx == m_clickButtonIdx) renderTrack(m_buttonTrackIdx[button_idx], m_buttonHoverOffset[button_idx]);
-        else renderTrack(m_buttonTrackIdx[button_idx]);
+        if (button_idx == m_clickButtonIdx) m_animPlayer.renderTrack(m_buttonTrackIdx[button_idx], m_buttonHoverOffset[button_idx]);
+        else m_animPlayer.renderTrack(m_buttonTrackIdx[button_idx]);
     }
     // 草
-    renderTracks({ 35, 36, 37, 38, 39, 40, 41 });
+    m_animPlayer.renderTracks({ 35, 36, 37, 38, 39, 40, 41 });
     // 花
-    renderTracks({ 42, 43, 44 });
+    m_animPlayer.renderTracks({ 42, 43, 44 });
     // 木板
-    if(m_playingAnimState != AnimState::R_ANIM1) renderTracks({ 45, 46, 47 });
+    if (m_state != MainSceneState::EnterScene) m_animPlayer.renderTracks({ 45, 46, 47 });
     // 渲染按钮的点击范围
     for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
     {
@@ -308,3 +277,36 @@ int MainScene::renderScene()
 
 MainScene::~MainScene()
 {}
+
+int MainScene::setAnimState(MainSceneState to_state)
+{
+    if (m_state == to_state) return 0;
+    switch (to_state)
+    {
+    case MainSceneState::EnterScene:
+        m_animPlayer.setPlayingTrack(
+            { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 },
+            0
+        );
+        m_animPlayer.restartTrack();
+        break;
+    case MainSceneState::WoodDrop:
+        m_animPlayer.setPlayingTrack(
+            { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47 },
+            1
+        );
+        m_animPlayer.restartTrack();
+        break;
+    case MainSceneState::Idle:
+        m_animPlayer.setPlayingTrack(
+            { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47 },
+            { 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  3,  3,  3,  3,  3,  3,  3,  1,  1,  1,  2,  2,  2 }
+        );
+        m_animPlayer.restartTrack();
+        break;
+    default:
+        break;
+    }
+    m_state = to_state;
+    return 0;
+}

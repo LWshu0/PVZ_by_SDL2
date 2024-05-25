@@ -15,17 +15,23 @@ enum ZombieType {
 enum ZombieState {
     Zombie_IDLE,
     Zombie_WALK,
-    Zombie_ATTACK
+    Zombie_ATTACK,
+    Zombie_DEAD,
+    Zombie_DELETE
 };
 
-class ZombieObject :public GameObject, public AnimPlayer {
-public:
+class ZombieObject :public GameObject {
+protected:
     int m_HP;
     ZombieState m_state;
+    // 僵尸移动动画的参考点, 每次动画循环更改该点一次
+    SDL_FPoint m_referenceScreenPoint;
 
     SDL_FPoint m_offsetAABB;    // 动画播放位置到aabb位置的偏移量
     SDL_FPoint m_offsetShadow;  // 动画播放位置到阴影位置的偏移量
 
+    AnimPlayer m_animPlayer;
+    
     SDL_Texture* m_shadow;
     SDL_FRect m_shadowRange;
 public:
@@ -65,7 +71,7 @@ public:
 
     // 改变当前僵尸的状态(ZombieState)
     // 发生改变才会执行 否则直接返回
-    virtual int changeZombieState(ZombieState to_state) = 0;
+    virtual int setZombieState(ZombieState to_state) = 0;
 
     /**
      *@brief 根据计时器中的时间, 计算这段时间内僵尸对植物造成的伤害

@@ -115,13 +115,13 @@ int ZombieManager::attackPlants()
         int col = m_mapManager->caculCol(m_zombies[i]->m_aabb.x);
         if (m_plantManager->collisionPlant(m_zombies[i], row, col))
         {
-            m_zombies[i]->changeZombieState(ZombieState::Zombie_ATTACK);
+            m_zombies[i]->setZombieState(ZombieState::Zombie_ATTACK);
             int dam = m_zombies[i]->attack();
             m_plantManager->doDamage(row, col, dam);
         }
         else
         {
-            m_zombies[i]->changeZombieState(ZombieState::Zombie_WALK);
+            m_zombies[i]->setZombieState(ZombieState::Zombie_WALK);
         }
     }
     return 0;
@@ -152,7 +152,7 @@ int ZombieManager::changeAllTo(ZombieState state)
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
-        if (-1 == m_zombies[i]->changeZombieState(state))
+        if (-1 == m_zombies[i]->setZombieState(state))
         {
             SDL_Log("change failed\n");
         }
