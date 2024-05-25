@@ -141,19 +141,13 @@ SceneType MainScene::getType()
     return SceneType::Scene_MainScene;
 }
 
-
-
 int MainScene::enterScene()
 {
     SDL_Log("enter main scene\n");
     // 相机位置
     GlobalVars::getInstance().camera.setPosition(0.0f, 0.0f);
     // 初始化动画
-    m_animPlayer.setPlayingTrack(
-        { 14, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 },
-        0
-    );
-    m_animPlayer.restartTrack();
+    setAnimState(MainSceneState::EnterScene);
     // 初始化按钮状态
     m_hoverButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;
     m_clickButtonIdx = MainSceneButtonType::MainScene_MaxButtonNum;

@@ -60,8 +60,7 @@ Zombie::Zombie(
     // 初始化播放的轨道
     m_animPlayer.setPlayingTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
-        { 6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6 }
-
+        6
     );
     m_animPlayer.restartTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
@@ -94,7 +93,7 @@ int Zombie::setZombieState(ZombieState to_state)
     case ZombieState::Zombie_ATTACK:
         m_animPlayer.setPlayingTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
-            { 8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8 }
+            8
         );
         // setFPS(
         //     { 13, 14, 15, 16 },
@@ -108,7 +107,7 @@ int Zombie::setZombieState(ZombieState to_state)
         // 4 or 5
         m_animPlayer.setPlayingTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38, 11 },
-            { 5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5 }
+            5
         );
         // alignTrack({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }, 11);
         m_animPlayer.setFPS(
@@ -120,12 +119,11 @@ int Zombie::setZombieState(ZombieState to_state)
         );
         m_referenceScreenPoint.x = m_animPlayer.getPlayPosition().x - 9.8f;
         break;
-    default:
+    default: //IDLE
         // 6 or 7
         m_animPlayer.setPlayingTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
-            { 6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6 }
-
+            6
         );
         m_animPlayer.restartTrack(
             { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }

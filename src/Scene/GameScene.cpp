@@ -20,6 +20,7 @@ GameScene::GameScene(
     m_cardInHandIdx(-1),
     m_plantInHandType(PlantType::MaxPlantType),
     m_dropSunIntervalTime(5000),
+    m_dropSunCountDown(5000),
     m_mapManager(mapManager),
     m_bulletManager(bulletManager),
     m_plantManager(plantManager),
@@ -41,6 +42,7 @@ int GameScene::enterScene()
     SDL_Log("enter game scene\n");
     m_cardInHandIdx = -1;
     m_plantInHandType = PlantType::MaxPlantType;
+    m_dropSunCountDown = 5000;
     m_mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
     m_plantManager->initilizePlants();
     m_zombieManager->initilizeZombie();
