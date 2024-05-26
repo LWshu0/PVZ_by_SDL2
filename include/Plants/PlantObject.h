@@ -86,7 +86,7 @@ public:
      * @param root_point 植物的根部坐标, 该位置用于对齐到地图上安置植物的点
      * @return std::shared_ptr<PlantObject> 构造的新对象
      */
-    virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) = 0;
+    virtual std::shared_ptr<PlantObject> clone(const SDL_FPoint& root_point) = 0;
 
     /**
      *@brief 将物体的动画播放位置设置为 real_point, 同时一并修改相关的各种坐标, 比如 AABB 碰撞箱的坐标等. 
@@ -122,18 +122,8 @@ public:
      */
     virtual bool inAttackRange(const SDL_FRect& enemy_aabb) = 0;
 
-    /**
-     *@brief 执行攻击逻辑, 内部需要实现: 当植物处于攻击状态(PlantState::ATTACK)同时当前时间大于等于需要发射的时间时, 返回产生的子弹类型
-     * 
-     * @return BulletType 植物产生的子弹类型, 返回 BulletType::MaxBulletType 代表该时刻不产生子弹
-     */
-    virtual ProductType attack() = 0;
-
     // 对植物造成伤害, 使植物 HP 减少
     virtual void damage(int damege_num);
-
-    // 更新植物到下一帧的状态
-    virtual int updatePlant() = 0;
 
     /*  将植物的状态改为静止状态(该状态并不在 PlantState 中), 静止状态专门用于显示静态的植物图像.
         同时, 该函数还要设置动画渲染的位置, 使 renderStatic 函数可以把植物图像渲染在纹理中间位置

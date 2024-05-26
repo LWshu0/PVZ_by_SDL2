@@ -16,14 +16,13 @@ public:
         const SDL_FPoint& root_point
     );
 
-    virtual std::shared_ptr<PlantObject> clonePlant(const SDL_FPoint& root_point) override;
+    virtual std::shared_ptr<PlantObject> clone(const SDL_FPoint& root_point) override;
     virtual void setRootPoint(const SDL_FPoint& root_point) override;
     virtual int setPlantState(PlantState to_state) override;
 
     virtual bool inAttackRange(const SDL_FRect& enemy_aabb) override;
-    virtual ProductType attack() override;
     
-    virtual int updatePlant() override;
+    virtual int update() override;
 
     virtual int changeToStatic() override;
     virtual int getAnimRange(float& width, float& height) override;

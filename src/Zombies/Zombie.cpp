@@ -1,4 +1,8 @@
 #include "Zombies/Zombie.h"
+#include "Core/GlobalVars.h"
+#include "Manager/MapManager.h"
+#include "Manager/PlantManager.h"
+
 /*
 0: anim_superlongdeath -> range: [292, 429] total: [0, 503]
 1: anim_swim -> range: [250, 292] total: [0, 503]
@@ -67,7 +71,7 @@ Zombie::Zombie(
     );
 }
 
-std::shared_ptr<ZombieObject> Zombie::cloneZombie(const SDL_FPoint& root_point)
+std::shared_ptr<ZombieObject> Zombie::clone(const SDL_FPoint& root_point)
 {
     return std::make_shared<Zombie>(m_animPlayer.getAnimLoader(), root_point);
 }
@@ -136,13 +140,14 @@ int Zombie::setZombieState(ZombieState to_state)
 
 int Zombie::attack()
 {
-    return 1;
+    return 0.01f * GlobalVars::getInstance().timer.getDeltaTime();
 }
 
-int Zombie::updateZombie()
+int Zombie::update()
 {
     // 更新帧
     m_animPlayer.updatePlayingFrameIdx();
+    // 移动
     if (m_animPlayer.isUpdateAt(11, GlobalVars::getInstance().timer.getTime()))
     {
         if (m_animPlayer.isPlayBegin(11))
@@ -154,6 +159,19 @@ int Zombie::updateZombie()
         m_animPlayer.setPlayPosition(anim_playing_point);
         m_aabb.x = anim_playing_point.x + m_offsetAABB.x;
         m_shadowRange.x = anim_playing_point.x + m_offsetShadow.x;
+    }
+    // 攻击
+    int row = GlobalVars::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
+    int col = GlobalVars::getInstance().mapManager->caculCol(m_aabb.x);
+    if (GlobalVars::getInstance().plantManager->collisionPlant(this, row, col))
+    {
+        setZombieState(ZombieState::Zombie_ATTACK);
+        int dam = attack();
+        GlobalVars::getInstance().plantManager->doDamage(row, col, dam);
+    }
+    else
+    {
+        setZombieState(ZombieState::Zombie_WALK);
     }
     return 0;
 }

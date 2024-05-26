@@ -22,7 +22,7 @@ public:
 
     virtual std::shared_ptr<ProductObject> clone(float x, float y) = 0;
     virtual ProductType getType() = 0;
-    virtual int update()
+    virtual int update() override
     {
         return m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
     }

@@ -63,7 +63,7 @@ SunFlower::SunFlower(
     m_animPlayer.restartTrack();
 }
 
-std::shared_ptr<PlantObject> SunFlower::clonePlant(const SDL_FPoint& root_point)
+std::shared_ptr<PlantObject> SunFlower::clone(const SDL_FPoint& root_point)
 {
     return std::make_shared<SunFlower>(m_animPlayer.getAnimLoader(), root_point);
 }
@@ -95,12 +95,7 @@ bool SunFlower::inAttackRange(const SDL_FRect& enemy_aabb)
     return false;
 }
 
-ProductType SunFlower::attack()
-{
-    return ProductType::MaxProductNum;
-}
-
-int SunFlower::updatePlant()
+int SunFlower::update()
 {
     // 更新帧
     m_animPlayer.updatePlayingFrameIdx();

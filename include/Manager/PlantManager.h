@@ -35,7 +35,7 @@ public:
     int initilizePlants();
 
     // 判断给定的 GameObject 是否和 row 行, col 列的植物碰撞
-    bool collisionPlant(std::shared_ptr<GameObject> obj, int row, int col);
+    bool collisionPlant(GameObject* obj, int row, int col);
 
     // 游戏中拿起卡片时, 创建一个植物
     // 存放在 m_presettlePlantImage 中

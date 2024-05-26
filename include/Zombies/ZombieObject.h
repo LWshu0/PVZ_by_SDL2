@@ -65,7 +65,7 @@ public:
      * @param root_point 僵尸的脚部坐标, 该位置用于对齐到地图上僵尸的行走的地面
      * @return std::shared_ptr<PlantObject> 构造的新对象
      */
-    virtual std::shared_ptr<ZombieObject> cloneZombie(const SDL_FPoint& root_point) = 0;
+    virtual std::shared_ptr<ZombieObject> clone(const SDL_FPoint& root_point) = 0;
 
     inline bool isDead() { return m_HP <= 0; }
 
@@ -84,15 +84,12 @@ public:
     // 如果僵尸死亡将切换到死亡动画(默认)
     virtual int damage(int damege_num);
 
-    // 更新到下一帧的状态
-    virtual int updateZombie() = 0;
-
     // 显示碰撞箱
     int showAABB();
     // 显示阴影
     int showShadow();
 
-    ~ZombieObject();
+    virtual ~ZombieObject();
 };
 
 #endif

@@ -40,7 +40,7 @@ int PlantManager::initilizePlants()
     return 0;
 }
 
-bool PlantManager::collisionPlant(std::shared_ptr<GameObject> obj, int row, int col)
+bool PlantManager::collisionPlant(GameObject* obj, int row, int col)
 {
     if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
         || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
@@ -57,7 +57,7 @@ int PlantManager::pickPlant(PlantType type)
     if (PlantType::MaxPlantType == type) return -1;
     m_presettleRowIdx = -1;
     m_presettleColIdx = -1;
-    m_presettlePlantImage = m_plantTemplate[type]->clonePlant(SDL_FPoint{ 0.0f, 0.0f });
+    m_presettlePlantImage = m_plantTemplate[type]->clone(SDL_FPoint{ 0.0f, 0.0f });
     SDL_Log("plant manager pick a plant: %d\n", type);
     return 0;
 }
@@ -120,7 +120,7 @@ int PlantManager::addPlant(PlantType type, int row, int col)
     float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
     root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
     root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
-    m_mainPlants[row][col] = m_plantTemplate[type]->clonePlant(SDL_FPoint{ root_x, root_y });
+    m_mainPlants[row][col] = m_plantTemplate[type]->clone(SDL_FPoint{ root_x, root_y });
     return 0;
 }
 
@@ -161,22 +161,7 @@ int PlantManager::updatePlants()
             }
             else
             {
-                // 是否有僵尸在攻击范围内
-                if (GlobalVars::getInstance().zombieManager->hasZombieInAttackRange(m_mainPlants[i][j]))
-                {
-                    m_mainPlants[i][j]->setPlantState(PlantState::Plant_ATTACK);
-                }
-                else
-                {
-                    m_mainPlants[i][j]->setPlantState(PlantState::Plant_IDLE);
-                }
-                ProductType bullet_type = m_mainPlants[i][j]->attack();
-                if (ProductType::MaxProductNum != bullet_type)
-                {
-                    GlobalVars::getInstance().productManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
-                }
-
-                m_mainPlants[i][j]->updatePlant();
+                m_mainPlants[i][j]->update();
             }
         }
     }

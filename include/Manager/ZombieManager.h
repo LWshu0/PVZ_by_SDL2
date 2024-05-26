@@ -40,18 +40,15 @@ public:
     // 在第 row 行的 left_x 和 right_x 之间是否有僵尸
     // 其中 left_x 和 right_x 都是世界坐标系下的坐标
     bool hasZombieBetween(int row, float left_x, float right_x);
-    bool hasZombieInAttackRange(std::shared_ptr<PlantObject> plant);
+    bool hasZombieInAttackRange(PlantObject* plant);
     inline bool hasZombie() { return m_zombies.size() > 0; }
 
     bool hasZombieInHouse();
     
     // 僵尸移动
     // 与子弹的碰撞检测, 并减少僵尸生命值
+    // 僵尸攻击植物
     int updateZombie();
-
-    // 攻击植物检测
-    // 当出现植物时转为攻击状态, 否则转为行走状态
-    int attackPlants();
 
     // 渲染僵尸
     int renderZombie();

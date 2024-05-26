@@ -116,7 +116,6 @@ SceneType GameScene::updateScene()
     GlobalVars::getInstance().plantManager->updatePlants();
     GlobalVars::getInstance().productManager->update();
     GlobalVars::getInstance().zombieManager->updateZombie();
-    GlobalVars::getInstance().zombieManager->attackPlants();
     GlobalVars::getInstance().cardManager->updateCardInSlot();
     if (m_dropSunCountDown <= GlobalVars::getInstance().timer.getDeltaTime())
     {

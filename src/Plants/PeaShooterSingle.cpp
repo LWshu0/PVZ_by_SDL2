@@ -1,5 +1,7 @@
 #include "Plants/PeaShooterSingle.h"
-
+#include "Core/GlobalVars.h"
+#include "Manager/ProductManager.h"
+#include "Manager/ZombieManager.h"
 /*
     fps: 12
     0 : anim_idle->range : [4, 29] total : [0, 103]
@@ -53,7 +55,7 @@ PeaShooterSingle::PeaShooterSingle(
     );
 }
 
-std::shared_ptr<PlantObject> PeaShooterSingle::clonePlant(const SDL_FPoint& root_point)
+std::shared_ptr<PlantObject> PeaShooterSingle::clone(const SDL_FPoint& root_point)
 {
     return std::make_shared<PeaShooterSingle>(m_animPlayer.getAnimLoader(), root_point);
 }
@@ -134,18 +136,7 @@ bool PeaShooterSingle::inAttackRange(const SDL_FRect& enemy_aabb)
     return enemy_aabb.x >= m_aabb.x;
 }
 
-ProductType PeaShooterSingle::attack()
-{
-    if (PlantState::Plant_ATTACK != m_state) return ProductType::MaxProductNum;
-    if (GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
-    {
-        m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;    // 防止在攻击动画播放完成前多次返回子弹
-        return ProductType::PeaType;
-    }
-    return ProductType::MaxProductNum;
-}
-
-int PeaShooterSingle::updatePlant()
+int PeaShooterSingle::update()
 {
     // 更新帧
     m_animPlayer.updatePlayingFrameIdx();
@@ -154,6 +145,22 @@ int PeaShooterSingle::updatePlant()
     {
         is_blinking = true;
         last_blink_ms = GlobalVars::getInstance().timer.getTime();
+    }
+    // 敌人检测
+    if (GlobalVars::getInstance().zombieManager->hasZombieInAttackRange(this))
+    {
+        setPlantState(PlantState::Plant_ATTACK);
+    }
+    else
+    {
+        setPlantState(PlantState::Plant_IDLE);
+    }
+    // 攻击
+    if (PlantState::Plant_ATTACK == m_state
+        && GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
+    {
+        m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;    // 防止在攻击动画播放完成前多次返回子弹
+        GlobalVars::getInstance().productManager->addBullet(ProductType::PeaType, m_aabb.x + m_aabb.w, m_aabb.y);
     }
     return 0;
 }

@@ -11,15 +11,15 @@ public:
         std::shared_ptr<AnimLoader> loader,
         const SDL_FPoint& root_point
     );
-    virtual std::shared_ptr<ZombieObject> cloneZombie(const SDL_FPoint& root_point) override;
+    virtual std::shared_ptr<ZombieObject> clone(const SDL_FPoint& root_point) override;
     
     virtual int render() override;
 
     virtual int setZombieState(ZombieState to_state) override;
     virtual int attack() override;
-    virtual int updateZombie() override;
+    virtual int update() override;
     
-    ~Zombie();
+    virtual ~Zombie();
 };
 
 #endif
