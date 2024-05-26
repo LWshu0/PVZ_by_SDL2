@@ -4,13 +4,6 @@
 #include "SceneObject.h"
 #include "Plants/PlantObject.h"
 
-class MapManager;
-class ProductManager;
-class PlantManager;
-class ZombieManager;
-class TaskManager;
-class CardManager;
-
 class GameScene : public SceneObject {
 protected:
     // 游戏进程
@@ -22,23 +15,8 @@ protected:
     uint64_t m_dropSunIntervalTime;         // 随机阳光掉落的时间间隔
     uint64_t m_dropSunCountDown;            // 产生随机阳光的倒计时
 
-    // 游戏对象 manager
-    std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<ProductManager> m_productManager;
-    std::shared_ptr<PlantManager> m_plantManager;
-    std::shared_ptr<ZombieManager> m_zombieManager;
-    std::shared_ptr<TaskManager> m_taskManager;
-    std::shared_ptr<CardManager> m_cardManager;
-
 public:
-    GameScene(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<ProductManager> productManager,
-        std::shared_ptr<PlantManager> plantManager,
-        std::shared_ptr<ZombieManager> zombieManager,
-        std::shared_ptr<TaskManager> taskManager,
-        std::shared_ptr<CardManager> cardManager
-    );
+    GameScene();
 
     virtual SceneType getType() override;
 

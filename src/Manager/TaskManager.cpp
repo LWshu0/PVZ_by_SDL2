@@ -1,20 +1,11 @@
 #include "Manager/TaskManager.h"
 #include "Manager/ZombieManager.h"
 #include "Manager/MapManager.h"
+#include "Core/GlobalVars.h"
 
 TaskManager::TaskManager() :
     m_taskPointer(-1)
 {}
-
-int TaskManager::initilizeManagers(
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<ZombieManager> zombieManager
-)
-{
-    m_mapManager = mapManager;
-    m_zombieManager = zombieManager;
-    return 0;
-}
 
 int TaskManager::loadTask(const std::string& file_path)
 {
@@ -70,19 +61,13 @@ int TaskManager::updateTask()
         {
             int row_idx = m_taskRecord[m_taskPointer].m_rowIdx;
             int col_idx = m_taskRecord[m_taskPointer].m_colIdx;
-            if (row_idx < 0) row_idx = rand() % m_mapManager->getRow();
-            if (col_idx < 0) col_idx = m_mapManager->getCol();
-            m_zombieManager->addZombie(m_taskRecord[m_taskPointer].m_zombieType, row_idx, col_idx);
+            if (row_idx < 0) row_idx = rand() % GlobalVars::getInstance().mapManager->getRow();
+            if (col_idx < 0) col_idx = GlobalVars::getInstance().mapManager->getCol();
+            GlobalVars::getInstance().zombieManager->addZombie(m_taskRecord[m_taskPointer].m_zombieType, row_idx, col_idx);
         }
         m_taskPointer++;
     }
     return 1;
-}
-
-void TaskManager::releaseManagers()
-{
-    m_mapManager = nullptr;
-    m_zombieManager = nullptr;
 }
 
 TaskManager::~TaskManager()
@@ -97,7 +82,7 @@ bool TaskManager::isValidEvent(TaskEvent& event)
         && (event.m_zombieType == ZombieType::MaxZombieType
             || event.m_zombieNumber <= 0)) return false;
     /* 行数不能超过地图限制的范围 */
-    if (event.m_rowIdx >= m_mapManager->getRow()) return false;
+    if (event.m_rowIdx >= GlobalVars::getInstance().mapManager->getRow()) return false;
     // 否则
     return true;
 }

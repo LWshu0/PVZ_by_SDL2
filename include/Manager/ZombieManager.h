@@ -23,25 +23,12 @@ protected:
     std::vector<std::shared_ptr<AnimLoader>> m_animLoader;          // 僵尸动画资源
     std::vector<std::shared_ptr<ZombieObject>> m_zombieTemplate;    // 僵尸模板
 
-    // 关联 manager
-    std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<ProductManager> m_productManager;
-    std::shared_ptr<PlantManager> m_plantManager;
-
     // zombies in game
     int m_zombieNum;
     std::vector<std::shared_ptr<ZombieObject>> m_zombies;
 
 public:
     ZombieManager();
-
-    // 关联 manager
-    // 因包含循环引用, 后续还需要 releaseManagers
-    int initilizeManagers(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<ProductManager> productManager,
-        std::shared_ptr<PlantManager> plantManager
-    );
 
     // 清空场上所有僵尸
     int initilizeZombie();
@@ -68,9 +55,6 @@ public:
 
     // 渲染僵尸
     int renderZombie();
-
-    // 取消关联 manager 的循环引用
-    void releaseManagers();
 
     ~ZombieManager();
 

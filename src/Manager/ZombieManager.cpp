@@ -2,11 +2,9 @@
 #include "Manager/MapManager.h"
 #include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
+#include "Core/GlobalVars.h"
 
 ZombieManager::ZombieManager() :
-    m_mapManager(nullptr),
-    m_productManager(nullptr),
-    m_plantManager(nullptr),
     m_zombieNum(0)
 {
     m_zombies.resize(10);
@@ -15,18 +13,6 @@ ZombieManager::ZombieManager() :
     // 普通僵尸
     m_animLoader[ZombieType::ZombieNormal] = std::make_shared<AnimLoader>("reanim/Zombie.reanim");
     m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(m_animLoader[ZombieType::ZombieNormal], SDL_FPoint{ 0.0f, 0.0f });
-}
-
-int ZombieManager::initilizeManagers(
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<ProductManager> productManager,
-    std::shared_ptr<PlantManager> plantManager
-)
-{
-    m_mapManager = mapManager;
-    m_productManager = productManager;
-    m_plantManager = plantManager;
-    return 0;
 }
 
 int ZombieManager::initilizeZombie()
@@ -39,7 +25,7 @@ int ZombieManager::initilizeZombie()
 
 int ZombieManager::addZombie(ZombieType type, int row, int col)
 {
-    if (row < 0 || row >= m_mapManager->getRow()
+    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
         || col < 0  // 不可从屏幕左侧起始, 可从屏幕右侧起始
         || ZombieType::MaxZombieType == type)
     {
@@ -48,10 +34,10 @@ int ZombieManager::addZombie(ZombieType type, int row, int col)
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr != m_zombies[i]) continue;
-        float root_x = m_mapManager->getLeftMargin() + col * m_mapManager->getCellWidth();
-        float root_y = m_mapManager->getTopMargin() + row * m_mapManager->getCellHeight();
-        root_x += m_mapManager->getCellWidth() / 2;
-        root_y += m_mapManager->getCellHeight() * 0.8;
+        float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
+        float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
+        root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
+        root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
         m_zombies[i] = m_zombieTemplate[type]->cloneZombie(SDL_FPoint{ root_x, root_y });
         m_zombieNum += 1;
         return 0;
@@ -64,7 +50,7 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
-        int rowIdx = m_mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
+        int rowIdx = GlobalVars::getInstance().mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
         if (rowIdx == row && (m_zombies[i]->m_aabb.x >= left_x && m_zombies[i]->m_aabb.x <= right_x))
         {
             return true;
@@ -105,7 +91,7 @@ int ZombieManager::updateZombie()
         // 移动
         m_zombies[i]->updateZombie();
         // 碰撞检测
-        int dam = m_productManager->calculateDamage(m_zombies[i]);
+        int dam = GlobalVars::getInstance().productManager->calculateDamage(m_zombies[i]);
         m_zombies[i]->damage(dam);
         if (m_zombies[i]->isDead())
         {
@@ -121,13 +107,13 @@ int ZombieManager::attackPlants()
     for (int i = 0;i < m_zombies.size();i++)
     {
         if (nullptr == m_zombies[i]) continue;
-        int row = m_mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
-        int col = m_mapManager->caculCol(m_zombies[i]->m_aabb.x);
-        if (m_plantManager->collisionPlant(m_zombies[i], row, col))
+        int row = GlobalVars::getInstance().mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
+        int col = GlobalVars::getInstance().mapManager->caculCol(m_zombies[i]->m_aabb.x);
+        if (GlobalVars::getInstance().plantManager->collisionPlant(m_zombies[i], row, col))
         {
             m_zombies[i]->setZombieState(ZombieState::Zombie_ATTACK);
             int dam = m_zombies[i]->attack();
-            m_plantManager->doDamage(row, col, dam);
+            GlobalVars::getInstance().plantManager->doDamage(row, col, dam);
         }
         else
         {
@@ -145,13 +131,6 @@ int ZombieManager::renderZombie()
         m_zombies[i]->render();
     }
     return 0;
-}
-
-void ZombieManager::releaseManagers()
-{
-    m_mapManager = nullptr;
-    m_productManager = nullptr;
-    m_plantManager = nullptr;
 }
 
 ZombieManager::~ZombieManager()

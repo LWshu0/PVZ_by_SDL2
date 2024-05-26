@@ -2,13 +2,8 @@
 #include "Manager/MapManager.h"
 #include "Manager/CardManager.h"
 
-SelectCardScene::SelectCardScene(
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<CardManager> cardManager
-) :
-    SceneObject(),
-    m_mapManager(mapManager),
-    m_cardManager(cardManager)
+SelectCardScene::SelectCardScene() :
+    SceneObject()
 {}
 
 SceneType SelectCardScene::getType()
@@ -20,11 +15,11 @@ SceneType SelectCardScene::getType()
 int SelectCardScene::enterScene()
 {
     SDL_Log("enter select card scene\n");
-    m_mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
-    m_cardManager->clearCardSlot();
-    m_cardManager->resetCardPool();
+    GlobalVars::getInstance().mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
+    GlobalVars::getInstance().cardManager->clearCardSlot();
+    GlobalVars::getInstance().cardManager->resetCardPool();
     // 相机位置 在地图初始化之后
-    GlobalVars::getInstance().camera.setPosition(m_mapManager->getWidth() - 800, 0.0f);
+    GlobalVars::getInstance().camera.setPosition(GlobalVars::getInstance().mapManager->getWidth() - 800, 0.0f);
     return 0;
 }
 
@@ -37,18 +32,18 @@ SceneType SelectCardScene::handleEvent(SDL_Event& event)
         if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试选卡 or 收集阳光/银币
         {
             SDL_Log("mouse button left\n");
-            int slot_idx = m_cardManager->getSlotIdx(event.button.x, event.button.y);
+            int slot_idx = GlobalVars::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
             if (slot_idx != -1)
             {
                 SDL_Log("slot -> pool: %d\n", slot_idx);
-                m_cardManager->slot2pool(slot_idx);
+                GlobalVars::getInstance().cardManager->slot2pool(slot_idx);
                 return SceneType::Scene_MaxSceneIdx;
             }
-            int pool_idx = m_cardManager->getPoolIdx(event.button.x, event.button.y);
+            int pool_idx = GlobalVars::getInstance().cardManager->getPoolIdx(event.button.x, event.button.y);
             if (pool_idx != -1)
             {
                 SDL_Log("pool -> slot: %d\n", pool_idx);
-                m_cardManager->pool2slot(pool_idx);
+                GlobalVars::getInstance().cardManager->pool2slot(pool_idx);
                 return SceneType::Scene_MaxSceneIdx;
             }
             // 点击按钮开始游戏
@@ -78,10 +73,10 @@ int SelectCardScene::exitScene()
 
 int SelectCardScene::renderScene()
 {
-    m_mapManager->renderMap();
+    GlobalVars::getInstance().mapManager->renderMap();
     // m_zombieManager->renderZombie();
-    m_cardManager->renderCardSlot();
-    m_cardManager->renderCardPool();
+    GlobalVars::getInstance().cardManager->renderCardSlot();
+    GlobalVars::getInstance().cardManager->renderCardPool();
     return 0;
 }
 

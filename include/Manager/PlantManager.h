@@ -20,10 +20,6 @@ protected:
     std::vector<std::shared_ptr<AnimLoader>> m_animLoader;      // 植物动画资源
     std::vector<std::shared_ptr<PlantObject>> m_plantTemplate;  // 植物模板
 
-    // 关联 manager
-    std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<ProductManager> m_productManager;
-    std::shared_ptr<ZombieManager> m_zombieManager;
     // plants in game
     std::vector<std::vector<std::shared_ptr<PlantObject>>> m_mainPlants;
     // 指示植物放置位置
@@ -32,14 +28,6 @@ protected:
     std::shared_ptr<PlantObject> m_presettlePlantImage;
 public:
     PlantManager();
-
-    // 关联 manager
-    // 因包含循环引用, 后续还需要 releaseManagers
-    int initilizeManagers(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<ProductManager> productManager,
-        std::shared_ptr<ZombieManager> zombieManager
-    );
 
     // 根据地图大小(由地图管理者处获得)创建植物数组用于存储植物
     // 清空所有场上的植物
@@ -74,8 +62,6 @@ public:
     // 渲染所有植物(包括 m_presettlePlantImage)
     // 当 m_presettlePlantImage 有效时才渲染(行列不为 -1, 且 m_presettlePlantImage 不为 nullptr)
     int renderPlants();
-    // 取消关联 manager 的循环引用
-    void releaseManagers();
 
     ~PlantManager();
 

@@ -9,15 +9,8 @@ class CardManager;
 
 class SelectCardScene : public SceneObject {
 protected:
-
-    // 游戏对象 manager
-    std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<CardManager> m_cardManager;
 public:
-    SelectCardScene(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<CardManager> cardManager
-    );
+    SelectCardScene();
 
     virtual SceneType getType() override;
 

@@ -1,4 +1,11 @@
 #include "Core/GlobalVars.h"
+#include "Manager/CardManager.h"
+#include "Manager/MapManager.h"
+#include "Manager/PlantManager.h"
+#include "Manager/ProductManager.h"
+#include "Manager/SceneManager.h"
+#include "Manager/TaskManager.h"
+#include "Manager/ZombieManager.h"
 
 GlobalVars& GlobalVars::getInstance()
 {

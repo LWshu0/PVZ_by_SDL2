@@ -7,12 +7,9 @@ class MapManager;
 
 class Select2Game :public SceneObject {
 protected:
-    // 游戏对象 manager
-    std::shared_ptr<MapManager> m_mapManager;
+
 public:
-    Select2Game(
-        std::shared_ptr<MapManager> mapManager
-    );
+    Select2Game();
 
     virtual SceneType getType() override;
 

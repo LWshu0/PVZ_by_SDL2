@@ -27,17 +27,10 @@ protected:
     // 游戏记录
     int m_sunNum;
 
-    // 关联的 manager
-    std::shared_ptr<MapManager> m_mapManager;
 public:
     ProductManager(
         int maxCollection,
         int maxBullet
-    );
-
-    // 关联 manager
-    int initilizeManagers(
-        std::shared_ptr<MapManager> mapManager
     );
 
     inline void setSunNum(int sum_num) { m_sunNum = sum_num; }
@@ -63,8 +56,6 @@ public:
     int clear();
     // 收集所有
     int collect();
-
-    void releaseManagers();
 
     ~ProductManager();
 };

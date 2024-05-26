@@ -15,14 +15,7 @@ protected:
     std::vector<std::shared_ptr<SceneObject>> m_sceneTemplate;  // 所有的场景
 
 public:
-    SceneManager(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<ProductManager> productManager,
-        std::shared_ptr<PlantManager> plantManager,
-        std::shared_ptr<ZombieManager> zombieManager,
-        std::shared_ptr<TaskManager> taskManager,
-        std::shared_ptr<CardManager> cardManager
-        );
+    SceneManager();
 
     // 调用当前场景的处理事件函数
     int handleEvent(SDL_Event& event);

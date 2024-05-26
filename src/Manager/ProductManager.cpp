@@ -15,14 +15,6 @@ ProductManager::ProductManager(
     m_productTemplate[ProductType::SunType] = std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader);
 }
 
-int ProductManager::initilizeManagers(
-    std::shared_ptr<MapManager> mapManager
-)
-{
-    m_mapManager = mapManager;
-    return 0;
-}
-
 int ProductManager::addBullet(ProductType type, int x, int y)
 {
     if (type == ProductType::MaxProductNum || m_bulletItems.size() > m_maxBulletLimit) return -1;
@@ -51,8 +43,8 @@ int ProductManager::produceCollection(ProductType type, int x, int y)
 int ProductManager::randomDropSun()
 {
     if (m_collectionItems.size() > m_maxCollectionLimit) return -1;
-    float width = m_mapManager->getRightMargin() - m_mapManager->getLeftMargin() - 100.0f;
-    float gene_x = m_mapManager->getLeftMargin() + width * rand() / RAND_MAX;
+    float width = GlobalVars::getInstance().mapManager->getRightMargin() - GlobalVars::getInstance().mapManager->getLeftMargin() - 100.0f;
+    float gene_x = GlobalVars::getInstance().mapManager->getLeftMargin() + width * rand() / RAND_MAX;
     uint64_t lifetime = 3000 + 10000 * rand() / RAND_MAX;
     m_collectionItems.push_front(std::static_pointer_cast<CollectionObject>(m_productTemplate[ProductType::SunType]->clone(gene_x, 0.0f)));
     m_collectionItems.front()->setMotion(std::make_shared<MotionSpeedLimitTime>(0.0f, 40.0f, lifetime));
@@ -162,11 +154,6 @@ int ProductManager::collect()
     }
     m_collectionItems.clear();
     return 0;
-}
-
-void ProductManager::releaseManagers()
-{
-    m_mapManager = nullptr;
 }
 
 ProductManager::~ProductManager()

@@ -1,6 +1,7 @@
 #include "Manager/CardManager.h"
-#include "Manager/PlantManager.h"
 #include "Manager/ProductManager.h"
+#include "Manager/PlantManager.h"
+#include "Core/GlobalVars.h"
 
 CardManager::CardManager(
 ) :
@@ -93,16 +94,9 @@ CardManager::CardManager(
     clearCardSlot();
 }
 
-int CardManager::initilizeManagers(
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<PlantManager> plantManager,
-    std::shared_ptr<ProductManager> productManager
-)
+int CardManager::initilizeManagers()
 {
-    m_mapManager = mapManager;
-    m_plantManager = plantManager;
-    m_productManager = productManager;
-    if (m_plantManager == nullptr) return -1;
+    if (GlobalVars::getInstance().plantManager == nullptr) return -1;
     // 初始化纹理数组为最大 plant 数量
     m_plantCardTexture.resize(PlantType::MaxPlantType);
     m_plantImageTexture.resize(PlantType::MaxPlantType);
@@ -114,7 +108,7 @@ int CardManager::initilizeManagers(
     {
         // 创建植物预览图片纹理
         // 设置植物状态 获取需要的纹理大小
-        std::shared_ptr<PlantObject> plant = plantManager->getPlantTemplate(i);
+        std::shared_ptr<PlantObject> plant = GlobalVars::getInstance().plantManager->getPlantTemplate(i);
         plant->changeToStatic();
         float width, height;
         plant->getAnimRange(width, height);
@@ -188,7 +182,7 @@ void CardManager::updateCardInSlot()
 {
     for (auto& card : m_cardInSlot)
     {
-        card.m_endble = (card.m_sunCost <= m_productManager->getSunNum());
+        card.m_endble = (card.m_sunCost <= GlobalVars::getInstance().productManager->getSunNum());
         if (card.m_rmCoolMilliSecond <= GlobalVars::getInstance().timer.getDeltaTime()) card.m_rmCoolMilliSecond = 0;
         else card.m_rmCoolMilliSecond -= GlobalVars::getInstance().timer.getDeltaTime();
     }
@@ -226,8 +220,9 @@ int CardManager::settleCard(int card_slot_idx)
     if (card_slot_idx >= 0
         && card_slot_idx < m_cardInSlot.size())
     {
-        m_productManager->setSunNum(m_productManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
-        m_cardInSlot[card_slot_idx].m_endble = m_productManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
+
+        GlobalVars::getInstance().productManager->setSunNum(GlobalVars::getInstance().productManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
+        m_cardInSlot[card_slot_idx].m_endble = GlobalVars::getInstance().productManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
         m_cardInSlot[card_slot_idx].m_rmCoolMilliSecond = m_cardInSlot[card_slot_idx].m_coolMilliSecond;
         return card_slot_idx;
     }
@@ -287,7 +282,7 @@ int CardManager::renderCardSlot()
             SDL_RenderFillRect(GlobalVars::getInstance().renderer, &m_cardRangeInSlot[i].m_range);
         }
     }
-    std::string sunNum = std::to_string(m_productManager->getSunNum());
+    std::string sunNum = std::to_string(GlobalVars::getInstance().productManager->getSunNum());
     m_sunFont.render(sunNum, 15, 57);
     // 显示可点击范围
     for (auto i : m_cardRangeInSlot)
@@ -344,13 +339,6 @@ int CardManager::renderCardInHand(PlantType type, int mouse_x, int mouse_y)
     SDL_Rect rect{ mouse_x - tex_w / 2, mouse_y - tex_h, tex_w, tex_h };
     SDL_RenderCopy(GlobalVars::getInstance().renderer, m_plantImageTexture[type], NULL, &rect);
     return 0;
-}
-
-void CardManager::releaseManagers()
-{
-    m_mapManager = nullptr;
-    m_plantManager = nullptr;
-    m_productManager = nullptr;
 }
 
 CardManager::~CardManager()

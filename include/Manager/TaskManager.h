@@ -25,18 +25,8 @@ protected:
     int m_taskPointer;                      // 当前所在的记录下标
     std::vector<TaskEvent> m_taskRecord;    // 关卡记录
 
-    // 关联 manager
-    std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<ZombieManager> m_zombieManager;
 public:
     TaskManager();
-
-    // 关联 manager
-    // 因包含循环引用, 后续还需要 releaseManagers
-    int initilizeManagers(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<ZombieManager> zombieManager
-    );
 
     // 读入一个特定格式的 xml 文件, 其中包含关卡信息
     int loadTask(const std::string& file_path);
@@ -47,9 +37,6 @@ public:
     int updateTask();
 
     inline bool isFinish() { return m_taskPointer >= m_taskRecord.size(); }
-
-    // 取消关联 manager 的循环引用
-    void releaseManagers();
 
     ~TaskManager();
 

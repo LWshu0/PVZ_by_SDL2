@@ -50,11 +50,12 @@ fps: 20
 46: woodsign2 -> range: [13, 78] total: [0, 705]
 47: woodsign3 -> range: [13, 78] total: [0, 705]
 */
-MainScene::MainScene(
-    std::shared_ptr<AnimLoader> loader
-) :
+MainScene::MainScene() :
     SceneObject(),
-    m_animPlayer(loader, SDL_FPoint{ 0.0f, 0.0f }),
+    m_animPlayer(
+        std::make_shared<AnimLoader>("reanim/SelectorScreen.reanim"),
+        SDL_FPoint{ 0.0f, 0.0f }
+    ),
     m_state(MainSceneState::EnterScene),
     m_hoverButtonIdx(MainSceneButtonType::MainScene_MaxButtonNum)
 {

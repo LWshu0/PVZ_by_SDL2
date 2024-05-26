@@ -63,21 +63,9 @@ protected:
     // 用户信息
     int m_cardSlotNum;      // 解锁的卡槽数量
 
-    // 关联 manager
-    std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<PlantManager> m_plantManager;
-    std::shared_ptr<ProductManager> m_productManager;
 public:
     CardManager();
-
-    // 关联 manager
-    // 初始化 texture(卡片纹理与植物纹理)
-    int initilizeManagers(
-        std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<PlantManager> plantManager,
-        std::shared_ptr<ProductManager> productManager
-    );
-
+    int initilizeManagers();
     // 清空卡槽
     void clearCardSlot();
     // 初始化卡池中的植物类型
@@ -123,8 +111,6 @@ public:
     int renderCardCoolDown();   // 绘制游戏过程中卡槽的冷却信息
     int renderCardPool();       // 绘制卡池
     int renderCardInHand(PlantType type, int mouse_x, int mouse_y);     // 绘制手中的植物纹理
-
-    void releaseManagers();
 
     ~CardManager();
 

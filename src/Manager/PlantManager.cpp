@@ -2,11 +2,10 @@
 #include "Manager/MapManager.h"
 #include "Manager/ProductManager.h"
 #include "Manager/ZombieManager.h"
+#include "Core/GlobalVars.h"
 
-PlantManager::PlantManager() :
-    m_mapManager(nullptr),
-    m_productManager(nullptr),
-    m_zombieManager(nullptr)
+
+PlantManager::PlantManager()
 {
     m_plantTemplate.resize(PlantType::MaxPlantType);
     m_animLoader.resize(PlantType::MaxPlantType);
@@ -22,26 +21,14 @@ PlantManager::PlantManager() :
     m_plantTemplate[PlantType::SunFlower_] = std::make_shared<SunFlower>(m_animLoader[PlantType::SunFlower_], SDL_FPoint{ 0.0f, 0.0f });
 }
 
-int PlantManager::initilizeManagers(
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<ProductManager> productManager,
-    std::shared_ptr<ZombieManager> zombieManager
-)
-{
-    m_mapManager = mapManager;
-    m_productManager = productManager;
-    m_zombieManager = zombieManager;
-    return 0;
-}
-
 int PlantManager::initilizePlants()
 {
-    if (nullptr == m_mapManager) return -1;
+    if (nullptr == GlobalVars::getInstance().mapManager) return -1;
     // resize & clear
-    m_mainPlants.resize(m_mapManager->getRow());
+    m_mainPlants.resize(GlobalVars::getInstance().mapManager->getRow());
     for (auto& r : m_mainPlants)
     {
-        r.resize(m_mapManager->getCol());
+        r.resize(GlobalVars::getInstance().mapManager->getCol());
         for (auto& c : r)
         {
             c = nullptr;
@@ -55,8 +42,8 @@ int PlantManager::initilizePlants()
 
 bool PlantManager::collisionPlant(std::shared_ptr<GameObject> obj, int row, int col)
 {
-    if (row < 0 || row >= m_mapManager->getRow()
-        || col < 0 || col >= m_mapManager->getCol()
+    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
+        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
         || nullptr == obj
         || nullptr == m_mainPlants[row][col])
     {
@@ -77,17 +64,17 @@ int PlantManager::pickPlant(PlantType type)
 
 int PlantManager::presettlePlant(int mouse_x, int mouse_y)
 {
-    int row = m_mapManager->caculRow(mouse_y);
-    int col = m_mapManager->caculCol(mouse_x);
-    if (m_mapManager->isValidCell(row, col)
+    int row = GlobalVars::getInstance().mapManager->caculRow(mouse_y);
+    int col = GlobalVars::getInstance().mapManager->caculCol(mouse_x);
+    if (GlobalVars::getInstance().mapManager->isValidCell(row, col)
         && m_mainPlants[row][col] == nullptr)
     {
         m_presettleRowIdx = row;
         m_presettleColIdx = col;
-        float root_x = m_mapManager->getLeftMargin() + col * m_mapManager->getCellWidth();
-        float root_y = m_mapManager->getTopMargin() + row * m_mapManager->getCellHeight();
-        root_x += m_mapManager->getCellWidth() / 2;
-        root_y += m_mapManager->getCellHeight() * 0.8;
+        float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
+        float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
+        root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
+        root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
         m_presettlePlantImage->setRootPoint(SDL_FPoint{ root_x,root_y });
     }
     else
@@ -122,25 +109,25 @@ int PlantManager::putbackPlant()
 
 int PlantManager::addPlant(PlantType type, int row, int col)
 {
-    if (row < 0 || row >= m_mapManager->getRow()
-        || col < 0 || col >= m_mapManager->getCol()
+    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
+        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
         || PlantType::MaxPlantType == type
         || nullptr != m_mainPlants[row][col])
     {
         return -1;
     }
-    float root_x = m_mapManager->getLeftMargin() + col * m_mapManager->getCellWidth();
-    float root_y = m_mapManager->getTopMargin() + row * m_mapManager->getCellHeight();
-    root_x += m_mapManager->getCellWidth() / 2;
-    root_y += m_mapManager->getCellHeight() * 0.8;
+    float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
+    float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
+    root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
+    root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
     m_mainPlants[row][col] = m_plantTemplate[type]->clonePlant(SDL_FPoint{ root_x, root_y });
     return 0;
 }
 
 int PlantManager::removePlant(int row, int col)
 {
-    if (row < 0 || row >= m_mapManager->getRow()
-        || col < 0 || col >= m_mapManager->getCol())
+    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
+        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol())
     {
         return -1;
     }
@@ -150,8 +137,8 @@ int PlantManager::removePlant(int row, int col)
 
 int PlantManager::doDamage(int row, int col, int d)
 {
-    if (row < 0 || row >= m_mapManager->getRow()
-        || col < 0 || col >= m_mapManager->getCol()
+    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
+        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
         || nullptr == m_mainPlants[row][col])
     {
         return -1;
@@ -175,7 +162,7 @@ int PlantManager::updatePlants()
             else
             {
                 // 是否有僵尸在攻击范围内
-                if (m_zombieManager->hasZombieInAttackRange(m_mainPlants[i][j]))
+                if (GlobalVars::getInstance().zombieManager->hasZombieInAttackRange(m_mainPlants[i][j]))
                 {
                     m_mainPlants[i][j]->setPlantState(PlantState::Plant_ATTACK);
                 }
@@ -186,7 +173,7 @@ int PlantManager::updatePlants()
                 ProductType bullet_type = m_mainPlants[i][j]->attack();
                 if (ProductType::MaxProductNum != bullet_type)
                 {
-                    m_productManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
+                    GlobalVars::getInstance().productManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
                 }
 
                 m_mainPlants[i][j]->updatePlant();
@@ -215,13 +202,6 @@ int PlantManager::renderPlants()
         m_presettlePlantImage->renderStatic(120);
     }
     return 0;
-}
-
-void PlantManager::releaseManagers()
-{
-    m_mapManager = nullptr;
-    m_productManager = nullptr;
-    m_zombieManager = nullptr;
 }
 
 PlantManager::~PlantManager()

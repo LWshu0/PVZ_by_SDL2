@@ -1,25 +1,17 @@
 #include "Manager/SceneManager.h"
 
-SceneManager::SceneManager(
-    std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<ProductManager> productManager,
-    std::shared_ptr<PlantManager> plantManager,
-    std::shared_ptr<ZombieManager> zombieManager,
-    std::shared_ptr<TaskManager> taskManager,
-    std::shared_ptr<CardManager> cardManager
-)
+SceneManager::SceneManager()
 {
     // 分配空间
     m_sceneTemplate.resize(SceneType::Scene_MaxSceneIdx);
     // 主界面
-    std::shared_ptr<AnimLoader> main_scene_loader = std::make_shared<AnimLoader>("reanim/SelectorScreen.reanim");
-    m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>(main_scene_loader);
+    m_sceneTemplate[SceneType::Scene_MainScene] = std::make_shared<MainScene>();
     // 选卡界面
-    m_sceneTemplate[SceneType::Scene_SelectCardScene] = std::make_shared<SelectCardScene>(mapManager, cardManager);
+    m_sceneTemplate[SceneType::Scene_SelectCardScene] = std::make_shared<SelectCardScene>();
     // 选卡到游戏的过渡界面
-    m_sceneTemplate[SceneType::Scene_Select2GameScene] = std::make_shared<Select2Game>(mapManager);
+    m_sceneTemplate[SceneType::Scene_Select2GameScene] = std::make_shared<Select2Game>();
     // 游戏界面
-    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(mapManager, productManager, plantManager, zombieManager, taskManager, cardManager);
+    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>();
     // ...
 
     // 设置初始界面

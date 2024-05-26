@@ -34,9 +34,7 @@ protected:
     std::vector<SDL_Texture*> m_buttonHoverTexture; // 按钮处于 hover 状态下的纹理
     std::vector<SceneType> m_jumpSceneType;         // 点击按钮跳转的页面
 public:
-    MainScene(
-        std::shared_ptr<AnimLoader> loader
-    );
+    MainScene();
 
     virtual SceneType getType() override;
 

@@ -1,11 +1,8 @@
 #include "Scene/Select2Game.h"
 #include "Manager/MapManager.h"
 
-Select2Game::Select2Game(
-    std::shared_ptr<MapManager> mapManager
-) :
-    SceneObject(),
-    m_mapManager(mapManager)
+Select2Game::Select2Game() :
+    SceneObject()
 {}
 
 SceneType Select2Game::getType()
@@ -43,7 +40,7 @@ int Select2Game::exitScene()
 
 int Select2Game::renderScene()
 {
-    return m_mapManager->renderMap();
+    return GlobalVars::getInstance().mapManager->renderMap();
 }
 
 Select2Game::~Select2Game()
