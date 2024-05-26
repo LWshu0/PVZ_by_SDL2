@@ -130,7 +130,7 @@ SceneType GameScene::updateScene()
     if (GlobalVars::getInstance().taskManager->isFinish() && !GlobalVars::getInstance().zombieManager->hasZombie())
     {
         // win
-        return SceneType::Scene_MainScene;
+        return SceneType::Scene_WinScene;
     }
     else if (GlobalVars::getInstance().zombieManager->hasZombieInHouse())
     {

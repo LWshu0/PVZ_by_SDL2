@@ -48,7 +48,7 @@ public:
 
     virtual int renderScene() override;
 
-    ~MainScene();
+    virtual ~MainScene();
 
 protected:
     // 修改动画状态

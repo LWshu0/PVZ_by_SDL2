@@ -341,6 +341,12 @@ int CardManager::renderCardInHand(PlantType type, int mouse_x, int mouse_y)
     return 0;
 }
 
+SDL_Texture* CardManager::getCardTexture(PlantType type)
+{
+    if (type == PlantType::MaxPlantType) return nullptr;
+    return m_plantCardTexture[type];
+}
+
 CardManager::~CardManager()
 {
     for (SDL_Texture* tex : m_plantImageTexture)

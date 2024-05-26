@@ -30,7 +30,7 @@ public:
 
     virtual int renderScene() override;
 
-    ~GameScene();
+    virtual ~GameScene();
 };
 
 

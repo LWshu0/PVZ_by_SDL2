@@ -12,6 +12,7 @@ enum SceneType {
     Scene_SelectCardScene,          // 开始游戏后的选卡界面
     Scene_Select2GameScene,         // 选卡界面到游戏界面的过渡界面
     Scene_GameScene,                // 游戏过程中的界面
+    Scene_WinScene,                 // 游戏获胜界面
     Scene_MaxSceneIdx               // 最大的界面数量(代表无效界面)
 };
 

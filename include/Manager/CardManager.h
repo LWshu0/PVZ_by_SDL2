@@ -112,6 +112,8 @@ public:
     int renderCardPool();       // 绘制卡池
     int renderCardInHand(PlantType type, int mouse_x, int mouse_y);     // 绘制手中的植物纹理
 
+    SDL_Texture* getCardTexture(PlantType type);
+    
     ~CardManager();
 
 protected:

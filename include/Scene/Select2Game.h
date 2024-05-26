@@ -23,7 +23,7 @@ public:
 
     virtual int renderScene() override;
 
-    ~Select2Game();
+    virtual ~Select2Game();
 };
 
 #endif

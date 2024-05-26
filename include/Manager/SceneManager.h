@@ -6,6 +6,7 @@
 #include "Scene/SelectCardScene.h"
 #include "Scene/Select2Game.h"
 #include "Scene/GameScene.h"
+#include "Scene/WinScene.h"
 
 class SceneManager {
 protected:

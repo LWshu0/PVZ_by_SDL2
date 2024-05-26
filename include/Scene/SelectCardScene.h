@@ -24,7 +24,7 @@ public:
 
     virtual int renderScene() override;
     
-    ~SelectCardScene();
+    virtual ~SelectCardScene();
 };
 
 

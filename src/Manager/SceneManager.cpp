@@ -12,6 +12,8 @@ SceneManager::SceneManager()
     m_sceneTemplate[SceneType::Scene_Select2GameScene] = std::make_shared<Select2Game>();
     // 游戏界面
     m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>();
+    // 获胜界面
+    m_sceneTemplate[SceneType::Scene_WinScene] = std::make_shared<WinScene>();
     // ...
 
     // 设置初始界面

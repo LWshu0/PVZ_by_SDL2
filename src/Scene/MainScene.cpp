@@ -101,7 +101,7 @@ MainScene::MainScene() :
         m_buttonHoverOffset[MainSceneButtonType::MainSceneButton_MiniGame] = SDL_FPoint{ 3.0f, 3.0f };
         m_buttonTrackIdx[MainSceneButtonType::MainSceneButton_MiniGame] = 26;
         m_buttonHoverTexture[MainSceneButtonType::MainSceneButton_MiniGame] = GlobalVars::getInstance().textureRes.getTextureFrom("reanim/SelectorScreen_Survival_highlight.png");
-        m_jumpSceneType[MainSceneButtonType::MainSceneButton_MiniGame] = SceneType::Scene_SelectCardScene;
+        m_jumpSceneType[MainSceneButtonType::MainSceneButton_MiniGame] = SceneType::Scene_WinScene;
     }
     /****************************************************************************/
     {
