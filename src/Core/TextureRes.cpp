@@ -45,6 +45,10 @@ SDL_Texture* TextureRes::getTextureFrom(const std::string& file_path)
 
 SDL_Texture* TextureRes::getTextureWithMask(const std::string& _file_path, const std::string& _mask_path)
 {
+    // 定义纹理名称(包括原图与mask)
+    std::string texture_name = _file_path + _mask_path;
+    if (m_textures.find(texture_name) != m_textures.end()) return m_textures[texture_name];
+
     SDL_Surface* surface = nullptr, * mask = nullptr;
     surface = IMG_Load(_file_path.c_str());
     mask = IMG_Load(_mask_path.c_str());
@@ -78,21 +82,22 @@ SDL_Texture* TextureRes::getTextureWithMask(const std::string& _file_path, const
     SDL_FreeSurface(mask);
     if (img_texture != NULL)
     {
-        // 删除旧纹理
-        auto iter = m_textures.find(_file_path);
-        if (iter != m_textures.end()) SDL_DestroyTexture(iter->second);
-        m_textures[_file_path] = img_texture;
+        m_textures[texture_name] = img_texture;
     }
     else
     {
         SDL_Log("failed to create texture from %s with mask %s\n", _file_path.c_str(), _mask_path.c_str());
         return nullptr;
     }
-    return m_textures[_file_path];
+    return img_texture;
 }
 
 SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::string& mask_path)
 {
+    // 定义纹理名称(包括原图与mask)
+    std::string texture_name = std::to_string(color.r) + std::to_string(color.g) + std::to_string(color.b) + std::to_string(color.a) + mask_path;
+    if (m_textures.find(texture_name) != m_textures.end()) return m_textures[texture_name];
+
     SDL_Surface* mask = nullptr;
     mask = IMG_Load(mask_path.c_str());
     if (!ToRGBA8888(mask))
@@ -100,8 +105,6 @@ SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::s
         SDL_FreeSurface(mask);
         return nullptr;
     }
-    // 定义纹理名称(包括原图与mask)
-    std::string texture_name = mask_path + std::to_string(SDL_MapRGBA(mask->format, color.r, color.g, color.b, color.a));
     SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, mask->w, mask->h, 32, SDL_PIXELFORMAT_RGBA8888);
     if (surface == nullptr)
     {
@@ -133,9 +136,6 @@ SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::s
     SDL_FreeSurface(mask);
     if (img_texture != NULL)
     {
-        // 删除旧纹理
-        auto iter = m_textures.find(texture_name);
-        if (iter != m_textures.end()) SDL_DestroyTexture(iter->second);
         m_textures[texture_name] = img_texture;
     }
     else
@@ -143,7 +143,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::s
         SDL_Log("failed to create texture from mask %s with color (r: %d, g: %d, b: %d, a: %d)\n", mask_path.c_str(), color.r, color.g, color.b, color.a);
         return nullptr;
     }
-    return m_textures[texture_name];
+    return img_texture;
 }
 
 SDL_Texture* TextureRes::getReanimTexture(const std::string& reanim_name)
