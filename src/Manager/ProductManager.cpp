@@ -35,7 +35,7 @@ int ProductManager::produceCollection(ProductType type, int x, int y)
 {
     if (type == ProductType::MaxProductNum || m_collectionItems.size() > m_maxCollectionLimit) return -1;
     m_collectionItems.push_front(std::static_pointer_cast<CollectionObject>(m_productTemplate[type]->clone(x, y)));
-    m_collectionItems.front()->setMotion(std::make_shared<MotionAccLimitTime>(20.0f, -20.0f, 0.0f, 10.0f, 2000));
+    m_collectionItems.front()->setMotion(std::make_shared<MotionAccLimitTime>(15.0f, -120.0f, 0.0f, 200.0f, 1300));
     SDL_Log("ProductManager::produceCollection produce a collection\n");
     return 0;
 }

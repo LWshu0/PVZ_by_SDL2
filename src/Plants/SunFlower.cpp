@@ -1,4 +1,6 @@
 #include "Plants/SunFlower.h"
+#include "Core/GlobalVars.h"
+#include "Manager/ProductManager.h"
 /*
 fps: 12
 0: backleaf -> range: [4, 28] total: [0, 28]
@@ -109,6 +111,12 @@ int SunFlower::updatePlant()
         m_animPlayer.restartTrack(28);
         is_blinking = true;
         last_blink_ms = GlobalVars::getInstance().timer.getTime();
+    }
+    // 产生阳光
+    if (GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
+    {
+        m_nextFireMilliSecond = GlobalVars::getInstance().timer.getTime() + m_reloadMilliSecond;
+        GlobalVars::getInstance().productManager->produceCollection(ProductType::SunType, m_aabb.x - m_aabb.w / 2, m_aabb.y);
     }
     return 0;
 }
