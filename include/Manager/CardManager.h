@@ -14,7 +14,7 @@
 
 class MapManager;
 class PlantManager;
-class CollectionManager;
+class ProductManager;
 
 //卡槽卡池节点
 struct CardNode {
@@ -66,7 +66,7 @@ protected:
     // 关联 manager
     std::shared_ptr<MapManager> m_mapManager;
     std::shared_ptr<PlantManager> m_plantManager;
-    std::shared_ptr<CollectionManager> m_collectionManager;
+    std::shared_ptr<ProductManager> m_productManager;
 public:
     CardManager();
 
@@ -75,7 +75,7 @@ public:
     int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
         std::shared_ptr<PlantManager> plantManager,
-        std::shared_ptr<CollectionManager> collectionManager
+        std::shared_ptr<ProductManager> productManager
     );
 
     // 清空卡槽

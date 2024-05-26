@@ -1,11 +1,11 @@
 #include "Manager/ZombieManager.h"
 #include "Manager/MapManager.h"
-#include "Manager/BulletManager.h"
+#include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
 
 ZombieManager::ZombieManager() :
     m_mapManager(nullptr),
-    m_bulletManager(nullptr),
+    m_productManager(nullptr),
     m_plantManager(nullptr),
     m_zombieNum(0)
 {
@@ -19,12 +19,12 @@ ZombieManager::ZombieManager() :
 
 int ZombieManager::initilizeManagers(
     std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<ProductManager> productManager,
     std::shared_ptr<PlantManager> plantManager
 )
 {
     m_mapManager = mapManager;
-    m_bulletManager = bulletManager;
+    m_productManager = productManager;
     m_plantManager = plantManager;
     return 0;
 }
@@ -105,7 +105,7 @@ int ZombieManager::updateZombie()
         // 移动
         m_zombies[i]->updateZombie();
         // 碰撞检测
-        int dam = m_bulletManager->collisionBullet(m_zombies[i]);
+        int dam = m_productManager->calculateDamage(m_zombies[i]);
         m_zombies[i]->damage(dam);
         if (m_zombies[i]->isDead())
         {
@@ -150,7 +150,7 @@ int ZombieManager::renderZombie()
 void ZombieManager::releaseManagers()
 {
     m_mapManager = nullptr;
-    m_bulletManager = nullptr;
+    m_productManager = nullptr;
     m_plantManager = nullptr;
 }
 

@@ -2,12 +2,11 @@
 #include "Core/GlobalVars.h"
 #include "Scene/GameScene.h"
 #include "Manager/MapManager.h"
-#include "Manager/BulletManager.h"
+#include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
 #include "Manager/CardManager.h"
-#include "Manager/CollectionManager.h"
 #include "Manager/SceneManager.h"
 
 #define FLUSH_DELAY 1000 / 45
@@ -17,12 +16,11 @@ bool QuitFlag = false;
 // int pvz_card_width = 53;
 // int pvz_card_height = 71;
 std::shared_ptr<MapManager> map_manager;
-std::shared_ptr<BulletManager> bullet_manager;
+std::shared_ptr<ProductManager> product_manager;
 std::shared_ptr<PlantManager> plant_manager;
 std::shared_ptr<ZombieManager> zombie_manager;
 std::shared_ptr<TaskManager> task_manager;
 std::shared_ptr<CardManager> card_manager;
-std::shared_ptr<CollectionManager> collection_manager;
 std::shared_ptr<SceneManager> scene_manager;
 
 SpinLock handle_update_render_spinlock;
@@ -76,22 +74,21 @@ int main(int argc, char* args[])
 
     // 创建管理者
     map_manager = std::make_shared<MapManager>();
-    bullet_manager = std::make_shared<BulletManager>(100);
+    product_manager = std::make_shared<ProductManager>(100, 100);
     plant_manager = std::make_shared<PlantManager>();
     zombie_manager = std::make_shared<ZombieManager>();
     task_manager = std::make_shared<TaskManager>();
     card_manager = std::make_shared<CardManager>();
-    collection_manager = std::make_shared<CollectionManager>(50);
     scene_manager = std::make_shared<SceneManager>(
-        map_manager, bullet_manager, plant_manager, zombie_manager, task_manager, card_manager, collection_manager
+        map_manager, product_manager, plant_manager, zombie_manager, task_manager, card_manager
     );
 
     // 关联管理者
-    plant_manager->initilizeManagers(map_manager, bullet_manager, zombie_manager);
-    zombie_manager->initilizeManagers(map_manager, bullet_manager, plant_manager);
+    plant_manager->initilizeManagers(map_manager, product_manager, zombie_manager);
+    zombie_manager->initilizeManagers(map_manager, product_manager, plant_manager);
     task_manager->initilizeManagers(map_manager, zombie_manager);
-    card_manager->initilizeManagers(map_manager, plant_manager, collection_manager);
-    collection_manager->initilizeManagers(map_manager);
+    card_manager->initilizeManagers(map_manager, plant_manager, product_manager);
+    product_manager->initilizeManagers(map_manager);
 
     std::thread render_thread(RenderThread);
 
@@ -159,7 +156,7 @@ int main(int argc, char* args[])
     zombie_manager->releaseManagers();
     task_manager->releaseManagers();
     card_manager->releaseManagers();
-    collection_manager->releaseManagers();
+    product_manager->releaseManagers();
 
     SDL_DestroyRenderer(GlobalVars::getInstance().renderer);
     SDL_DestroyWindow(GlobalVars::getInstance().window);

@@ -17,12 +17,11 @@ protected:
 public:
     SceneManager(
         std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<BulletManager> bulletManager,
+        std::shared_ptr<ProductManager> productManager,
         std::shared_ptr<PlantManager> plantManager,
         std::shared_ptr<ZombieManager> zombieManager,
         std::shared_ptr<TaskManager> taskManager,
-        std::shared_ptr<CardManager> cardManager,
-        std::shared_ptr<CollectionManager> collectionManager
+        std::shared_ptr<CardManager> cardManager
         );
 
     // 调用当前场景的处理事件函数

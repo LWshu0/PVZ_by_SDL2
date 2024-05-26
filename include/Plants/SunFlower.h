@@ -20,7 +20,7 @@ public:
     virtual int setPlantState(PlantState to_state) override;
 
     virtual bool inAttackRange(const SDL_FRect& enemy_aabb) override;
-    virtual BulletType attack() override;
+    virtual ProductType attack() override;
 
     virtual int updatePlant() override;
 

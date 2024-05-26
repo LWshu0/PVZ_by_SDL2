@@ -93,9 +93,9 @@ bool SunFlower::inAttackRange(const SDL_FRect& enemy_aabb)
     return false;
 }
 
-BulletType SunFlower::attack()
+ProductType SunFlower::attack()
 {
-    return BulletType::MaxBulletType;
+    return ProductType::MaxProductNum;
 }
 
 int SunFlower::updatePlant()

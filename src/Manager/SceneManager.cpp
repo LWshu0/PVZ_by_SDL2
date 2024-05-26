@@ -2,12 +2,11 @@
 
 SceneManager::SceneManager(
     std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<ProductManager> productManager,
     std::shared_ptr<PlantManager> plantManager,
     std::shared_ptr<ZombieManager> zombieManager,
     std::shared_ptr<TaskManager> taskManager,
-    std::shared_ptr<CardManager> cardManager,
-    std::shared_ptr<CollectionManager> collectionManager
+    std::shared_ptr<CardManager> cardManager
 )
 {
     // 分配空间
@@ -20,7 +19,7 @@ SceneManager::SceneManager(
     // 选卡到游戏的过渡界面
     m_sceneTemplate[SceneType::Scene_Select2GameScene] = std::make_shared<Select2Game>(mapManager);
     // 游戏界面
-    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(mapManager, bulletManager, plantManager, zombieManager, taskManager, cardManager, collectionManager);
+    m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>(mapManager, productManager, plantManager, zombieManager, taskManager, cardManager);
     // ...
 
     // 设置初始界面

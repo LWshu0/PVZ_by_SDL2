@@ -1,11 +1,11 @@
 #include "Manager/PlantManager.h"
 #include "Manager/MapManager.h"
-#include "Manager/BulletManager.h"
+#include "Manager/ProductManager.h"
 #include "Manager/ZombieManager.h"
 
 PlantManager::PlantManager() :
     m_mapManager(nullptr),
-    m_bulletManager(nullptr),
+    m_productManager(nullptr),
     m_zombieManager(nullptr)
 {
     m_plantTemplate.resize(PlantType::MaxPlantType);
@@ -24,12 +24,12 @@ PlantManager::PlantManager() :
 
 int PlantManager::initilizeManagers(
     std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<ProductManager> productManager,
     std::shared_ptr<ZombieManager> zombieManager
 )
 {
     m_mapManager = mapManager;
-    m_bulletManager = bulletManager;
+    m_productManager = productManager;
     m_zombieManager = zombieManager;
     return 0;
 }
@@ -183,10 +183,10 @@ int PlantManager::updatePlants()
                 {
                     m_mainPlants[i][j]->setPlantState(PlantState::Plant_IDLE);
                 }
-                BulletType bullet_type = m_mainPlants[i][j]->attack();
-                if (BulletType::MaxBulletType != bullet_type)
+                ProductType bullet_type = m_mainPlants[i][j]->attack();
+                if (ProductType::MaxProductNum != bullet_type)
                 {
-                    m_bulletManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
+                    m_productManager->addBullet(bullet_type, m_mainPlants[i][j]->m_aabb.x + m_mainPlants[i][j]->m_aabb.w, m_mainPlants[i][j]->m_aabb.y + 10);
                 }
 
                 m_mainPlants[i][j]->updatePlant();
@@ -220,7 +220,7 @@ int PlantManager::renderPlants()
 void PlantManager::releaseManagers()
 {
     m_mapManager = nullptr;
-    m_bulletManager = nullptr;
+    m_productManager = nullptr;
     m_zombieManager = nullptr;
 }
 

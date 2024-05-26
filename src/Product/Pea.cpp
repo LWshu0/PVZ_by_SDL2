@@ -1,34 +1,31 @@
-#include "Bullet/Pea.h"
+#include "Product/Pea.h"
 
 Pea::Pea(
-    SDL_Texture* bullet_texture,
-    SDL_Texture* shadow_texture,
     float x, float y
 ) :
     BulletObject(
         SDL_FRect{ x, y, 20, 20 },  // AABB
-        shadow_texture,             // 阴影纹理
         SDL_FPoint{ -10, 50 },      // 阴影偏移
         50, 20,                     // 阴影宽高        
         20                          // 伤害
-    ),
-    m_texture(bullet_texture)
+    )
 {
-    if (bullet_texture != nullptr)
+    m_texture = GlobalVars::getInstance().textureRes.getTextureFrom("images/ProjectilePea.png");
+    if (m_texture != nullptr)
     {
         SDL_QueryTexture(m_texture, NULL, NULL, &m_textureWidth, &m_textureHeight);
     }
+    m_updater = std::make_shared<MotionSpeed>(200.0f, 0.0f);
 }
 
-std::shared_ptr<BulletObject> Pea::cloneBullet(float x, float y)
+std::shared_ptr<ProductObject> Pea::clone(float x, float y)
 {
-    std::shared_ptr<BulletObject> new_one = std::make_shared<Pea>(
-        m_texture,
-        m_shadow,
-        x, y);
+    std::shared_ptr<BulletObject> new_one = std::make_shared<Pea>(x, y);
     new_one->setMotion(m_updater);
     return new_one;
 }
+
+ProductType Pea::getType() { return ProductType::PeaType; }
 
 int Pea::render()
 {

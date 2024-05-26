@@ -10,12 +10,12 @@ protected:
     int m_textureHeight;
 public:
     Pea(
-        SDL_Texture* bullet_texture,
-        SDL_Texture* shadow_texture,
-        float x, float y
+        float x,
+        float y
     );
 
-    virtual std::shared_ptr<BulletObject> cloneBullet(float x, float y) override;
+    virtual std::shared_ptr<ProductObject> clone(float x, float y) override;
+    virtual ProductType getType() override;
     virtual int render() override;
     virtual ~Pea() {};
 };

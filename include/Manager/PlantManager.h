@@ -9,7 +9,7 @@
 #include "Plants/SunFlower.h"
 
 class MapManager;
-class BulletManager;
+class ProductManager;
 class ZombieManager;
 
 class PlantManager {
@@ -22,7 +22,7 @@ protected:
 
     // 关联 manager
     std::shared_ptr<MapManager> m_mapManager;
-    std::shared_ptr<BulletManager> m_bulletManager;
+    std::shared_ptr<ProductManager> m_productManager;
     std::shared_ptr<ZombieManager> m_zombieManager;
     // plants in game
     std::vector<std::vector<std::shared_ptr<PlantObject>>> m_mainPlants;
@@ -37,7 +37,7 @@ public:
     // 因包含循环引用, 后续还需要 releaseManagers
     int initilizeManagers(
         std::shared_ptr<MapManager> mapManager,
-        std::shared_ptr<BulletManager> bulletManager,
+        std::shared_ptr<ProductManager> productManager,
         std::shared_ptr<ZombieManager> zombieManager
     );
 

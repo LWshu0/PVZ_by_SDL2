@@ -1,6 +1,6 @@
 #include "Manager/CardManager.h"
 #include "Manager/PlantManager.h"
-#include "Manager/CollectionManager.h"
+#include "Manager/ProductManager.h"
 
 CardManager::CardManager(
 ) :
@@ -96,12 +96,12 @@ CardManager::CardManager(
 int CardManager::initilizeManagers(
     std::shared_ptr<MapManager> mapManager,
     std::shared_ptr<PlantManager> plantManager,
-    std::shared_ptr<CollectionManager> collectionManager
+    std::shared_ptr<ProductManager> productManager
 )
 {
     m_mapManager = mapManager;
     m_plantManager = plantManager;
-    m_collectionManager = collectionManager;
+    m_productManager = productManager;
     if (m_plantManager == nullptr) return -1;
     // 初始化纹理数组为最大 plant 数量
     m_plantCardTexture.resize(PlantType::MaxPlantType);
@@ -188,7 +188,7 @@ void CardManager::updateCardInSlot()
 {
     for (auto& card : m_cardInSlot)
     {
-        card.m_endble = (card.m_sunCost <= m_collectionManager->getSunNum());
+        card.m_endble = (card.m_sunCost <= m_productManager->getSunNum());
         if (card.m_rmCoolMilliSecond <= GlobalVars::getInstance().timer.getDeltaTime()) card.m_rmCoolMilliSecond = 0;
         else card.m_rmCoolMilliSecond -= GlobalVars::getInstance().timer.getDeltaTime();
     }
@@ -226,8 +226,8 @@ int CardManager::settleCard(int card_slot_idx)
     if (card_slot_idx >= 0
         && card_slot_idx < m_cardInSlot.size())
     {
-        m_collectionManager->setSunNum(m_collectionManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
-        m_cardInSlot[card_slot_idx].m_endble = m_collectionManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
+        m_productManager->setSunNum(m_productManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
+        m_cardInSlot[card_slot_idx].m_endble = m_productManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
         m_cardInSlot[card_slot_idx].m_rmCoolMilliSecond = m_cardInSlot[card_slot_idx].m_coolMilliSecond;
         return card_slot_idx;
     }
@@ -287,7 +287,7 @@ int CardManager::renderCardSlot()
             SDL_RenderFillRect(GlobalVars::getInstance().renderer, &m_cardRangeInSlot[i].m_range);
         }
     }
-    std::string sunNum = std::to_string(m_collectionManager->getSunNum());
+    std::string sunNum = std::to_string(m_productManager->getSunNum());
     m_sunFont.render(sunNum, 15, 57);
     // 显示可点击范围
     for (auto i : m_cardRangeInSlot)
@@ -350,7 +350,7 @@ void CardManager::releaseManagers()
 {
     m_mapManager = nullptr;
     m_plantManager = nullptr;
-    m_collectionManager = nullptr;
+    m_productManager = nullptr;
 }
 
 CardManager::~CardManager()

@@ -134,15 +134,15 @@ bool PeaShooterSingle::inAttackRange(const SDL_FRect& enemy_aabb)
     return enemy_aabb.x >= m_aabb.x;
 }
 
-BulletType PeaShooterSingle::attack()
+ProductType PeaShooterSingle::attack()
 {
-    if (PlantState::Plant_ATTACK != m_state) return BulletType::MaxBulletType;
+    if (PlantState::Plant_ATTACK != m_state) return ProductType::MaxProductNum;
     if (GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
     {
         m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;    // 防止在攻击动画播放完成前多次返回子弹
-        return BulletType::BulletPea;
+        return ProductType::PeaType;
     }
-    return BulletType::MaxBulletType;
+    return ProductType::MaxProductNum;
 }
 
 int PeaShooterSingle::updatePlant()

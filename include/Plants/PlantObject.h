@@ -4,7 +4,7 @@
 #include "Core/Timer.h"
 #include "Core/GameObject.h"
 #include "Core/AnimPlayer.h"
-#include "Bullet/BulletObject.h"
+#include "Product/ProductObject.h"
 #include "Core/ExtSDL.h"
 
 #include <memory>
@@ -127,7 +127,7 @@ public:
      * 
      * @return BulletType 植物产生的子弹类型, 返回 BulletType::MaxBulletType 代表该时刻不产生子弹
      */
-    virtual BulletType attack() = 0;
+    virtual ProductType attack() = 0;
 
     // 对植物造成伤害, 使植物 HP 减少
     virtual void damage(int damege_num);

@@ -1,4 +1,4 @@
-#include "Collection/Sun.h"
+#include "Product/Sun.h"
 /*
 0: Sun3 -> range: [0, 12] total: [0, 12]
 1: Sun2 -> range: [0, 12] total: [0, 12]
@@ -23,17 +23,17 @@ Sun::Sun(
     );
 }
 
-std::shared_ptr<CollectionObject> Sun::cloneCollection(float x, float y)
+std::shared_ptr<ProductObject> Sun::clone(float x, float y)
 {
     return std::make_shared<Sun>(SDL_FRect{ x, y, m_aabb.w, m_aabb.h }, m_animPlayer.getAnimLoader());
 }
 
-CollectionType Sun::getType()
+ProductType Sun::getType()
 {
-    return CollectionType::Collection_Sun;
+    return ProductType::SunType;
 }
 
-int Sun::updateCollection()
+int Sun::update()
 {
     m_animPlayer.updatePlayingFrameIdx();
     m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());

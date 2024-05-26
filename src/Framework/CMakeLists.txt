@@ -4,12 +4,11 @@ add_executable(PVZ PVZ.cpp)
 target_link_libraries(PVZ PUBLIC 
     normal_core sdl_core 
     map mapmanager 
-    bullet bulletmanager 
+    product productmanager 
     plants plantmanager
     zombies zombiemanager
     taskmanager
     cardmanager
-    collection collectionmanager
     scene scenemanager
     ui
 )

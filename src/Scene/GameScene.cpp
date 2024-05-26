@@ -1,20 +1,19 @@
 #include "Scene/GameScene.h"
 #include "Manager/MapManager.h"
-#include "Manager/BulletManager.h"
+#include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
 #include "Manager/CardManager.h"
-#include "Manager/CollectionManager.h"
+
 
 GameScene::GameScene(
     std::shared_ptr<MapManager> mapManager,
-    std::shared_ptr<BulletManager> bulletManager,
+    std::shared_ptr<ProductManager> productManager,
     std::shared_ptr<PlantManager> plantManager,
     std::shared_ptr<ZombieManager> zombieManager,
     std::shared_ptr<TaskManager> taskManager,
-    std::shared_ptr<CardManager> cardManager,
-    std::shared_ptr<CollectionManager> collectionManager
+    std::shared_ptr<CardManager> cardManager
 ) :
     SceneObject(),
     m_cardInHandIdx(-1),
@@ -22,12 +21,11 @@ GameScene::GameScene(
     m_dropSunIntervalTime(5000),
     m_dropSunCountDown(5000),
     m_mapManager(mapManager),
-    m_bulletManager(bulletManager),
+    m_productManager(productManager),
     m_plantManager(plantManager),
     m_zombieManager(zombieManager),
     m_taskManager(taskManager),
-    m_cardManager(cardManager),
-    m_collectionManager(collectionManager)
+    m_cardManager(cardManager)
 {
 
 }
@@ -46,10 +44,9 @@ int GameScene::enterScene()
     m_mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
     m_plantManager->initilizePlants();
     m_zombieManager->initilizeZombie();
-    m_bulletManager->clearBullets();
+    m_productManager->clear();
     m_taskManager->loadTask("task/1-1-1.xml");
-    m_collectionManager->clearCollection();
-    m_collectionManager->setSunNum(50);
+    m_productManager->setSunNum(50);
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
@@ -108,7 +105,7 @@ SceneType GameScene::handleEvent(SDL_Event& event)
                 else // 尝试收集
                 {
                     // todo ...
-                    m_collectionManager->clickCollection(event.button.x, event.button.y);
+                    m_productManager->clickCollection(event.button.x, event.button.y);
                 }
 
             }
@@ -130,15 +127,14 @@ SceneType GameScene::updateScene()
 {
     m_taskManager->updateTask();
     m_plantManager->updatePlants();
-    m_bulletManager->updateBullets();
+    m_productManager->update();
     m_zombieManager->updateZombie();
     m_zombieManager->attackPlants();
     m_cardManager->updateCardInSlot();
-    m_collectionManager->updateCollection();
     if (m_dropSunCountDown <= GlobalVars::getInstance().timer.getDeltaTime())
     {
         m_dropSunCountDown = m_dropSunIntervalTime;
-        m_collectionManager->randomDropSun();
+        m_productManager->randomDropSun();
     }
     else
     {
@@ -160,8 +156,8 @@ SceneType GameScene::updateScene()
 int GameScene::exitScene()
 {
     SDL_Log("exit game scene\n");
-    m_collectionManager->collectCollection();
-    m_collectionManager->setSunNum(50);
+    m_productManager->collect();
+    m_productManager->setSunNum(50);
     return 0;
 }
 
@@ -170,7 +166,7 @@ int GameScene::renderScene()
     m_mapManager->renderMap();
     m_plantManager->renderPlants();
     m_zombieManager->renderZombie();
-    m_bulletManager->renderBullets();
+    m_productManager->render();
     m_cardManager->renderCardSlot();
     if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)
     {
@@ -179,7 +175,6 @@ int GameScene::renderScene()
         // 预放置位置虚影(在 m_plantManager->renderPlants() 中实现)
     }
     m_cardManager->renderCardCoolDown();
-    m_collectionManager->renderCollection();
     return 0;
 }
 
