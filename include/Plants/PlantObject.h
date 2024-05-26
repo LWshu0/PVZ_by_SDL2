@@ -11,6 +11,7 @@
 
 enum PlantType {
     PlantPeaShooter1,
+    SunFlower_,
     MaxPlantType
 };
 

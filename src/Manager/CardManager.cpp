@@ -269,7 +269,7 @@ int CardManager::getPoolIdx(int x, int y)
     if (x < 0 || y < 0) return -1;
     x /= (m_cardWidth + m_poolCardSepX);
     y /= (m_cardHeight + m_poolCardOffsetY);
-    int card_idx = x * m_poolCardPerRow + y;
+    int card_idx = y * m_poolCardPerRow + x;
     if (card_idx < m_cardInPool.size()) return card_idx;
     return -1;
 }

@@ -73,6 +73,16 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
     return false;
 }
 
+bool ZombieManager::hasZombieInAttackRange(std::shared_ptr<PlantObject> plant)
+{
+    for (int i = 0;i < m_zombies.size();i++)
+    {
+        if (nullptr == m_zombies[i]) continue;
+        if (plant->inAttackRange(m_zombies[i]->m_aabb)) return true;
+    }
+    return false;
+}
+
 bool ZombieManager::hasZombieInHouse()
 {
     float house_margin = GlobalVars::getInstance().camera.getClickX(0);

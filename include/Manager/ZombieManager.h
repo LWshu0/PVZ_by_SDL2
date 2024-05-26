@@ -9,6 +9,7 @@
 
 #include "Zombies/ZombieObject.h"
 #include "Zombies/Zombie.h"
+#include "Plants/PlantObject.h"
 
 class MapManager;
 class BulletManager;
@@ -52,7 +53,7 @@ public:
     // 在第 row 行的 left_x 和 right_x 之间是否有僵尸
     // 其中 left_x 和 right_x 都是世界坐标系下的坐标
     bool hasZombieBetween(int row, float left_x, float right_x);
-
+    bool hasZombieInAttackRange(std::shared_ptr<PlantObject> plant);
     inline bool hasZombie() { return m_zombieNum > 0; }
 
     bool hasZombieInHouse();

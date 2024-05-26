@@ -38,4 +38,22 @@ public:
     virtual ~MotionSpeedLimitTime() {}
 };
 
+class MotionAccLimitTime :public ObjectMotion {
+protected:
+    float m_speedX, m_speedY;
+    float m_accX, m_accY;
+    uint64_t m_lifetime;
+public:
+    MotionAccLimitTime(float sx, float sy, float ax, float ay, uint64_t time) :
+        ObjectMotion(),
+        m_speedX(sx),
+        m_speedY(sy),
+        m_accX(ax),
+        m_accY(ay),
+        m_lifetime(time)
+    {}
+    virtual int step(GameObject* object, uint64_t delta_ms) override;
+    virtual ~MotionAccLimitTime() {}
+};
+
 #endif

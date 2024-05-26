@@ -4,6 +4,8 @@
 #include "Collection/CollectionObject.h"
 #include "Collection/Sun.h"
 
+#include <list>
+
 class MapManager;
 
 class CollectionManager
@@ -13,7 +15,9 @@ protected:
     std::vector<std::shared_ptr<CollectionObject>> m_collectionTemplate;    // 掉落物模板
 
     // 游戏中的掉落物
-    std::vector<std::shared_ptr<CollectionObject>> m_collectionItems;
+    std::list<std::shared_ptr<CollectionObject>> m_collectionItems;
+    // 允许存在在游戏内的掉落物最大数量
+    int m_maxCollectionLimit;
 
     // 数据记录
     int m_sunNum;
@@ -38,6 +42,9 @@ public:
     int addCollection(CollectionType type, int x, int y);
 
     int randomDropSun();
+
+    // 生产得到的掉落物 抛物线形式的运动
+    int produceCollection(CollectionType type, int x, int y);
 
     int clickCollection(int mouse_x, int mouse_y);
     

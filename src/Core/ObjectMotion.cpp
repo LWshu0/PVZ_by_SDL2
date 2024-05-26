@@ -21,3 +21,16 @@ int MotionSpeedLimitTime::step(GameObject* object, uint64_t delta_ms)
     object->m_aabb.y += delta_y;
     return 0;
 }
+
+int MotionAccLimitTime::step(GameObject* object, uint64_t delta_ms)
+{
+    if (nullptr == object) return -1;
+    if (m_lifetime < delta_ms) return 0;
+    m_lifetime -= delta_ms;
+    float delta_s = static_cast<float>(delta_ms) / 1000.0f;
+    m_speedX += m_accX * delta_s;
+    m_speedY += m_accY * delta_s;
+    object->m_aabb.x += m_speedX * delta_s;
+    object->m_aabb.y += m_speedY * delta_s;
+    return 0;
+}

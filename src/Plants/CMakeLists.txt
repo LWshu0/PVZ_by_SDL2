@@ -1,1 +1,1 @@
-add_library(plants OBJECT PlantObject.cpp PeaShooterSingle.cpp)
+add_library(plants OBJECT PlantObject.cpp PeaShooterSingle.cpp SunFlower.cpp)

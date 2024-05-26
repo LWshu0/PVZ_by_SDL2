@@ -16,7 +16,10 @@ PlantManager::PlantManager() :
     m_animLoader[PlantType::PlantPeaShooter1]->Attach(17, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     m_animLoader[PlantType::PlantPeaShooter1]->Attach(16, SDL_FPoint{ 16.0f, 9.0f }, 14, SDL_FPoint{ 49.0f, 20.0f });
     m_plantTemplate[PlantType::PlantPeaShooter1] = std::make_shared<PeaShooterSingle>(m_animLoader[PlantType::PlantPeaShooter1], SDL_FPoint{ 0.0f, 0.0f });
-
+    // 向日葵
+    m_animLoader[PlantType::SunFlower_] = std::make_shared<AnimLoader>("reanim/SunFlower.reanim");
+    m_animLoader[PlantType::SunFlower_]->Attach(28, SDL_FPoint{ 14.0f, 8.0f }, 27, SDL_FPoint{ 31.0f, 17.0f });
+    m_plantTemplate[PlantType::SunFlower_] = std::make_shared<SunFlower>(m_animLoader[PlantType::SunFlower_], SDL_FPoint{ 0.0f, 0.0f });
 }
 
 int PlantManager::initilizeManagers(
@@ -171,7 +174,8 @@ int PlantManager::updatePlants()
             }
             else
             {
-                if (m_zombieManager->hasZombieBetween(i, m_mainPlants[i][j]->m_aabb.x, m_mapManager->getRightMargin()))
+                // 是否有僵尸在攻击范围内
+                if (m_zombieManager->hasZombieInAttackRange(m_mainPlants[i][j]))
                 {
                     m_mainPlants[i][j]->setPlantState(PlantState::Plant_ATTACK);
                 }

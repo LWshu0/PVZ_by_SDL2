@@ -6,6 +6,7 @@
 #include "Core/GlobalVars.h"
 #include "Plants/PlantObject.h"
 #include "Plants/PeaShooterSingle.h"
+#include "Plants/SunFlower.h"
 
 class MapManager;
 class BulletManager;
