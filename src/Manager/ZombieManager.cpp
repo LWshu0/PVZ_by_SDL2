@@ -4,10 +4,8 @@
 #include "Manager/PlantManager.h"
 #include "Core/GlobalVars.h"
 
-ZombieManager::ZombieManager() :
-    m_zombieNum(0)
+ZombieManager::ZombieManager()
 {
-    m_zombies.resize(10);
     m_zombieTemplate.resize(ZombieType::MaxZombieType);
     m_animLoader.resize(ZombieType::MaxZombieType);
     // 普通僵尸
@@ -17,9 +15,7 @@ ZombieManager::ZombieManager() :
 
 int ZombieManager::initilizeZombie()
 {
-    m_zombieNum = 0;
     m_zombies.clear();
-    m_zombies.resize(10);
     return 0;
 }
 
@@ -31,27 +27,20 @@ int ZombieManager::addZombie(ZombieType type, int row, int col)
     {
         return -1;
     }
-    for (int i = 0;i < m_zombies.size();i++)
-    {
-        if (nullptr != m_zombies[i]) continue;
-        float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
-        float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
-        root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
-        root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
-        m_zombies[i] = m_zombieTemplate[type]->cloneZombie(SDL_FPoint{ root_x, root_y });
-        m_zombieNum += 1;
-        return 0;
-    }
-    return -1;
+    float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
+    float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
+    root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
+    root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
+    m_zombies.push_front(m_zombieTemplate[type]->cloneZombie(SDL_FPoint{ root_x, root_y }));
+    return 0;
 }
 
 bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
 {
-    for (int i = 0;i < m_zombies.size();i++)
+    for (auto& ptr : m_zombies)
     {
-        if (nullptr == m_zombies[i]) continue;
-        int rowIdx = GlobalVars::getInstance().mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
-        if (rowIdx == row && (m_zombies[i]->m_aabb.x >= left_x && m_zombies[i]->m_aabb.x <= right_x))
+        int rowIdx = GlobalVars::getInstance().mapManager->caculRow(ptr->m_aabb.y + ptr->m_aabb.h);
+        if (rowIdx == row && (ptr->m_aabb.x >= left_x && ptr->m_aabb.x <= right_x))
         {
             return true;
         }
@@ -61,10 +50,9 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
 
 bool ZombieManager::hasZombieInAttackRange(std::shared_ptr<PlantObject> plant)
 {
-    for (int i = 0;i < m_zombies.size();i++)
+    for (auto& ptr : m_zombies)
     {
-        if (nullptr == m_zombies[i]) continue;
-        if (plant->inAttackRange(m_zombies[i]->m_aabb)) return true;
+        if (plant->inAttackRange(ptr->m_aabb)) return true;
     }
     return false;
 }
@@ -72,10 +60,9 @@ bool ZombieManager::hasZombieInAttackRange(std::shared_ptr<PlantObject> plant)
 bool ZombieManager::hasZombieInHouse()
 {
     float house_margin = GlobalVars::getInstance().camera.getClickX(0);
-    for (int i = 0;i < m_zombies.size();i++)
+    for (auto& ptr : m_zombies)
     {
-        if (nullptr == m_zombies[i]) continue;
-        if (m_zombies[i]->m_aabb.x + m_zombies[i]->m_aabb.w < house_margin)
+        if (ptr->m_aabb.x + ptr->m_aabb.w < house_margin)
         {
             return true;
         }
@@ -85,18 +72,20 @@ bool ZombieManager::hasZombieInHouse()
 
 int ZombieManager::updateZombie()
 {
-    for (int i = 0;i < m_zombies.size();i++)
+    for (auto iter = m_zombies.begin();iter != m_zombies.end();)
     {
-        if (nullptr == m_zombies[i]) continue;
         // 移动
-        m_zombies[i]->updateZombie();
+        (*iter)->updateZombie();
         // 碰撞检测
-        int dam = GlobalVars::getInstance().productManager->calculateDamage(m_zombies[i]);
-        m_zombies[i]->damage(dam);
-        if (m_zombies[i]->isDead())
+        int dam = GlobalVars::getInstance().productManager->calculateDamage((*iter));
+        (*iter)->damage(dam);
+        if ((*iter)->isDead())
         {
-            m_zombies[i] = nullptr;
-            m_zombieNum -= 1;
+            iter = m_zombies.erase(iter);
+        }
+        else
+        {
+            iter++;
         }
     }
     return 0;
@@ -104,20 +93,19 @@ int ZombieManager::updateZombie()
 
 int ZombieManager::attackPlants()
 {
-    for (int i = 0;i < m_zombies.size();i++)
+    for (auto& ptr : m_zombies)
     {
-        if (nullptr == m_zombies[i]) continue;
-        int row = GlobalVars::getInstance().mapManager->caculRow(m_zombies[i]->m_aabb.y + m_zombies[i]->m_aabb.h);
-        int col = GlobalVars::getInstance().mapManager->caculCol(m_zombies[i]->m_aabb.x);
-        if (GlobalVars::getInstance().plantManager->collisionPlant(m_zombies[i], row, col))
+        int row = GlobalVars::getInstance().mapManager->caculRow(ptr->m_aabb.y + ptr->m_aabb.h);
+        int col = GlobalVars::getInstance().mapManager->caculCol(ptr->m_aabb.x);
+        if (GlobalVars::getInstance().plantManager->collisionPlant(ptr, row, col))
         {
-            m_zombies[i]->setZombieState(ZombieState::Zombie_ATTACK);
-            int dam = m_zombies[i]->attack();
+            ptr->setZombieState(ZombieState::Zombie_ATTACK);
+            int dam = ptr->attack();
             GlobalVars::getInstance().plantManager->doDamage(row, col, dam);
         }
         else
         {
-            m_zombies[i]->setZombieState(ZombieState::Zombie_WALK);
+            ptr->setZombieState(ZombieState::Zombie_WALK);
         }
     }
     return 0;
@@ -125,26 +113,12 @@ int ZombieManager::attackPlants()
 
 int ZombieManager::renderZombie()
 {
-    for (int i = 0;i < m_zombies.size();i++)
+    for (auto& ptr : m_zombies)
     {
-        if (nullptr == m_zombies[i]) continue;
-        m_zombies[i]->render();
+        ptr->render();
     }
     return 0;
 }
 
 ZombieManager::~ZombieManager()
 {}
-
-int ZombieManager::changeAllTo(ZombieState state)
-{
-    for (int i = 0;i < m_zombies.size();i++)
-    {
-        if (nullptr == m_zombies[i]) continue;
-        if (-1 == m_zombies[i]->setZombieState(state))
-        {
-            SDL_Log("change failed\n");
-        }
-    }
-    return 0;
-}

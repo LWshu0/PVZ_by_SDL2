@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <list>
 
 #include "Core/GlobalVars.h"
 #include "Core/AnimLoader.h"
@@ -24,8 +25,7 @@ protected:
     std::vector<std::shared_ptr<ZombieObject>> m_zombieTemplate;    // 僵尸模板
 
     // zombies in game
-    int m_zombieNum;
-    std::vector<std::shared_ptr<ZombieObject>> m_zombies;
+    std::list<std::shared_ptr<ZombieObject>> m_zombies;
 
 public:
     ZombieManager();
@@ -41,7 +41,7 @@ public:
     // 其中 left_x 和 right_x 都是世界坐标系下的坐标
     bool hasZombieBetween(int row, float left_x, float right_x);
     bool hasZombieInAttackRange(std::shared_ptr<PlantObject> plant);
-    inline bool hasZombie() { return m_zombieNum > 0; }
+    inline bool hasZombie() { return m_zombies.size() > 0; }
 
     bool hasZombieInHouse();
     
@@ -57,9 +57,6 @@ public:
     int renderZombie();
 
     ~ZombieManager();
-
-    // 测试(弃用)
-    int changeAllTo(ZombieState state);
 };
 
 #endif
