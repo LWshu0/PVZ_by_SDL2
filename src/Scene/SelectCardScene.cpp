@@ -1,6 +1,7 @@
 #include "Scene/SelectCardScene.h"
 #include "Manager/MapManager.h"
 #include "Manager/CardManager.h"
+#include "Manager/UsrInfoManager.h"
 #include "Core/GlobalVars.h"
 
 SelectCardScene::SelectCardScene() :
@@ -48,7 +49,7 @@ SceneType SelectCardScene::handleEvent(SDL_Event& event)
             return SceneType::Scene_MaxSceneIdx;
         }
         int pool_idx = GlobalVars::getInstance().cardManager->getPoolIdx(event.button.x, event.button.y);
-        if (pool_idx != -1)
+        if (GlobalVars::getInstance().usrinfoManager->isUnlockPlant(pool_idx))
         {
             SDL_Log("pool -> slot: %d\n", pool_idx);
             GlobalVars::getInstance().cardManager->pool2slot(pool_idx);
