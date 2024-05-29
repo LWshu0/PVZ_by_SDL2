@@ -262,11 +262,13 @@ int MainScene::renderScene()
     m_animPlayer.renderTracks({ 42, 43, 44 });
     // 木板
     if (m_state != MainSceneState::EnterScene) m_animPlayer.renderTracks({ 45, 46, 47 });
+#ifndef NDEBUG
     // 渲染按钮的点击范围
     for (int button_idx = MainSceneButtonType::MainSceneButton_StartAdventure; button_idx < MainSceneButtonType::MainScene_MaxButtonNum; button_idx++)
     {
         m_buttonRange[button_idx]->renderShape();
     }
+#endif
     return 0;
 }
 

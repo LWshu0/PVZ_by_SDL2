@@ -85,8 +85,10 @@ int PeaShooterSingle::render()
         m_animPlayer.renderTrack(16);
         if (m_animPlayer.isPlayEnd(15)) setPlantState(PlantState::Plant_IDLE);
     }
+#ifndef NDEBUG
     // AABB 碰撞箱
     showAABB();
+#endif
     return 0;
 }
 

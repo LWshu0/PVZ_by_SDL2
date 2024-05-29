@@ -163,8 +163,10 @@ int SunFlower::render()
             m_animPlayer.popPlayingTrack();
         }
     }
+#ifndef NDEBUG
     // AABB 碰撞箱
     showAABB();
+#endif
     return 0;
 }
 

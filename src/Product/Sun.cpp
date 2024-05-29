@@ -44,11 +44,13 @@ int Sun::update()
 int Sun::render()
 {
     m_animPlayer.render();
+#ifndef NDEBUG
     SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
     SDL_FRect render_aabb = m_aabb;
     render_aabb.x = GlobalVars::getInstance().camera.getRenderX(m_aabb.x);
     render_aabb.y = GlobalVars::getInstance().camera.getRenderY(m_aabb.y);
     SDL_RenderDrawRectF(GlobalVars::getInstance().renderer, &render_aabb);
+#endif
     return 0;
 }
 

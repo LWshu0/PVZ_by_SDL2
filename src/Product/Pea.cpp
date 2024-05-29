@@ -33,10 +33,11 @@ int Pea::render()
     SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_texture, NULL, &tex_rect);
     SDL_FRect sha_rect{ GlobalVars::getInstance().camera.getRenderX(m_aabb.x + m_offsetShadow.x), GlobalVars::getInstance().camera.getRenderY(m_aabb.y + m_offsetShadow.y), m_shadowWidth, m_shadowHeight };
     SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_shadow, NULL, &sha_rect);
+#ifndef NDEBUG
     SDL_FRect aabb_box = m_aabb;
     aabb_box.x = GlobalVars::getInstance().camera.getRenderX(aabb_box.x);
     aabb_box.y = GlobalVars::getInstance().camera.getRenderY(aabb_box.y);
     SDL_RenderDrawRectF(GlobalVars::getInstance().renderer, &aabb_box);
-
+#endif
     return 0;
 }

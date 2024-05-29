@@ -83,9 +83,9 @@ int Zombie::render()
     showShadow();
 
     m_animPlayer.renderTracks({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 });
-
+#ifndef NDEBUG
     showAABB();
-
+#endif
     return 0;
 }
 

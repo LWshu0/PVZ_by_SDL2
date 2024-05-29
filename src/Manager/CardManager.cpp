@@ -43,7 +43,7 @@ CardManager::CardManager(
         i < PlantType::MaxPlantType;
         i++)
     {
-        m_cardRangeInPool.push_back(wsRectangle{ SDL_Rect{x, y, m_cardWidth, m_cardHeight}});
+        m_cardRangeInPool.push_back(wsRectangle{ SDL_Rect{x, y, m_cardWidth, m_cardHeight} });
         x += m_cardWidth + m_poolCardSepX;
         if ((i % m_poolCardPerRow) == m_poolCardPerRow - 1)
         {
@@ -56,7 +56,7 @@ CardManager::CardManager(
         i < GlobalVars::getInstance().usrinfoManager->getUnlockSlotNum();
         i++)
     {
-        m_cardRangeInSlot.push_back(wsRectangle{ SDL_Rect{x, y, m_cardWidth, m_cardHeight}});
+        m_cardRangeInSlot.push_back(wsRectangle{ SDL_Rect{x, y, m_cardWidth, m_cardHeight} });
         x += m_cardWidth + m_slotCardSepX;
     }
     // 初始化卡池中卡片的信息
@@ -290,11 +290,13 @@ int CardManager::renderCardSlot()
     }
     std::string sunNum = std::to_string(GlobalVars::getInstance().productManager->getSunNum());
     m_sunFont.render(sunNum, 15, 57);
+#ifndef NDEBUG
     // 显示可点击范围
     for (auto i : m_cardRangeInSlot)
     {
         i.renderShape();
     }
+#endif
     return 0;
 }
 
@@ -330,11 +332,13 @@ int CardManager::renderCardPool()
             SDL_RenderFillRect(GlobalVars::getInstance().renderer, &m_cardRangeInPool[i].m_range);
         }
     }
+#ifndef NDEBUG
     // 显示可点击范围
     for (auto i : m_cardRangeInPool)
     {
         i.renderShape();
     }
+#endif
     return 0;
 }
 

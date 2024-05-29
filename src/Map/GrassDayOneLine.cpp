@@ -25,7 +25,7 @@ int GrassDayOneLine::render()
     SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_bkTexture, NULL, &map_rect);
     SDL_Rect grass_rect{
         (int)GlobalVars::getInstance().camera.getRenderX(237.0f),
-        (int)GlobalVars::getInstance().camera.getRenderY(260.0f),
+        (int)GlobalVars::getInstance().camera.getRenderY(270.0f),
         m_grassWidth,
         m_grassHeight
     };
