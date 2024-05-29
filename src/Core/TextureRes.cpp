@@ -78,6 +78,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const std::string& _file_path, const
     if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
     // 创建纹理
     SDL_Texture* img_texture = SDL_CreateTextureFromSurface(GlobalVars::getInstance().renderer, surface);
+    SDL_SetTextureBlendMode(img_texture, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(mask);
     if (img_texture != NULL)
@@ -132,6 +133,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::s
     if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
     // 创建纹理
     SDL_Texture* img_texture = SDL_CreateTextureFromSurface(GlobalVars::getInstance().renderer, surface);
+    SDL_SetTextureBlendMode(img_texture, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(mask);
     if (img_texture != NULL)
