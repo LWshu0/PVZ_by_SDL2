@@ -10,6 +10,8 @@ target_link_libraries(CollectionTest PUBLIC normal_core sdl_core bullet collecti
 add_executable(DictionaryTest DictionaryTest.cpp)
 target_link_libraries(DictionaryTest PUBLIC normal_core sdl_core)
 
+add_executable(NormalTest NormalTest.cpp)
+
 # add_executable(BulletTest BulletTest.cpp)
 # target_link_libraries(BulletTest PUBLIC normal_core sdl_core bullet bulletmanager)
 
