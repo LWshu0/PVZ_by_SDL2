@@ -74,6 +74,7 @@ include_directories(${INCLUDE_DIR}
                     ${SDL2_image_INCLUDE_DIRS}
                     ${SDL2_ttf_INCLUDE_DIRS}
                     ${GLM_INCLUDE_DIRS}
+                    "D:/3rd_lib"
                     )
 # 链接库文件
 link_directories(${RUN_DIR}/lib

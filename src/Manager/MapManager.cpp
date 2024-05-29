@@ -1,62 +1,53 @@
 #include "Manager/MapManager.h"
+#include <fstream>
+#include "rapidjson/istreamwrapper.h"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
+#include "Map/GrassDayOneLine.h"
 
-MapManager::MapManager() :
-    m_mapWidthPixel(0),
-    m_mapHeightPixel(0),
-    m_leftMargin(0),
-    m_rightMargin(0),
-    m_topMargin(0),
-    m_bottomMargin(0),
-    m_cellHeight(0),
-    m_cellWidth(0)
+MapManager::MapManager() :m_map(nullptr)
+{}
+
+void MapManager::setMap(MapType type)
 {
-    // 初始化模板数组
-    m_mapTemplate.resize(MapType::MaxMapType);
-    // 初始化模板
-    m_mapTemplate[MapType::MapGrassDayOneLine] = std::make_shared<GrassDayOneLine>();
-
-}
-
-int MapManager::setMap(
-    float width,
-    float height,
-    MapType type
-)
-{
-    m_mapType = type;
-    m_mapTemplate[m_mapType]->initilizeMapManager(this, width, height);
-    m_mapTemplate[m_mapType]->resetMap(m_mapRunTime);
-    return 0;
+    switch (type)
+    {
+    case MapType::MapGrassDayOneLine:
+        m_map = std::make_shared<GrassDayOneLine>();
+        break;
+    
+    default:
+        break;
+    }
 }
 
 int MapManager::caculRow(float y)
 {
-    return static_cast<int>((y - m_topMargin) / m_cellHeight);
+    return static_cast<int>((y - m_map->getTopMargin()) / m_map->getCellHeight());
 }
 
 int MapManager::caculCol(float x)
 {
-    return static_cast<int>((x - m_leftMargin) / m_cellWidth);
+    return static_cast<int>((x - m_map->getLeftMargin()) / m_map->getCellWidth());
 }
 
 bool MapManager::isValidCell(int row, int col)
 {
     // 位置判断
-    if (row < 0 || row >= m_rowNum || col < 0 || col >= m_colNum) return false;
+    if (row < 0 || row >= m_map->getRow() || col < 0 || col >= m_map->getCol()) return false;
     // 地形判断
-    if (m_mapRunTime[row][col].m_landForm != MapNode::LandForm::GRASS) return false;
+    if (m_map->getLandForm(row, col) != MapNode::LandForm::GRASS) return false;
     return true;
+}
+
+int MapManager::updateMap()
+{
+    return m_map->update();
 }
 
 int MapManager::renderMap()
 {
-    SDL_FRect map_rect{
-        GlobalVars::getInstance().camera.getRenderX(0.0f),
-        GlobalVars::getInstance().camera.getRenderY(0.0f),
-        m_mapWidthPixel,
-        m_mapHeightPixel
-    };
-    return SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_bkTexture, NULL, &map_rect);
+    return m_map->render();
 }
 
 MapManager::~MapManager()

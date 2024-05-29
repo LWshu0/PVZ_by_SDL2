@@ -1,4 +1,4 @@
 add_library(map OBJECT 
-    MapInitilizer.cpp 
+    MapObject.cpp 
     GrassDayOneLine.cpp
 )

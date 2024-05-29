@@ -4,8 +4,7 @@
 #include <vector>
 #include <memory>
 #include "Core/GlobalVars.h"
-#include "Map/MapInitilizer.h"
-#include "Map/GrassDayOneLine.h"
+#include "Map/MapObject.h"
 
 enum MapType {
     MapGrassDayOneLine,
@@ -14,67 +13,36 @@ enum MapType {
 };
 
 class MapManager {
-protected:
-    /**********************
-    *    初始化后不可变   *
-    *    与渲染相关       *
-    **********************/
-    std::vector<std::shared_ptr<MapInitilizer>> m_mapTemplate;
-    /********************
-    *   地图管理变量    *
-    ********************/
-public:
-    // 地图大小
-    float m_mapWidthPixel;
-    float m_mapHeightPixel;
-    // 可种植区域的边界
-    float m_leftMargin;
-    float m_rightMargin;
-    float m_topMargin;
-    float m_bottomMargin;
-    // 格子大小
-    float m_cellWidth;
-    float m_cellHeight;
-    // 可种植区域的行列数
-    int m_rowNum;
-    int m_colNum;
-    // 地图背景
-    SDL_Texture* m_bkTexture;
-protected:
-    // 地图类型
-    MapType m_mapType;
-    // 二维数组
-    std::vector<std::vector<MapNode>> m_mapRunTime;
+private:
+
+    std::shared_ptr<MapObject> m_map;
+
 public:
     MapManager();
 
-    int setMap(
-        float width,
-        float height,
-        MapType type
-    );
+    void setMap(MapType type);
 
-    inline void setTime(MapNode::Time time, int row, int col) { m_mapRunTime[row][col].m_time = time; }
-    inline void setLandForm(MapNode::LandForm landform, int row, int col) { m_mapRunTime[row][col].m_landForm = landform; }
+    inline float getWidth() { return m_map->getWidth(); }
+    inline float getHeight() { return m_map->getHeight(); }
+    inline float getLeftMargin() { return m_map->getLeftMargin(); }
+    inline float getRightMargin() { return m_map->getRightMargin(); }
+    inline float getTopMargin() { return m_map->getTopMargin(); }
+    inline float getBottomMargin() { return m_map->getBottomMargin(); }
+    inline float getCellWidth() { return m_map->getCellWidth(); }
+    inline float getCellHeight() { return m_map->getCellHeight(); }
+    inline int getRow() { return m_map->getRow(); }
+    inline int getCol() { return m_map->getCol(); }
+    inline int getTime(int row, int col) { return m_map->getTime(row, col); }
+    inline int getLandForm(int row, int col) { return m_map->getLandForm(row, col); }
 
-    inline float getWidth() { return m_mapWidthPixel; }
-    inline float getHeight() { return m_mapHeightPixel; }
-    inline float getLeftMargin() { return m_leftMargin; }
-    inline float getRightMargin() { return m_rightMargin; }
-    inline float getTopMargin() { return m_topMargin; }
-    inline float getBottomMargin() { return m_bottomMargin; }
-    inline float getCellWidth() { return m_cellWidth; }
-    inline float getCellHeight() { return m_cellHeight; }
-    inline int getRow() { return m_rowNum; }
-    inline int getCol() { return m_colNum; }
-    inline int getTime(int row, int col) { return m_mapRunTime[row][col].m_time; }
-    inline int getLandForm(int row, int col) { return m_mapRunTime[row][col].m_landForm; }
 
     // 给定坐标位置, 计算所处的行列
     int caculRow(float y);
     int caculCol(float x);
     // 判断一个格子是否可以添加植物
     bool isValidCell(int row, int col);
+
+    int updateMap();
 
     int renderMap();
 
