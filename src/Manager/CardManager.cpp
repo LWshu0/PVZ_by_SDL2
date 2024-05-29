@@ -1,6 +1,7 @@
 #include "Manager/CardManager.h"
 #include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
+#include "Manager/UsrInfoManager.h"
 #include "Core/GlobalVars.h"
 
 CardManager::CardManager(
@@ -19,8 +20,7 @@ CardManager::CardManager(
     m_poolCardPerRow(8),
     m_slotCardOffsetX(78),
     m_slotCardOffsetY(8),
-    m_slotCardSepX(1),
-    m_cardSlotNum(7)
+    m_slotCardSepX(1)
 {
     m_cardPoolBK = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Background.png");
     if (m_cardPoolBK != nullptr)
@@ -53,7 +53,7 @@ CardManager::CardManager(
     }
     // 设置卡片在卡槽中占据的位置
     for (int i = 0, x = m_slotCardOffsetX, y = m_slotCardOffsetY;
-        i < m_cardSlotNum;
+        i < GlobalVars::getInstance().usrinfoManager->getUnlockSlotNum();
         i++)
     {
         m_cardRangeInSlot.push_back(wsRectangle{ SDL_Rect{x, y, m_cardWidth, m_cardHeight}});
@@ -269,6 +269,12 @@ int CardManager::getPoolIdx(int x, int y)
     return -1;
 }
 
+bool CardManager::isFullSlot()
+{
+    return GlobalVars::getInstance().usrinfoManager->getUnlockSlotNum() == m_cardInSlot.size()
+        || GlobalVars::getInstance().usrinfoManager->getUnlockPlantNum() == m_cardInSlot.size();
+}
+
 int CardManager::renderCardSlot()
 {
     SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 0, 0, 75);
@@ -317,6 +323,7 @@ int CardManager::renderCardPool()
     for (int i = 0; i < PlantType::MaxPlantType;i++)
     {
         if (m_cardInPool[i].m_plantType == PlantType::MaxPlantType) continue;
+        if (!GlobalVars::getInstance().usrinfoManager->isUnlockPlant(i)) continue;  // 不渲染未解锁的植物
         SDL_RenderCopy(GlobalVars::getInstance().renderer, m_plantCardTexture[i], NULL, &m_cardRangeInPool[i].m_range);
         if (!m_cardInPool[i].m_endble)
         {

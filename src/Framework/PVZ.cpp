@@ -69,6 +69,11 @@ int main(int argc, char* args[])
     if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) { SDL_Log("error: fail to set SDL_HINT_RENDER_SCALE_QUALITY"); }
 
     // 创建管理者
+    // UserInfoManager 必须第一个创建并完成数据读取
+    // 后续的 Manager 可能会依赖 UserInfoManager 的数据
+    GlobalVars::getInstance().usrinfoManager = std::make_shared<UsrInfoManager>();
+    GlobalVars::getInstance().usrinfoManager->read();
+
     GlobalVars::getInstance().mapManager = std::make_shared<MapManager>();
     GlobalVars::getInstance().productManager = std::make_shared<ProductManager>(100, 100);
     GlobalVars::getInstance().plantManager = std::make_shared<PlantManager>();
@@ -77,8 +82,6 @@ int main(int argc, char* args[])
     GlobalVars::getInstance().cardManager = std::make_shared<CardManager>();
     GlobalVars::getInstance().cardManager->initilizeManagers();
     GlobalVars::getInstance().sceneManager = std::make_shared<SceneManager>();
-    GlobalVars::getInstance().usrinfoManager = std::make_shared<UsrInfoManager>();
-    GlobalVars::getInstance().usrinfoManager->read();
     
     std::thread render_thread(RenderThread);
 

@@ -60,9 +60,6 @@ protected:
     // 卡片纹理
     std::vector<SDL_Texture*> m_plantCardTexture;
 
-    // 用户信息
-    int m_cardSlotNum;      // 解锁的卡槽数量
-
 public:
     CardManager();
     int initilizeManagers();
@@ -102,10 +99,7 @@ public:
 
     // 判断卡槽是否填满
     // 填满 or 所有的卡都在卡槽中
-    inline bool isFullSlot()
-    {
-        return m_cardSlotNum == m_cardInSlot.size() || m_cardInPool.size() == m_cardInSlot.size();
-    }
+    bool isFullSlot();
 
     int renderCardSlot();       // 绘制卡槽
     int renderCardCoolDown();   // 绘制游戏过程中卡槽的冷却信息

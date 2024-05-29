@@ -52,7 +52,7 @@ SceneType SelectCardScene::handleEvent(SDL_Event& event)
         else
         {
             // 临时: 非左键且满足条件就开始游戏
-            // if (m_cardManager->isFullSlot())
+            if (GlobalVars::getInstance().cardManager->isFullSlot())
                 return SceneType::Scene_Select2GameScene;
         }
 

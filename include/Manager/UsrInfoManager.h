@@ -14,6 +14,7 @@ private:
     int m_unlockSlotNum;
     // 解锁的植物
     bool m_unlockPlants[PlantType::MaxPlantType];
+    int m_unlockPlantNum;
 
 public:
     UsrInfoManager();
@@ -24,6 +25,7 @@ public:
     inline int getTaskPre() { return m_taskIdxPre; }
     inline int getTaskPost() { return m_taskIdxPost; }
     inline int getUnlockSlotNum() { return m_unlockSlotNum; }
+    inline int getUnlockPlantNum() { return m_unlockPlantNum; }
 
     bool isUnlockPlant(int plant_type);
 
