@@ -6,6 +6,7 @@
 #include "Manager/SceneManager.h"
 #include "Manager/TaskManager.h"
 #include "Manager/ZombieManager.h"
+#include "Manager/UsrInfoManager.h"
 
 GlobalVars& GlobalVars::getInstance()
 {

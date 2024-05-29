@@ -1,6 +1,7 @@
 #include "Manager/TaskManager.h"
 #include "Manager/ZombieManager.h"
 #include "Manager/MapManager.h"
+#include "Manager/UsrInfoManager.h"
 #include "Core/GlobalVars.h"
 
 TaskManager::TaskManager() :
@@ -35,6 +36,18 @@ int TaskManager::loadTask(const std::string& file_path)
         m_taskPointer = -1;
     }
     return m_taskPointer;
+}
+
+int TaskManager::loadTask()
+{
+    int pre = GlobalVars::getInstance().usrinfoManager->getTaskPre();
+    int post = GlobalVars::getInstance().usrinfoManager->getTaskPost();
+    int round = GlobalVars::getInstance().usrinfoManager->getRoundNum();
+    std::string task_file_name = std::to_string(pre) + "-" + std::to_string(post) + "-";
+    if (round >= 1) task_file_name += "n";
+    else task_file_name += "1";
+    task_file_name += ".xml";
+    return loadTask("task/" + task_file_name);
 }
 
 int TaskManager::updateTask()

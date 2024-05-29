@@ -15,3 +15,5 @@ add_library(taskmanager OBJECT TaskManager.cpp)
 add_library(cardmanager OBJECT CardManager.cpp)
 
 add_library(scenemanager OBJECT SceneManager.cpp)
+
+add_library(usrinfomanager OBJECT UsrInfoManager.cpp)

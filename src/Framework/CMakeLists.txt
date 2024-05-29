@@ -11,4 +11,5 @@ target_link_libraries(PVZ PUBLIC
     cardmanager
     scene scenemanager
     ui
+    usrinfomanager
 )

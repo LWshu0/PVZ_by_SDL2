@@ -8,6 +8,7 @@
 #include "Manager/TaskManager.h"
 #include "Manager/CardManager.h"
 #include "Manager/SceneManager.h"
+#include "Manager/UsrInfoManager.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -76,7 +77,9 @@ int main(int argc, char* args[])
     GlobalVars::getInstance().cardManager = std::make_shared<CardManager>();
     GlobalVars::getInstance().cardManager->initilizeManagers();
     GlobalVars::getInstance().sceneManager = std::make_shared<SceneManager>();
-
+    GlobalVars::getInstance().usrinfoManager = std::make_shared<UsrInfoManager>();
+    GlobalVars::getInstance().usrinfoManager->read();
+    
     std::thread render_thread(RenderThread);
 
     SDL_Event event;

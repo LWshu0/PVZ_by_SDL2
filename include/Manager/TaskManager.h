@@ -30,7 +30,8 @@ public:
 
     // 读入一个特定格式的 xml 文件, 其中包含关卡信息
     int loadTask(const std::string& file_path);
-
+    // 从 usrinfoManager 中读取进度
+    int loadTask();
     /**
      * @return int 1 代表关卡中所有僵尸出现事件结束, 0 代表正在进行关卡, -1 代表出错
      */

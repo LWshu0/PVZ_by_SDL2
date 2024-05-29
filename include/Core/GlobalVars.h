@@ -15,6 +15,7 @@ class ZombieManager;
 class TaskManager;
 class CardManager;
 class SceneManager;
+class UsrInfoManager;
 
 class GlobalVars {
 public:
@@ -40,6 +41,7 @@ public:
     std::shared_ptr<TaskManager> taskManager;
     std::shared_ptr<CardManager> cardManager;
     std::shared_ptr<SceneManager> sceneManager;
+    std::shared_ptr<UsrInfoManager> usrinfoManager;
 private:
     GlobalVars();
 };

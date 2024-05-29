@@ -32,7 +32,7 @@ int GameScene::enterScene()
     GlobalVars::getInstance().plantManager->initilizePlants();
     GlobalVars::getInstance().zombieManager->initilizeZombie();
     GlobalVars::getInstance().productManager->clear();
-    GlobalVars::getInstance().taskManager->loadTask("task/1-1-1.xml");
+    GlobalVars::getInstance().taskManager->loadTask();
     GlobalVars::getInstance().productManager->setSunNum(50);
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
