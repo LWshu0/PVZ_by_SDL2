@@ -1,16 +1,23 @@
 #include "Scene/SelectCardScene.h"
 #include "Manager/MapManager.h"
 #include "Manager/CardManager.h"
+#include "Core/GlobalVars.h"
 
 SelectCardScene::SelectCardScene() :
-    SceneObject()
-{}
+    SceneObject(),
+    m_startButtonRange(SDL_Rect{ 144, 550, 156, 42 }),
+    m_enableFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 255, 255, 0, 255 }),
+    m_disableFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 205, 64, 40, 255 })
+{
+    m_startButtonBK = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button.png");
+    m_startButtonDisable = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button_Disabled.png");
+    m_startButtonBloom = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button_Glow.png");
+}
 
 SceneType SelectCardScene::getType()
 {
     return SceneType::Scene_SelectCardScene;
 }
-
 
 int SelectCardScene::enterScene()
 {
@@ -20,42 +27,43 @@ int SelectCardScene::enterScene()
     GlobalVars::getInstance().cardManager->resetCardPool();
     // 相机位置 在地图初始化之后
     GlobalVars::getInstance().camera.setPosition(GlobalVars::getInstance().mapManager->getWidth() - 800, 0.0f);
+    m_enableStartButton = false;
+    m_hoverStartButton = false;
     return 0;
 }
 
 SceneType SelectCardScene::handleEvent(SDL_Event& event)
 {
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_q) return SceneType::Scene_MainScene;
-    if (event.type == SDL_MOUSEBUTTONDOWN)
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) // 左键 尝试选卡
     {
         // 选卡过程
-        if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试选卡 or 收集阳光/银币
+        SDL_Log("mouse button left\n");
+        int slot_idx = GlobalVars::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
+        if (slot_idx != -1)
         {
-            SDL_Log("mouse button left\n");
-            int slot_idx = GlobalVars::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
-            if (slot_idx != -1)
-            {
-                SDL_Log("slot -> pool: %d\n", slot_idx);
-                GlobalVars::getInstance().cardManager->slot2pool(slot_idx);
-                return SceneType::Scene_MaxSceneIdx;
-            }
-            int pool_idx = GlobalVars::getInstance().cardManager->getPoolIdx(event.button.x, event.button.y);
-            if (pool_idx != -1)
-            {
-                SDL_Log("pool -> slot: %d\n", pool_idx);
-                GlobalVars::getInstance().cardManager->pool2slot(pool_idx);
-                return SceneType::Scene_MaxSceneIdx;
-            }
-            // 点击按钮开始游戏
-            // todo ...
+            SDL_Log("slot -> pool: %d\n", slot_idx);
+            GlobalVars::getInstance().cardManager->slot2pool(slot_idx);
+            m_enableStartButton = GlobalVars::getInstance().cardManager->isFullSlot();
+            return SceneType::Scene_MaxSceneIdx;
         }
-        else
+        int pool_idx = GlobalVars::getInstance().cardManager->getPoolIdx(event.button.x, event.button.y);
+        if (pool_idx != -1)
         {
-            // 临时: 非左键且满足条件就开始游戏
-            if (GlobalVars::getInstance().cardManager->isFullSlot())
-                return SceneType::Scene_Select2GameScene;
+            SDL_Log("pool -> slot: %d\n", pool_idx);
+            GlobalVars::getInstance().cardManager->pool2slot(pool_idx);
+            m_enableStartButton = GlobalVars::getInstance().cardManager->isFullSlot();
+            return SceneType::Scene_MaxSceneIdx;
         }
-
+        // 点击按钮开始游戏
+        if (m_startButtonRange.isInShape(event.button.x, event.button.y) && m_enableStartButton)
+        {
+            return SceneType::Scene_Select2GameScene;
+        }
+    }
+    else if (event.type == SDL_MOUSEMOTION)
+    {
+        m_hoverStartButton = m_startButtonRange.isInShape(event.button.x, event.button.y);
     }
     return SceneType::Scene_MaxSceneIdx;
 }
@@ -77,6 +85,18 @@ int SelectCardScene::renderScene()
     // m_zombieManager->renderZombie();
     GlobalVars::getInstance().cardManager->renderCardSlot();
     GlobalVars::getInstance().cardManager->renderCardPool();
+    // 绘制按钮
+    if (m_enableStartButton)
+    {
+        SDL_RenderCopy(GlobalVars::getInstance().renderer, m_startButtonBK, NULL, &m_startButtonRange.m_range);
+        m_enableFont.render("一起开始吧!", m_startButtonRange.m_range.x, m_startButtonRange.m_range.y, 1.5f);
+        if (m_hoverStartButton) SDL_RenderCopy(GlobalVars::getInstance().renderer, m_startButtonBloom, NULL, &m_startButtonRange.m_range);
+    }
+    else
+    {
+        SDL_RenderCopy(GlobalVars::getInstance().renderer, m_startButtonDisable, NULL, &m_startButtonRange.m_range);
+        m_disableFont.render("一起开始吧!", m_startButtonRange.m_range.x, m_startButtonRange.m_range.y, 1.5f);
+    }
     return 0;
 }
 
