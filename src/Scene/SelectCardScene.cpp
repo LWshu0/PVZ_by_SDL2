@@ -15,7 +15,7 @@ SceneType SelectCardScene::getType()
 int SelectCardScene::enterScene()
 {
     SDL_Log("enter select card scene\n");
-    GlobalVars::getInstance().mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
+    GlobalVars::getInstance().mapManager->setMap(MapType::MapGrassDayOneLine);
     GlobalVars::getInstance().cardManager->clearCardSlot();
     GlobalVars::getInstance().cardManager->resetCardPool();
     // 相机位置 在地图初始化之后

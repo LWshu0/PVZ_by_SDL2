@@ -140,7 +140,7 @@ int Zombie::setZombieState(ZombieState to_state)
 
 int Zombie::attack()
 {
-    return 0.01f * GlobalVars::getInstance().timer.getDeltaTime();
+    return 0.1f * GlobalVars::getInstance().timer.getDeltaTime();
 }
 
 int Zombie::update()

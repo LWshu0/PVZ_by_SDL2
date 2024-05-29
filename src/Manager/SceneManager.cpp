@@ -14,6 +14,8 @@ SceneManager::SceneManager()
     m_sceneTemplate[SceneType::Scene_GameScene] = std::make_shared<GameScene>();
     // 获胜界面
     m_sceneTemplate[SceneType::Scene_WinScene] = std::make_shared<WinScene>();
+    // 失败界面
+    m_sceneTemplate[SceneType::Scene_LoseScene] = std::make_shared<LoseScene>();
     // ...
 
     // 设置初始界面

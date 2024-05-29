@@ -7,7 +7,7 @@
 #include "Scene/Select2Game.h"
 #include "Scene/GameScene.h"
 #include "Scene/WinScene.h"
-
+#include "Scene/LoseScene.h"
 class SceneManager {
 protected:
 

@@ -28,7 +28,7 @@ int GameScene::enterScene()
     m_cardInHandIdx = -1;
     m_plantInHandType = PlantType::MaxPlantType;
     m_dropSunCountDown = 5000;
-    GlobalVars::getInstance().mapManager->setMap(0.0f, 0.0f, MapType::MapGrassDayOneLine);
+    // GlobalVars::getInstance().mapManager->setMap(MapType::MapGrassDayOneLine);
     GlobalVars::getInstance().plantManager->initilizePlants();
     GlobalVars::getInstance().zombieManager->initilizeZombie();
     GlobalVars::getInstance().productManager->clear();
@@ -134,7 +134,7 @@ SceneType GameScene::updateScene()
     else if (GlobalVars::getInstance().zombieManager->hasZombieInHouse())
     {
         // lose
-        return SceneType::Scene_MainScene;
+        return SceneType::Scene_LoseScene;
     }
     return SceneType::Scene_MaxSceneIdx;
 }
