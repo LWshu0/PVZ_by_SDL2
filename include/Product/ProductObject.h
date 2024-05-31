@@ -9,7 +9,7 @@
 
 enum ProductState {
     Product_MOVE,         // 运动状态
-    Product_BREAK,        // 破碎动画
+    Product_DEAD,        // 破碎动画
     Product_DELETE        // 删除状态, 其对象可以被销毁
 };
 

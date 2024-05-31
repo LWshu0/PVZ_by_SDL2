@@ -38,7 +38,7 @@ void Pea::setState(ProductState state)
 {
     switch (state)
     {
-    case ProductState::Product_BREAK:
+    case ProductState::Product_DEAD:
         m_otherEmitter->initilize(m_aabb.x + m_aabb.w, m_aabb.y);
         m_centerEmitter->initilize(m_aabb.x + m_aabb.w, m_aabb.y);
         break;
@@ -56,7 +56,7 @@ int Pea::update()
     case ProductState::Product_MOVE:
         m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
         break;
-    case ProductState::Product_BREAK:
+    case ProductState::Product_DEAD:
         m_otherEmitter->update();
         m_centerEmitter->update();
         if (!m_otherEmitter->valid() && !m_centerEmitter->valid())
@@ -82,7 +82,7 @@ int Pea::render()
         SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_shadow, NULL, &sha_rect);
         break;
     }
-    case ProductState::Product_BREAK:
+    case ProductState::Product_DEAD:
     {
         m_otherEmitter->render();
         m_centerEmitter->render();

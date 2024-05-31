@@ -69,7 +69,7 @@ int ProductManager::calculateDamage(std::shared_ptr<GameObject> other)
         if (ProductState::Product_MOVE == (*iter)->getState() && (*iter)->collision(other))
         {
             rt_value += (*iter)->getDamage();
-            (*iter)->setState(ProductState::Product_BREAK);
+            (*iter)->setState(ProductState::Product_DEAD);
         }
     }
     return rt_value;
@@ -87,11 +87,16 @@ int ProductManager::clickCollection(int mouse_x, int mouse_y)
             {
             case ProductType::SunType:
                 m_sunNum += 50;
+                (*iter)->setMotion(std::make_shared<MotionTargetPoint>(
+                    GlobalVars::getInstance().camera.getClickX(20.0f),
+                    GlobalVars::getInstance().camera.getClickY(16.0f),
+                    1000.0f)
+                );
                 break;
             default:
                 break;
             }
-            (*iter)->setState(ProductState::Product_DELETE);
+            (*iter)->setState(ProductState::Product_DEAD);
             return 0;
         }
     }

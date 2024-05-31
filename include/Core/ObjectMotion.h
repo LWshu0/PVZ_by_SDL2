@@ -2,6 +2,7 @@
 #define OBJECTMOTION_H
 
 #include "GameObject.h"
+#include <cmath>
 
 class ObjectMotion {
 public:
@@ -54,6 +55,22 @@ public:
     {}
     virtual int step(GameObject* object, uint64_t delta_ms) override;
     virtual ~MotionAccLimitTime() {}
+};
+
+class MotionTargetPoint :public ObjectMotion {
+protected:
+    float m_targetX;
+    float m_targetY;
+    float m_speed;
+public:
+    MotionTargetPoint(float x, float y, float speed) :
+        ObjectMotion(),
+        m_targetX(x),
+        m_targetY(y),
+        m_speed(speed)
+    {}
+    virtual int step(GameObject* object, uint64_t delta_ms) override;
+    virtual ~MotionTargetPoint() {}
 };
 
 #endif

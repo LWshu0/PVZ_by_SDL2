@@ -42,8 +42,12 @@ ProductType Sun::getType()
 int Sun::update()
 {
     m_animPlayer.updatePlayingFrameIdx();
-    m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
+    int rt = m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
     m_animPlayer.setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
+    if (rt == -1 && ProductState::Product_DEAD == m_state)
+    {
+        m_state = ProductState::Product_DELETE;
+    }
     return 0;
 }
 

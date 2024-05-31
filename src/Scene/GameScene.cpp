@@ -152,7 +152,6 @@ int GameScene::renderScene()
     GlobalVars::getInstance().mapManager->renderMap();
     GlobalVars::getInstance().plantManager->renderPlants();
     GlobalVars::getInstance().zombieManager->renderZombie();
-    GlobalVars::getInstance().productManager->render();
     GlobalVars::getInstance().cardManager->renderCardSlot();
     if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)
     {
@@ -161,6 +160,7 @@ int GameScene::renderScene()
         // 预放置位置虚影(在 m_plantManager->renderPlants() 中实现)
     }
     GlobalVars::getInstance().cardManager->renderCardCoolDown();
+    GlobalVars::getInstance().productManager->render();
     return 0;
 }
 
