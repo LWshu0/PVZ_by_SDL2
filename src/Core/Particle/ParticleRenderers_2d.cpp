@@ -13,8 +13,8 @@ ParticleRenderer_2d_default::ParticleRenderer_2d_default(SDL_Texture* texture) :
 void ParticleRenderer_2d_default::render(Particle_2d& particle)
 {
     SDL_FRect rect{
-        particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale,
-        particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale,
+        GlobalVars::getInstance().camera.getRenderX(particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale),
+        GlobalVars::getInstance().camera.getRenderY(particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale),
         m_dstRectWidth_half * 2 * particle.m_scale,
         m_dstRectHeight_half * 2 * particle.m_scale
     };
@@ -50,8 +50,8 @@ void ParticleRenderer_2d_Sprite::render(Particle_2d& particle)
         m_texHeight
     };
     SDL_FRect dst_rect{
-        particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale,
-        particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale,
+        GlobalVars::getInstance().camera.getRenderX(particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale),
+        GlobalVars::getInstance().camera.getRenderY(particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale),
         m_dstRectWidth_half * 2 * particle.m_scale,
         m_dstRectHeight_half * 2 * particle.m_scale
     };
