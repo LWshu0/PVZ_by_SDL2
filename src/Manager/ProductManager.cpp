@@ -9,16 +9,19 @@ ProductManager::ProductManager(
     m_maxBulletLimit(maxBullet),
     m_sunNum(0)
 {
-    m_productTemplate.resize(ProductType::MaxProductNum);
-    m_productTemplate[ProductType::PeaType] = std::make_shared<Pea>(0.0f, 0.0f);
-    std::shared_ptr<AnimLoader> sun_loader = std::make_shared<AnimLoader>("reanim/Sun.reanim");
-    m_productTemplate[ProductType::SunType] = std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader);
+    m_productPool.resize(ProductType::MaxProductNum);
+    auto pea_factory = std::make_shared<PeaFactory>();
+    m_productPool[ProductType::PeaType] = std::make_shared<ObjectPool<ProductObject>>(pea_factory);
+    auto sun_factory = std::make_shared<SunFactory>();
+    m_productPool[ProductType::SunType] = std::make_shared<ObjectPool<ProductObject>>(sun_factory);
 }
 
 int ProductManager::addBullet(ProductType type, int x, int y)
 {
     if (type == ProductType::MaxProductNum || m_bulletItems.size() > m_maxBulletLimit) return -1;
-    m_bulletItems.push_front(std::static_pointer_cast<BulletObject>(m_productTemplate[type]->clone(x, y)));
+    std::shared_ptr<BulletObject> new_bullet = std::static_pointer_cast<BulletObject>(m_productPool[type]->getReusable());
+    new_bullet->initilize(x, y);
+    m_bulletItems.push_front(new_bullet);
     SDL_Log("ProductManager::addBullet add a bullet\n");
     return 0;
 }
@@ -26,7 +29,9 @@ int ProductManager::addBullet(ProductType type, int x, int y)
 int ProductManager::addCollection(ProductType type, int x, int y)
 {
     if (type == ProductType::MaxProductNum || m_collectionItems.size() > m_maxCollectionLimit) return -1;
-    m_collectionItems.push_front(std::static_pointer_cast<CollectionObject>(m_productTemplate[type]->clone(x, y)));
+    std::shared_ptr<CollectionObject> new_collection = std::static_pointer_cast<CollectionObject>(m_productPool[type]->getReusable());
+    new_collection->initilize(x, y);
+    m_collectionItems.push_front(new_collection);
     SDL_Log("ProductManager::addCollection add a collection\n");
     return 0;
 }
@@ -34,8 +39,10 @@ int ProductManager::addCollection(ProductType type, int x, int y)
 int ProductManager::produceCollection(ProductType type, int x, int y)
 {
     if (type == ProductType::MaxProductNum || m_collectionItems.size() > m_maxCollectionLimit) return -1;
-    m_collectionItems.push_front(std::static_pointer_cast<CollectionObject>(m_productTemplate[type]->clone(x, y)));
-    m_collectionItems.front()->setMotion(std::make_shared<MotionAccLimitTime>(15.0f, -120.0f, 0.0f, 200.0f, 1300));
+    std::shared_ptr<CollectionObject> new_collection = std::static_pointer_cast<CollectionObject>(m_productPool[type]->getReusable());
+    new_collection->initilize(x, y);
+    new_collection->setMotion(std::make_shared<MotionAccLimitTime>(15.0f, -120.0f, 0.0f, 200.0f, 1300));
+    m_collectionItems.push_front(new_collection);
     SDL_Log("ProductManager::produceCollection produce a collection\n");
     return 0;
 }
@@ -46,8 +53,10 @@ int ProductManager::randomDropSun()
     float width = GlobalVars::getInstance().mapManager->getRightMargin() - GlobalVars::getInstance().mapManager->getLeftMargin() - 100.0f;
     float gene_x = GlobalVars::getInstance().mapManager->getLeftMargin() + width * rand() / RAND_MAX;
     uint64_t lifetime = 3000 + 10000 * rand() / RAND_MAX;
-    m_collectionItems.push_front(std::static_pointer_cast<CollectionObject>(m_productTemplate[ProductType::SunType]->clone(gene_x, 0.0f)));
-    m_collectionItems.front()->setMotion(std::make_shared<MotionSpeedLimitTime>(0.0f, 40.0f, lifetime));
+    std::shared_ptr<CollectionObject> new_collection = std::static_pointer_cast<CollectionObject>(m_productPool[ProductType::SunType]->getReusable());
+    new_collection->initilize(gene_x, 0.0f);
+    new_collection->setMotion(std::make_shared<MotionSpeedLimitTime>(0.0f, 40.0f, lifetime));
+    m_collectionItems.push_front(new_collection);
     SDL_Log("ProductManager::randomDropSun add a sun\n");
     return 0;
 }
@@ -55,16 +64,12 @@ int ProductManager::randomDropSun()
 int ProductManager::calculateDamage(std::shared_ptr<GameObject> other)
 {
     int rt_value = 0;
-    for (auto iter = m_bulletItems.begin(); iter != m_bulletItems.end();)
+    for (auto iter = m_bulletItems.begin(); iter != m_bulletItems.end(); iter++)
     {
-        if ((*iter)->collision(other))
+        if (ProductState::Product_MOVE == (*iter)->getState() && (*iter)->collision(other))
         {
             rt_value += (*iter)->getDamage();
-            iter = m_bulletItems.erase(iter);
-        }
-        else
-        {
-            iter++;
+            (*iter)->setState(ProductState::Product_BREAK);
         }
     }
     return rt_value;
@@ -86,7 +91,7 @@ int ProductManager::clickCollection(int mouse_x, int mouse_y)
             default:
                 break;
             }
-            m_collectionItems.erase(iter);
+            (*iter)->setState(ProductState::Product_DELETE);
             return 0;
         }
     }
@@ -102,9 +107,12 @@ int ProductManager::update()
         if ((*iter)->m_aabb.x > GlobalVars::getInstance().camera.getRight()
             || (*iter)->m_aabb.x + (*iter)->m_aabb.w < GlobalVars::getInstance().camera.getLeft()
             || (*iter)->m_aabb.y > GlobalVars::getInstance().camera.getBottom()
-            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < GlobalVars::getInstance().camera.getTop())
+            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < GlobalVars::getInstance().camera.getTop()
+            || ProductState::Product_DELETE == (*iter)->getState())
         {
+            std::shared_ptr<ProductObject> ptr = std::static_pointer_cast<ProductObject>(*iter);
             iter = m_bulletItems.erase(iter);
+            m_productPool[ptr->getType()]->returnReusable(ptr);
             // SDL_Log("remove one\n");
         }
         else
@@ -112,9 +120,25 @@ int ProductManager::update()
             iter++;
         }
     }
-    for (auto& ptr : m_collectionItems)
+    for (auto iter = m_collectionItems.begin(); iter != m_collectionItems.end();)
     {
-        ptr->update();
+        (*iter)->update();
+        // 超出屏幕范围子弹检查
+        if ((*iter)->m_aabb.x > GlobalVars::getInstance().camera.getRight()
+            || (*iter)->m_aabb.x + (*iter)->m_aabb.w < GlobalVars::getInstance().camera.getLeft()
+            || (*iter)->m_aabb.y > GlobalVars::getInstance().camera.getBottom()
+            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < GlobalVars::getInstance().camera.getTop()
+            || ProductState::Product_DELETE == (*iter)->getState())
+        {
+            std::shared_ptr<ProductObject> ptr = std::static_pointer_cast<ProductObject>(*iter);
+            iter = m_collectionItems.erase(iter);
+            m_productPool[ptr->getType()]->returnReusable(ptr);
+            // SDL_Log("remove one\n");
+        }
+        else
+        {
+            iter++;
+        }
     }
     return 0;
 }
@@ -134,6 +158,18 @@ int ProductManager::render()
 
 int ProductManager::clear()
 {
+    for (auto& ptr : m_bulletItems)
+    {
+        // 归还
+        std::shared_ptr<ProductObject> pptr = ptr;
+        m_productPool[ptr->getType()]->returnReusable(pptr);
+    }
+    for (auto& ptr : m_collectionItems)
+    {
+        // 归还
+        std::shared_ptr<ProductObject> pptr = ptr;
+        m_productPool[ptr->getType()]->returnReusable(pptr);
+    }
     m_bulletItems.clear();
     m_collectionItems.clear();
     return 0;
@@ -151,6 +187,9 @@ int ProductManager::collect()
         default:
             break;
         }
+        // 归还
+        std::shared_ptr<ProductObject> pptr = ptr;
+        m_productPool[ptr->getType()]->returnReusable(pptr);
     }
     m_collectionItems.clear();
     return 0;

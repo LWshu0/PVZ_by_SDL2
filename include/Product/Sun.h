@@ -15,14 +15,19 @@ public:
         const SDL_FRect& aabb,
         std::shared_ptr<AnimLoader> loader
     );
-    virtual std::shared_ptr<ProductObject> clone(float x, float y) override;
-
+    virtual void initilize(float x, float y) override;
     virtual ProductType getType() override;
     virtual int update() override;
     virtual int render() override;
     ~Sun();
 };
 
-
+class SunFactory :public ObjectFactory<ProductObject> {
+private:
+    std::shared_ptr<AnimLoader> sun_loader;
+public:
+    SunFactory();
+    virtual std::shared_ptr<ProductObject> create() override;
+};
 
 #endif

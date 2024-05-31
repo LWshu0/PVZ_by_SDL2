@@ -13,9 +13,7 @@ class MapManager;
 
 class ProductManager {
 protected:
-
-    std::vector<std::shared_ptr<ProductObject>> m_productTemplate;
-
+    std::vector<std::shared_ptr<ObjectPool<ProductObject>>> m_productPool;
     // 允许存在在游戏内的掉落物最大数量
     int m_maxCollectionLimit;
     std::list<std::shared_ptr<CollectionObject>> m_collectionItems;

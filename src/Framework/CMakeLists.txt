@@ -12,4 +12,5 @@ target_link_libraries(PVZ PUBLIC
     scene scenemanager
     ui
     usrinfomanager
+    particle
 )

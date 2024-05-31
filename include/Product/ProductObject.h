@@ -5,6 +5,7 @@
 #include "Core/ObjectMotion.h"
 #include "Core/GameObject.h"
 #include "Core/GlobalVars.h"
+#include "Core/ObjectPool.h"
 
 enum ProductState {
     Product_MOVE,         // 运动状态
@@ -27,7 +28,9 @@ protected:
 public:
     ProductObject(const SDL_FRect& aabb);
 
-    virtual std::shared_ptr<ProductObject> clone(float x, float y) = 0;
+    // 初始化参数 (对象池)
+    virtual void initilize(float x, float y) = 0;
+    virtual void setState(ProductState state) { m_state = state; }
     inline ProductState getState() { return m_state; }
     virtual ProductType getType() = 0;
     virtual int update() override

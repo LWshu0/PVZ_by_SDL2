@@ -23,9 +23,15 @@ Sun::Sun(
     );
 }
 
-std::shared_ptr<ProductObject> Sun::clone(float x, float y)
+void Sun::initilize(float x, float y)
 {
-    return std::make_shared<Sun>(SDL_FRect{ x, y, m_aabb.w, m_aabb.h }, m_animPlayer.getAnimLoader());
+    m_state = ProductState::Product_MOVE;
+    m_aabb.x = x;
+    m_aabb.y = y;
+    m_animPlayer.setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
+    m_animPlayer.restartTrack(
+        { 0, 1, 2 }
+    );
 }
 
 ProductType Sun::getType()
@@ -56,3 +62,14 @@ int Sun::render()
 
 Sun::~Sun()
 {}
+
+
+SunFactory::SunFactory()
+{
+    sun_loader = std::make_shared<AnimLoader>("reanim/Sun.reanim");
+}
+
+std::shared_ptr<ProductObject> SunFactory::create()
+{
+    return std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader);
+}
