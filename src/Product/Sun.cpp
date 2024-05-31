@@ -12,7 +12,8 @@ Sun::Sun(
     m_animPlayer(
         loader,
         SDL_FPoint{ aabb.x + aabb.w / 2 , aabb.y + aabb.h / 2 }   // 渲染位置
-    )
+    ),
+    m_lifetimeMilliSecond(8000)
 {
     m_animPlayer.setPlayingTrack(
         { 0, 1, 2 },
@@ -26,6 +27,7 @@ Sun::Sun(
 void Sun::initilize(float x, float y)
 {
     m_state = ProductState::Product_MOVE;
+    m_lifetimeMilliSecond = 8000;
     m_aabb.x = x;
     m_aabb.y = y;
     m_animPlayer.setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
@@ -42,6 +44,14 @@ ProductType Sun::getType()
 int Sun::update()
 {
     m_animPlayer.updatePlayingFrameIdx();
+    if (m_lifetimeMilliSecond > GlobalVars::getInstance().timer.getDeltaTime())
+    {
+        m_lifetimeMilliSecond -= GlobalVars::getInstance().timer.getDeltaTime();
+    }
+    else
+    {
+        m_state = ProductState::Product_DELETE;
+    }
     int rt = m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
     m_animPlayer.setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
     if (rt == -1 && ProductState::Product_DEAD == m_state)

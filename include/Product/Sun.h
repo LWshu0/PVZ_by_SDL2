@@ -8,7 +8,6 @@ protected:
 
     AnimPlayer m_animPlayer;
 
-    uint64_t m_movetimeMilliSecond;
     uint64_t m_lifetimeMilliSecond;
 public:
     Sun(
