@@ -48,6 +48,41 @@ ZombieObject::ZombieObject(
 int ZombieObject::damage(int damege_num)
 {
     m_HP -= damege_num;
+    if (m_HP <= 0)
+    {
+        setZombieState(ZombieState::Zombie_DEAD);
+    }
+    return 0;
+}
+
+int ZombieObject::update()
+{
+    switch (m_state)
+    {
+    case ZombieState::Zombie_IDLE:
+        onUpdateIdle();
+        break;
+    case ZombieState::Zombie_WALK:
+        onUpdateWalk();
+        break;
+    case ZombieState::Zombie_ATTACK:
+        onUpdateAttack();
+        break;
+    case ZombieState::Zombie_DEAD:
+        onUpdateDead();
+        break;
+    case ZombieState::Zombie_ASHES:
+        onUpdateAshes();
+        break;
+    case ZombieState::Zombie_SQUISH:
+        onUpdateSquish();
+        break;
+    case ZombieState::Zombie_DELETE:
+        onUpdateDelete();
+        break;
+    default:
+        break;
+    }
     return 0;
 }
 
@@ -69,3 +104,11 @@ int ZombieObject::showShadow()
 
 ZombieObject::~ZombieObject()
 {}
+
+void ZombieObject::onUpdateIdle() {}
+void ZombieObject::onUpdateWalk() {}
+void ZombieObject::onUpdateAttack() {}
+void ZombieObject::onUpdateDead() {}
+void ZombieObject::onUpdateAshes() {}
+void ZombieObject::onUpdateSquish() {}
+void ZombieObject::onUpdateDelete() {}

@@ -76,19 +76,6 @@ std::shared_ptr<ZombieObject> Zombie::clone(const SDL_FPoint& root_point)
     return std::make_shared<Zombie>(m_animPlayer.getAnimLoader(), root_point);
 }
 
-int Zombie::render()
-{
-    // 渲染帧
-    // 阴影
-    showShadow();
-
-    m_animPlayer.renderTracks({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 });
-#ifndef NDEBUG
-    showAABB();
-#endif
-    return 0;
-}
-
 int Zombie::setZombieState(ZombieState to_state)
 {
     if (to_state == m_state) return -1;
@@ -123,6 +110,20 @@ int Zombie::setZombieState(ZombieState to_state)
         );
         m_referenceScreenPoint.x = m_animPlayer.getPlayPosition().x - 9.8f;
         break;
+    case ZombieState::Zombie_DEAD:
+        m_animPlayer.setPlayingTrack(
+            { 11, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
+            2
+        );
+        // alignTrack({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }, 11);
+        m_animPlayer.setFPS(
+            { 11, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
+            14.0f
+        );
+        m_animPlayer.restartTrack(
+            { 11, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
+        );
+        break;
     default: //IDLE
         // 6 or 7
         m_animPlayer.setPlayingTrack(
@@ -143,9 +144,30 @@ int Zombie::attack()
     return 0.1f * GlobalVars::getInstance().timer.getDeltaTime();
 }
 
-int Zombie::update()
+int Zombie::render()
 {
-    // 更新帧
+    if (canDelete()) return 0;
+    // 渲染帧
+    // 阴影
+    showShadow();
+
+    m_animPlayer.renderTracks({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 });
+#ifndef NDEBUG
+    showAABB();
+#endif
+    return 0;
+}
+
+Zombie::~Zombie()
+{}
+
+void Zombie::onUpdateIdle()
+{
+    m_animPlayer.updatePlayingFrameIdx();
+}
+
+void Zombie::onUpdateWalk()
+{
     m_animPlayer.updatePlayingFrameIdx();
     // 移动
     if (m_animPlayer.isUpdateAt(11, GlobalVars::getInstance().timer.getTime()))
@@ -160,12 +182,22 @@ int Zombie::update()
         m_aabb.x = anim_playing_point.x + m_offsetAABB.x;
         m_shadowRange.x = anim_playing_point.x + m_offsetShadow.x;
     }
-    // 攻击
+    // 检测攻击
     int row = GlobalVars::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
     int col = GlobalVars::getInstance().mapManager->caculCol(m_aabb.x);
     if (GlobalVars::getInstance().plantManager->collisionPlant(this, row, col))
     {
         setZombieState(ZombieState::Zombie_ATTACK);
+    }
+}
+void Zombie::onUpdateAttack()
+{
+    m_animPlayer.updatePlayingFrameIdx();
+    // 攻击
+    int row = GlobalVars::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
+    int col = GlobalVars::getInstance().mapManager->caculCol(m_aabb.x);
+    if (GlobalVars::getInstance().plantManager->collisionPlant(this, row, col))
+    {
         int dam = attack();
         GlobalVars::getInstance().plantManager->doDamage(row, col, dam);
     }
@@ -173,8 +205,14 @@ int Zombie::update()
     {
         setZombieState(ZombieState::Zombie_WALK);
     }
-    return 0;
 }
-
-Zombie::~Zombie()
-{}
+void Zombie::onUpdateDead()
+{
+    m_animPlayer.updatePlayingFrameIdx();
+    if (m_animPlayer.isPlayEnd(12))
+    {
+        setZombieState(ZombieState::Zombie_DELETE);
+    }
+}
+void Zombie::onUpdateAshes() {}
+void Zombie::onUpdateSquish() {}

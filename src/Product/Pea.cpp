@@ -2,6 +2,7 @@
 #include "Core/Particle/ParticleSetters_2d.h"
 #include "Core/Particle/ParticleUpdaters_2d.h"
 #include "Core/Particle/ParticleRenderers_2d.h"
+#include "Manager/ZombieManager.h"
 
 Pea::Pea(
     float x, float y,
@@ -55,6 +56,10 @@ int Pea::update()
     {
     case ProductState::Product_MOVE:
         m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
+        if (0 != GlobalVars::getInstance().zombieManager->damageZombie(this, m_damage))
+        {
+            setState(ProductState::Product_DEAD);
+        }
         break;
     case ProductState::Product_DEAD:
         m_otherEmitter->update();

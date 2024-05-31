@@ -18,11 +18,11 @@ target_link_libraries(ParticleTest PUBLIC mingw32 SDL2::SDL2main SDL2::SDL2 norm
 # add_executable(BulletTest BulletTest.cpp)
 # target_link_libraries(BulletTest PUBLIC normal_core sdl_core bullet bulletmanager)
 
-# add_executable(ZombieTest ZombieTest.cpp)
-# target_link_libraries(ZombieTest PUBLIC 
-#     normal_core sdl_core 
-#     map mapmanager 
-#     bullet bulletmanager 
-#     plants plantmanager
-#     zombies zombiemanager
-# )
+add_executable(ZombieTest ZombieTest.cpp)
+target_link_libraries(ZombieTest PUBLIC 
+    normal_core sdl_core 
+    map mapmanager 
+    bullet bulletmanager 
+    plants plantmanager
+    zombies zombiemanager
+)

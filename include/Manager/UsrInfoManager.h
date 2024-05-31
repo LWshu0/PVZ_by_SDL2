@@ -27,6 +27,9 @@ public:
     inline int getUnlockSlotNum() { return m_unlockSlotNum; }
     inline int getUnlockPlantNum() { return m_unlockPlantNum; }
 
+    void nextTask();
+
+    void unlockPlant(PlantType plant_type);
     bool isUnlockPlant(int plant_type);
 
     ~UsrInfoManager();

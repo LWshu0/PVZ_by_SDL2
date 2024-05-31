@@ -32,7 +32,37 @@ int ZombieManager::addZombie(ZombieType type, int row, int col)
     root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
     root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
     m_zombies.push_front(m_zombieTemplate[type]->clone(SDL_FPoint{ root_x, root_y }));
+    m_zombies.front()->setZombieState(ZombieState::Zombie_WALK);
     return 0;
+}
+
+int ZombieManager::setZombieState(GameObject* bullet_object, ZombieState state)
+{
+    int count = 0;
+    for (auto& zombie : m_zombies)
+    {
+        if (zombie->collision(bullet_object))
+        {
+            count++;
+            zombie->setZombieState(state);
+        }
+    }
+    return count;
+}
+
+int ZombieManager::damageZombie(GameObject* bullet_object, int damage, bool single)
+{
+    int count = 0;
+    for (auto& zombie : m_zombies)
+    {
+        if (!zombie->zeroHP() && zombie->collision(bullet_object))
+        {
+            count++;
+            zombie->damage(damage);
+            if (single) return 1;
+        }
+    }
+    return count;
 }
 
 bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
@@ -74,17 +104,14 @@ int ZombieManager::updateZombie()
 {
     for (auto iter = m_zombies.begin();iter != m_zombies.end();)
     {
-        // 移动
-        (*iter)->update();
-        // 碰撞检测
-        int dam = GlobalVars::getInstance().productManager->calculateDamage((*iter));
-        (*iter)->damage(dam);
-        if ((*iter)->isDead())
+        if ((*iter)->canDelete())
         {
             iter = m_zombies.erase(iter);
         }
         else
         {
+            // 更新
+            (*iter)->update();
             iter++;
         }
     }

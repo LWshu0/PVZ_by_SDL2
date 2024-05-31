@@ -37,6 +37,13 @@ public:
     // 当列号可以超过地图最大的列数, 当超出时, 将放置在屏幕外指定的位置(原版游戏中的效果)
     int addZombie(ZombieType type, int row, int col);
 
+    // 对碰撞范围内的僵尸进行状态的修改
+    // aka 代码杀
+    int setZombieState(GameObject* bullet_object, ZombieState state);
+    // 对碰撞范围内的僵尸造成伤害
+    // single 只会造成一个伤害
+    int damageZombie(GameObject* bullet_object, int damage, bool single = true);
+
     // 在第 row 行的 left_x 和 right_x 之间是否有僵尸
     // 其中 left_x 和 right_x 都是世界坐标系下的坐标
     bool hasZombieBetween(int row, float left_x, float right_x);
@@ -44,7 +51,7 @@ public:
     inline bool hasZombie() { return m_zombies.size() > 0; }
 
     bool hasZombieInHouse();
-    
+
     // 僵尸移动
     // 与子弹的碰撞检测, 并减少僵尸生命值
     // 僵尸攻击植物

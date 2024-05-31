@@ -17,6 +17,8 @@ enum ZombieState {
     Zombie_WALK,
     Zombie_ATTACK,
     Zombie_DEAD,
+    Zombie_ASHES,
+    Zombie_SQUISH,
     Zombie_DELETE
 };
 
@@ -67,8 +69,11 @@ public:
      */
     virtual std::shared_ptr<ZombieObject> clone(const SDL_FPoint& root_point) = 0;
 
-    inline bool isDead() { return m_HP <= 0; }
+    inline bool zeroHP() { return m_HP <= 0; }
+    inline bool isDead() { return m_state == ZombieState::Zombie_DEAD || m_state == ZombieState::Zombie_ASHES || m_state == ZombieState::Zombie_SQUISH; }
+    inline bool canDelete() { return m_state == ZombieState::Zombie_DELETE; }
 
+    inline ZombieState getZombieState() { return m_state; }
     // 改变当前僵尸的状态(ZombieState)
     // 发生改变才会执行 否则直接返回
     virtual int setZombieState(ZombieState to_state) = 0;
@@ -79,10 +84,12 @@ public:
      * @return int 对植物的伤害值
      */
     virtual int attack() = 0;
-
+    
     // 对僵尸造成伤害, 减少 HP
     // 如果僵尸死亡将切换到死亡动画(默认)
     virtual int damage(int damege_num);
+
+    virtual int update() override;
 
     // 显示碰撞箱
     int showAABB();
@@ -90,6 +97,14 @@ public:
     int showShadow();
 
     virtual ~ZombieObject();
+protected:
+    virtual void onUpdateIdle();
+    virtual void onUpdateWalk();
+    virtual void onUpdateAttack();
+    virtual void onUpdateDead();
+    virtual void onUpdateAshes();
+    virtual void onUpdateSquish();
+    virtual void onUpdateDelete();
 };
 
 #endif

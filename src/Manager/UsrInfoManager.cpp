@@ -35,6 +35,29 @@ int UsrInfoManager::read()
     return 0;
 }
 
+void UsrInfoManager::nextTask()
+{
+    m_taskIdxPost += 1;
+    if (m_taskIdxPost > 10)
+    {
+        m_taskIdxPost = 1;
+        m_taskIdxPre += 1;
+        if (m_taskIdxPre > 10)
+        {
+            m_taskIdxPre = 1;
+            m_roundNum += 1;
+        }
+    }
+}
+
+void UsrInfoManager::unlockPlant(PlantType plant_type)
+{
+    if (plant_type != PlantType::MaxPlantType)
+    {
+        m_unlockPlants[plant_type] = true;
+    }
+}
+
 bool UsrInfoManager::isUnlockPlant(int plant)
 {
     if (0 <= plant && plant < PlantType::MaxPlantType) return m_unlockPlants[plant];
