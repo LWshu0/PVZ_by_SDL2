@@ -13,7 +13,7 @@ struct Particle_2d {
     SDL_FPoint m_originPoint;   // 粒子位置
     SDL_Color m_color;          // 粒子颜色 RGBA
     float m_scale;              // 粒子大小(缩放倍数)
-    float m_radian;             // 旋转的弧度
+    float m_degree;             // 旋转的度数
     // 更新粒子所需参数
     SDL_FPoint m_speed;         // 粒子速度
     int64_t m_lifetime;         // 粒子剩余存活时间 ms
@@ -23,7 +23,7 @@ struct Particle_2d {
         m_color{ 255,255,255,255 },
         m_scale(1.0f),
         m_speed{ 0.0f, 0.0f },
-        m_radian(0.0f),
+        m_degree(0.0f),
         m_lifetime(0),
         m_totalLifetime(0)
     {}

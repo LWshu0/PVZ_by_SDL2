@@ -44,13 +44,13 @@ void ParticleUpdater_2d_Color::update(Particle_2d& particle)
 ParticleUpdater_2d_Rotate::ParticleUpdater_2d_Rotate(float speed_degree)
 {
     // 旋转的速度(radian)
-    m_speedRadian = M_PI * speed_degree / 180.0f;
+    m_speedRadian = speed_degree;
 }
 
 void ParticleUpdater_2d_Rotate::update(Particle_2d& particle)
 {
     float delta_s = static_cast<float>(GlobalVars::getInstance().timer.getDeltaTime()) / 1000.0f;
-    particle.m_radian += m_speedRadian * delta_s;
+    particle.m_degree += m_speedRadian * delta_s;
 }
 
 ParticleUpdater_2d_Size::ParticleUpdater_2d_Size(float beginScacle, float endScale) :

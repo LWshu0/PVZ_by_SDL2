@@ -7,6 +7,9 @@ void ParticleSetter_2d_default::set(Particle_2d& particle, ParticleEmitter_2d& e
 {
     // position
     particle.m_originPoint = emitter.m_center;
+    particle.m_color = SDL_Color{ 255,255,255,255 };
+    particle.m_scale = 1.0f;
+    particle.m_degree = 0.0f;
     // lifetime
     particle.m_lifetime = m_initLifetime;
     particle.m_totalLifetime = m_initLifetime;
@@ -25,6 +28,9 @@ void ParticleSetter_2d_explosion::set(Particle_2d& particle, ParticleEmitter_2d&
 {
     // position
     particle.m_originPoint = emitter.m_center;
+    particle.m_color = SDL_Color{ 255,255,255,255 };
+    particle.m_scale = 1.0f;
+    particle.m_degree = 0.0f;
     // lifetime
     particle.m_lifetime = m_initLifetime;
     particle.m_totalLifetime = m_initLifetime;

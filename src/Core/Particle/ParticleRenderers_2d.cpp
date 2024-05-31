@@ -18,15 +18,19 @@ void ParticleRenderer_2d_default::render(Particle_2d& particle)
         m_dstRectWidth_half * 2 * particle.m_scale,
         m_dstRectHeight_half * 2 * particle.m_scale
     };
+    SDL_SetTextureColorMod(m_texture, particle.m_color.r, particle.m_color.g, particle.m_color.b);
+    SDL_SetTextureAlphaMod(m_texture, particle.m_color.a);
     SDL_RenderCopyExF(
         GlobalVars::getInstance().renderer,
         m_texture,
         NULL,
         &rect,
-        particle.m_radian,
+        particle.m_degree,
         NULL,
         SDL_RendererFlip::SDL_FLIP_NONE
     );
+    SDL_SetTextureColorMod(m_texture, 255, 255, 255);
+    SDL_SetTextureAlphaMod(m_texture, 255);
 }
 
 ParticleRenderer_2d_Sprite::ParticleRenderer_2d_Sprite(SDL_Texture* texture, uint32_t col_num) :
@@ -55,13 +59,17 @@ void ParticleRenderer_2d_Sprite::render(Particle_2d& particle)
         m_dstRectWidth_half * 2 * particle.m_scale,
         m_dstRectHeight_half * 2 * particle.m_scale
     };
+    SDL_SetTextureColorMod(m_texture, particle.m_color.r, particle.m_color.g, particle.m_color.b);
+    SDL_SetTextureAlphaMod(m_texture, particle.m_color.a);
     SDL_RenderCopyExF(
         GlobalVars::getInstance().renderer,
         m_texture,
         &src_rect,
         &dst_rect,
-        particle.m_radian,
+        particle.m_degree,
         NULL,
         SDL_RendererFlip::SDL_FLIP_NONE
     );
+    SDL_SetTextureColorMod(m_texture, 255, 255, 255);
+    SDL_SetTextureAlphaMod(m_texture, 255);
 }
