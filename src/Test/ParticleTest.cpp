@@ -12,25 +12,21 @@ int main(int argc, char* args[])
     IMG_Init(IMG_INIT_PNG);
 
     // builder
-    std::shared_ptr<ParticleSetter_2d> setter_center = std::make_shared<ParticleSetter_2d_default>(
-        200
-    );
-    std::shared_ptr<ParticleSetter_2d> setter_other = std::make_shared<ParticleSetter_2d_explosion>(
-        300,
-        100
+    std::shared_ptr<ParticleSetter_2d> setter = std::make_shared<ParticleSetter_2d_default>(
+        800,
+        SDL_FPoint{ 50, -100 }
     );
     // updater
     std::shared_ptr<ParticleUpdater_2d> updater0 = std::make_shared<ParticleUpdater_2d_Lifetime>();
     std::shared_ptr<ParticleUpdater_2d> updater1 = std::make_shared<ParticleUpdater_2d_Speed>();
-    std::shared_ptr<ParticleUpdater_2d> updater3 = std::make_shared<ParticleUpdater_2d_Rotate>(40.0f);
-    std::shared_ptr<ParticleUpdater_2d> updater4 = std::make_shared<ParticleUpdater_2d_Size>(0.5f, 0.5f);
-    std::shared_ptr<ParticleUpdater_2d> updater8 = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 150.0f);
-    // renderer
-    std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_Sprite>(
-        GlobalVars::getInstance().textureRes.getTextureFrom("particles/Pea_particles.png"), 3);
 
-    std::shared_ptr<ParticleRenderer_2d> render1 = std::make_shared<ParticleRenderer_2d_Sprite>(
-        GlobalVars::getInstance().textureRes.getTextureFrom("particles/pea_splats.png"), 4);
+    std::shared_ptr<ParticleUpdater_2d> updater2 = std::make_shared<ParticleUpdater_2d_Color>(SDL_Color{255, 0, 0, 255}, SDL_Color{0, 255, 0, 255});
+    std::shared_ptr<ParticleUpdater_2d> updater3 = std::make_shared<ParticleUpdater_2d_Rotate>(270.0f);
+    std::shared_ptr<ParticleUpdater_2d> updater4 = std::make_shared<ParticleUpdater_2d_Size>(0.5f, 0.5f);
+    std::shared_ptr<ParticleUpdater_2d> updater8 = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 500.0f);
+    // renderer
+    std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_default>(
+        GlobalVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
 
     // emitter
     ParticleEmitter_2d emitter(
@@ -38,23 +34,11 @@ int main(int argc, char* args[])
         1,                    // 最大粒子数量
         3000,            // 发射器生命值
         3000,                   // 发射间隔
-        setter_center,               // 粒子构造器
-        { updater0 },   // 粒子更新器
-        render1                 // 粒子渲染器
+        setter,               // 粒子构造器
+        { updater0, updater1, updater3, updater8 },   // 粒子更新器
+        render0                 // 粒子渲染器
     );
     emitter.setOneShoot(true);
-
-    ParticleEmitter_2d emitter_particle(
-        100.0f, 100.0f,
-        5,
-        3000,
-        3000,
-        setter_other,
-        { updater0, updater1, updater4, updater8 },
-        render0
-    );
-    emitter_particle.setOneShoot(true);
-    emitter_particle.initilize(100.0f, 100.0f);
 
     bool quit = false;
     SDL_Event event;
@@ -76,11 +60,10 @@ int main(int argc, char* args[])
         GlobalVars::getInstance().timer.updateTime();
         // 更新粒子发射器
         emitter.update();
-        emitter_particle.update();
-        if (!emitter.valid() && !emitter_particle.valid())
+
+        if (!emitter.valid())
         {
             emitter.initilize(100.0f, 100.0f);
-            emitter_particle.initilize(100.0f, 100.0f);
         }
 
         // 清空屏幕
@@ -93,7 +76,6 @@ int main(int argc, char* args[])
         SDL_RenderDrawLine(GlobalVars::getInstance().renderer, 100, 0, 100, 200);
         // 渲染粒子发射器
         emitter.render();
-        emitter_particle.render();
 
         // 刷新屏幕
         SDL_RenderPresent(GlobalVars::getInstance().renderer);
