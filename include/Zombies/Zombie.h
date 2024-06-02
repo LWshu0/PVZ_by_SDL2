@@ -10,12 +10,13 @@
 class Zombie :public ZombieObject {
 private:
     bool m_loseArm;
-    std::shared_ptr<ParticleEmitter_2d> m_emitter;
+    std::shared_ptr<ParticleEmitter_2d> m_emitterArm;
+    std::shared_ptr<ParticleEmitter_2d> m_emitterHead;
 public:
-    Zombie(
-        const SDL_FPoint& root_point
-    );
+    Zombie(const SDL_FPoint& root_point);
     virtual std::shared_ptr<ZombieObject> clone(const SDL_FPoint& root_point) override;
+    virtual void initilize(const SDL_FPoint& root_point) override;
+    virtual ZombieType getType() override;
 
     virtual int setZombieState(ZombieState to_state) override;
     virtual int attack() override;

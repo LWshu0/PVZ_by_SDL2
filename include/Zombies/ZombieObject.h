@@ -68,6 +68,10 @@ public:
      */
     virtual std::shared_ptr<ZombieObject> clone(const SDL_FPoint& root_point) = 0;
 
+    // 初始化方法
+    virtual void initilize(const SDL_FPoint& root_point) = 0;
+
+    virtual ZombieType getType() = 0;
     inline bool zeroHP() { return m_HP <= 0; }
     inline bool isDead() { return m_state == ZombieState::Zombie_DEAD || m_state == ZombieState::Zombie_ASHES || m_state == ZombieState::Zombie_SQUISH; }
     inline bool canDelete() { return m_state == ZombieState::Zombie_DELETE; }

@@ -61,8 +61,70 @@ Zombie::Zombie(
         ZombieState::Zombie_IDLE
     ),
     m_loseArm(false),
-    m_emitter(nullptr)
+    m_emitterArm(nullptr),
+    m_emitterHead(nullptr)
 {
+    // 初始化播放的轨道
+    m_animPlayer.setPlayingTrack(
+        { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
+        6
+    );
+    m_animPlayer.restartTrack(
+        { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
+    );
+    // 粒子发射器
+    // setters
+    std::shared_ptr<ParticleSetter_2d> setter_arm = std::make_shared<ParticleSetter_2d_default>(600, SDL_FPoint{ 0, 100 }, 0.8f);
+    std::shared_ptr<ParticleSetter_2d> setter_head = std::make_shared<ParticleSetter_2d_default>(800, SDL_FPoint{ 50, -100 }, 0.8f);
+    // updaters
+    std::shared_ptr<ParticleUpdater_2d> updater_lifetime = std::make_shared<ParticleUpdater_2d_Lifetime>();
+    std::shared_ptr<ParticleUpdater_2d> updater_speed = std::make_shared<ParticleUpdater_2d_Speed>();
+    std::shared_ptr<ParticleUpdater_2d> updater_rot_arm = std::make_shared<ParticleUpdater_2d_Rotate>(-180.0f);
+    std::shared_ptr<ParticleUpdater_2d> updater_rot_head = std::make_shared<ParticleUpdater_2d_Rotate>(270.0f);
+    std::shared_ptr<ParticleUpdater_2d> updater_force_head = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 500.0f);
+    // renderers
+    std::shared_ptr<ParticleRenderer_2d> render_arm = std::make_shared<ParticleRenderer_2d_default>(ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieArm.png"));
+    std::shared_ptr<ParticleRenderer_2d> render_head = std::make_shared<ParticleRenderer_2d_default>(ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
+    // emitters
+    m_emitterArm = std::make_shared<ParticleEmitter_2d>(
+        m_aabb.x + 20, m_aabb.y + 50,   // 发射器位置
+        1,                              // 最大粒子数量
+        10,                             // 发射器生命值
+        3000,                           // 发射间隔
+        setter_arm,                     // 粒子构造器
+        std::initializer_list < std::shared_ptr<ParticleUpdater_2d>>{ updater_lifetime, updater_speed, updater_rot_arm },   // 粒子更新器
+        render_arm                      // 粒子渲染器
+    );
+    m_emitterArm->setOneShoot(true);
+
+    m_emitterHead = std::make_shared<ParticleEmitter_2d>(
+        m_aabb.x + 20, m_aabb.y + 10,       // 发射器位置
+        1,                                  // 最大粒子数量
+        10,                                 // 发射器生命值
+        3000,                               // 发射间隔
+        setter_head,                        // 粒子构造器
+        std::initializer_list < std::shared_ptr<ParticleUpdater_2d>>{ updater_lifetime, updater_speed, updater_rot_head, updater_force_head },   // 粒子更新器
+        render_head                         // 粒子渲染器
+    );
+    m_emitterHead->setOneShoot(true);
+}
+
+std::shared_ptr<ZombieObject> Zombie::clone(const SDL_FPoint& root_point)
+{
+    return std::make_shared<Zombie>(root_point);
+}
+
+void Zombie::initilize(const SDL_FPoint& root_point)
+{
+    m_animPlayer.setPlayPosition(SDL_FPoint{ root_point.x - 40, root_point.y - 120 });
+    SDL_FPoint base_point = m_animPlayer.getPlayPosition();
+    m_aabb.x = base_point.x + m_offsetAABB.x;
+    m_aabb.y = base_point.y + m_offsetAABB.y;
+    m_shadowRange.x = base_point.y + m_offsetShadow.x;
+    m_shadowRange.y = base_point.y + m_offsetShadow.y;
+    m_HP = 200;
+    m_loseArm = false;
+    m_state = ZombieState::Zombie_IDLE;
     // 初始化播放的轨道
     m_animPlayer.setPlayingTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 },
@@ -73,9 +135,9 @@ Zombie::Zombie(
     );
 }
 
-std::shared_ptr<ZombieObject> Zombie::clone(const SDL_FPoint& root_point)
+ZombieType Zombie::getType()
 {
-    return std::make_shared<Zombie>(root_point);
+    return ZombieType::ZombieNormal;
 }
 
 int Zombie::setZombieState(ZombieState to_state)
@@ -156,54 +218,12 @@ int Zombie::damage(int damege_num)
             36,
             ResVars::getInstance().textureRes.getTextureFrom("reanim/Zombie_outerarm_upper2.png")
         );
-        std::shared_ptr<ParticleSetter_2d> setter = std::make_shared<ParticleSetter_2d_default>(
-            600,
-            SDL_FPoint{ 0, 100 }
-        );
-        std::shared_ptr<ParticleUpdater_2d> updater0 = std::make_shared<ParticleUpdater_2d_Lifetime>();
-        std::shared_ptr<ParticleUpdater_2d> updater1 = std::make_shared<ParticleUpdater_2d_Speed>();
-        std::shared_ptr<ParticleUpdater_2d> updater3 = std::make_shared<ParticleUpdater_2d_Rotate>(-180.0f);
-        std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_default>(
-            ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieArm.png"));
-        m_emitter = std::make_shared<ParticleEmitter_2d>(
-            m_aabb.x + 20, m_aabb.y + 50,         // 发射器位置
-            1,                    // 最大粒子数量
-            10,            // 发射器生命值
-            3000,                   // 发射间隔
-            setter,               // 粒子构造器
-            std::initializer_list < std::shared_ptr<ParticleUpdater_2d>>{ updater0, updater1, updater3 },   // 粒子更新器
-            render0                 // 粒子渲染器
-        );
-        m_emitter->setOneShoot(true);
-        m_emitter->initilize(m_aabb.x + 20, m_aabb.y + 50);
+        m_emitterArm->initilize(m_aabb.x + 20, m_aabb.y + 50);
     }
     if (m_HP <= 0)
     {
         setZombieState(ZombieState::Zombie_DEAD);
-        std::shared_ptr<ParticleSetter_2d> setter = std::make_shared<ParticleSetter_2d_default>(
-            800,
-            SDL_FPoint{ 50, -100 }
-        );
-        // updater
-        std::shared_ptr<ParticleUpdater_2d> updater0 = std::make_shared<ParticleUpdater_2d_Lifetime>();
-        std::shared_ptr<ParticleUpdater_2d> updater1 = std::make_shared<ParticleUpdater_2d_Speed>();
-        std::shared_ptr<ParticleUpdater_2d> updater3 = std::make_shared<ParticleUpdater_2d_Rotate>(270.0f);
-        std::shared_ptr<ParticleUpdater_2d> updater8 = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 500.0f);
-        // renderer
-        std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_default>(
-            ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
-        
-        m_emitter = std::make_shared<ParticleEmitter_2d>(
-            m_aabb.x + 20, m_aabb.y + 10,         // 发射器位置
-            1,                    // 最大粒子数量
-            10,            // 发射器生命值
-            3000,                   // 发射间隔
-            setter,               // 粒子构造器
-            std::initializer_list < std::shared_ptr<ParticleUpdater_2d>>{ updater0, updater1, updater3, updater8 },   // 粒子更新器
-            render0                 // 粒子渲染器
-        );
-        m_emitter->setOneShoot(true);
-        m_emitter->initilize(m_aabb.x + 20, m_aabb.y + 10);
+        m_emitterHead->initilize(m_aabb.x + 20, m_aabb.y + 10);
     }
     return 0;
 }
@@ -222,7 +242,8 @@ int Zombie::render()
     {
         m_animPlayer.renderTracks({ 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 });
     }
-    if (m_emitter != nullptr) m_emitter->render();
+    if (m_emitterArm->valid()) m_emitterArm->render();
+    if (m_emitterHead->valid()) m_emitterHead->render();
 #ifndef NDEBUG
     showAABB();
 #endif
@@ -240,11 +261,8 @@ void Zombie::onUpdateIdle()
 void Zombie::onUpdateWalk()
 {
     m_animPlayer.updatePlayingFrameIdx();
-    if (m_emitter != nullptr)
-    {
-        m_emitter->update();
-        if (!m_emitter->valid()) m_emitter = nullptr;
-    }
+    m_emitterArm->update();
+    m_emitterHead->update();
     // 移动
     if (m_animPlayer.isUpdateAt(11, CoreVars::getInstance().timer.getTime()))
     {
@@ -269,11 +287,8 @@ void Zombie::onUpdateWalk()
 void Zombie::onUpdateAttack()
 {
     m_animPlayer.updatePlayingFrameIdx();
-    if (m_emitter != nullptr)
-    {
-        m_emitter->update();
-        if (!m_emitter->valid()) m_emitter = nullptr;
-    }
+    m_emitterArm->update();
+    m_emitterHead->update();
     // 攻击
     int row = Managers::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
     int col = Managers::getInstance().mapManager->caculCol(m_aabb.x);
@@ -290,11 +305,8 @@ void Zombie::onUpdateAttack()
 void Zombie::onUpdateDead()
 {
     m_animPlayer.updatePlayingFrameIdx();
-    if (m_emitter != nullptr)
-    {
-        m_emitter->update();
-        if (!m_emitter->valid()) m_emitter = nullptr;
-    }
+    m_emitterArm->update();
+    m_emitterHead->update();
     if (m_animPlayer.isPlayEnd(12))
     {
         setZombieState(ZombieState::Zombie_DELETE);

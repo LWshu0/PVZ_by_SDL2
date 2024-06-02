@@ -1,15 +1,25 @@
 #include "Core/Particle/ParticleSetters_2d.h"
 
-ParticleSetter_2d_default::ParticleSetter_2d_default(uint64_t init_lifetime, const SDL_FPoint& speed) :
-    m_initLifetime(init_lifetime), m_initSpeed(speed)
+ParticleSetter_2d_default::ParticleSetter_2d_default(
+    uint64_t init_lifetime,
+    const SDL_FPoint& speed,
+    float scale,
+    const SDL_Color& color,
+    float degree
+) :
+    m_initLifetime(init_lifetime),
+    m_initSpeed(speed),
+    m_initScale(scale),
+    m_initColor(color),
+    m_initDegree(degree)
 {}
 void ParticleSetter_2d_default::set(Particle_2d& particle, ParticleEmitter_2d& emitter)
 {
     // position
     particle.m_originPoint = emitter.m_center;
-    particle.m_color = SDL_Color{ 255,255,255,255 };
-    particle.m_scale = 1.0f;
-    particle.m_degree = 0.0f;
+    particle.m_color = m_initColor;
+    particle.m_scale = m_initScale;
+    particle.m_degree = m_initDegree;
     // lifetime
     particle.m_lifetime = m_initLifetime;
     particle.m_totalLifetime = m_initLifetime;
