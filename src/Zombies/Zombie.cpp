@@ -133,6 +133,7 @@ void Zombie::initilize(const SDL_FPoint& root_point)
     m_animPlayer.restartTrack(
         { 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 29, 35, 36, 38 }
     );
+    m_animPlayer.setTrackTexture(36, nullptr);
 }
 
 ZombieType Zombie::getType()
@@ -315,3 +316,10 @@ void Zombie::onUpdateDead()
 }
 void Zombie::onUpdateAshes() {}
 void Zombie::onUpdateSquish() {}
+
+
+std::shared_ptr<ZombieObject> ZombieFactory::create()
+{
+    SDL_Log("create a zombie\n");
+    return std::make_shared<Zombie>(SDL_FPoint{ 0.0f, 0.0f });
+}

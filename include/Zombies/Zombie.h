@@ -6,6 +6,7 @@
 #include "Core/Particle/ParticleSetters_2d.h"
 #include "Core/Particle/ParticleUpdaters_2d.h"
 #include "Core/Particle/ParticleRenderers_2d.h"
+#include "Core/ObjectPool.h"
 
 class Zombie :public ZombieObject {
 private:
@@ -31,6 +32,11 @@ protected:
     virtual void onUpdateAshes() override;
     virtual void onUpdateSquish() override;
 
+};
+
+class ZombieFactory :public ObjectFactory<ZombieObject> {
+public:
+    virtual std::shared_ptr<ZombieObject> create() override;
 };
 
 #endif

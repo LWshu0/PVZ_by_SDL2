@@ -48,6 +48,14 @@ public:
         return m_objects.empty();
     }
 
+    void clear()
+    {
+        while(!m_objects.empty())
+        {
+            m_objects.pop();
+        }
+    }
+
     ~ObjectPool() {}
 };
 

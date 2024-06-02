@@ -8,13 +8,19 @@
 
 ZombieManager::ZombieManager()
 {
-    m_zombieTemplate.resize(ZombieType::MaxZombieType);
+    m_zombiePool.resize(ZombieType::MaxZombieType);
     // 普通僵尸
-    m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(SDL_FPoint{ 0.0f, 0.0f });
+    auto zombieFactory = std::make_unique<ZombieFactory>();
+    m_zombiePool[ZombieType::ZombieNormal] = std::make_unique<ObjectPool<ZombieObject>>(std::move(zombieFactory));
+    // ...
 }
 
 int ZombieManager::initilizeZombie()
 {
+    for (auto& pool : m_zombiePool)
+    {
+        pool->clear();
+    }
     m_zombies.clear();
     return 0;
 }
@@ -31,8 +37,12 @@ int ZombieManager::addZombie(ZombieType type, int row, int col)
     float root_y = Managers::getInstance().mapManager->getTopMargin() + row * Managers::getInstance().mapManager->getCellHeight();
     root_x += Managers::getInstance().mapManager->getCellWidth() / 2;
     root_y += Managers::getInstance().mapManager->getCellHeight() * 0.8;
-    m_zombies.push_front(m_zombieTemplate[type]->clone(SDL_FPoint{ root_x, root_y }));
-    m_zombies.front()->setZombieState(ZombieState::Zombie_WALK);
+    // 对象池取object
+    auto new_zombie = m_zombiePool[type]->getReusable();
+    new_zombie->initilize(SDL_FPoint{ root_x, root_y });
+    new_zombie->setZombieState(ZombieState::Zombie_WALK);
+    // 添加到游戏中
+    m_zombies.push_front(new_zombie);
     return 0;
 }
 
@@ -106,6 +116,8 @@ int ZombieManager::updateZombie()
     {
         if ((*iter)->canDelete())
         {
+            auto zombie_ptr = (*iter);
+            m_zombiePool[(*iter)->getType()]->returnReusable(zombie_ptr);
             iter = m_zombies.erase(iter);
         }
         else

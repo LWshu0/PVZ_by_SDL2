@@ -8,6 +8,7 @@
 #include "Zombies/ZombieObject.h"
 #include "Zombies/Zombie.h"
 #include "Plants/PlantObject.h"
+#include "Core/ObjectPool.h"
 
 #include "Manager/Managers.h"
 
@@ -16,7 +17,7 @@ protected:
     /**************************
     *    初始化后不可变成员   *
     **************************/
-    std::vector<std::shared_ptr<ZombieObject>> m_zombieTemplate;    // 僵尸模板
+    std::vector<std::unique_ptr<ObjectPool<ZombieObject>>> m_zombiePool;    // 僵尸对象池 按照类型索引
 
     // zombies in game
     std::list<std::shared_ptr<ZombieObject>> m_zombies;
