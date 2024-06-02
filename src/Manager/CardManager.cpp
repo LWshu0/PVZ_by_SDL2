@@ -9,7 +9,7 @@
 
 CardManager::CardManager(
 ) :
-    m_sunFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0,0,0,255 }),
+    m_sunFont(nullptr),
     m_cardPoolBK(nullptr),
     m_cardPoolRange{ 0,0,0,0 },
     m_cardSlotBK(nullptr),
@@ -25,6 +25,7 @@ CardManager::CardManager(
     m_slotCardOffsetY(8),
     m_slotCardSepX(1)
 {
+    m_sunFont = ResVars::getInstance().dictRes.getDictFrom("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0,0,0,255 });
     m_cardPoolBK = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Background.png");
     if (m_cardPoolBK != nullptr)
     {
@@ -152,7 +153,7 @@ int CardManager::initilizeManagers()
         }
         SDL_RenderCopyF(CoreVars::getInstance().renderer, plant_texture, NULL, &dst_rect);
         // 渲染阳光消耗数量
-        m_sunFont.render(std::to_string(m_cardInPool[i].m_sunCost), card_w * 0.1f, card_h * 0.7f, 1.5f);
+        m_sunFont->render(std::to_string(m_cardInPool[i].m_sunCost), card_w * 0.1f, card_h * 0.7f, 1.5f);
         // 添加到列表存储
         m_plantCardTexture[i] = card_texture;
     }
@@ -292,7 +293,7 @@ int CardManager::renderCardSlot()
         }
     }
     std::string sunNum = std::to_string(Managers::getInstance().productManager->getSunNum());
-    m_sunFont.render(sunNum, 15, 57);
+    m_sunFont->render(sunNum, 15, 57);
 #ifndef NDEBUG
     // 显示可点击范围
     for (auto i : m_cardRangeInSlot)

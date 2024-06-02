@@ -9,12 +9,14 @@
 SelectCardScene::SelectCardScene() :
     SceneObject(),
     m_startButtonRange(SDL_Rect{ 144, 550, 156, 42 }),
-    m_enableFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 255, 255, 0, 255 }),
-    m_disableFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 205, 64, 40, 255 })
+    m_enableFont(nullptr),
+    m_disableFont(nullptr)
 {
     m_startButtonBK = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button.png");
     m_startButtonDisable = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button_Disabled.png");
     m_startButtonBloom = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button_Glow.png");
+    m_enableFont = ResVars::getInstance().dictRes.getDictFrom("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 255, 255, 0, 255 });
+    m_disableFont = ResVars::getInstance().dictRes.getDictFrom("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 205, 64, 40, 255 });
 }
 
 SceneType SelectCardScene::getType()
@@ -92,13 +94,13 @@ int SelectCardScene::renderScene()
     if (m_enableStartButton)
     {
         SDL_RenderCopy(CoreVars::getInstance().renderer, m_startButtonBK, NULL, &m_startButtonRange.m_range);
-        m_enableFont.render("一起开始吧!", m_startButtonRange.m_range.x, m_startButtonRange.m_range.y, 1.5f);
+        m_enableFont->render("一起开始吧!", m_startButtonRange.m_range.x, m_startButtonRange.m_range.y, 1.5f);
         if (m_hoverStartButton) SDL_RenderCopy(CoreVars::getInstance().renderer, m_startButtonBloom, NULL, &m_startButtonRange.m_range);
     }
     else
     {
         SDL_RenderCopy(CoreVars::getInstance().renderer, m_startButtonDisable, NULL, &m_startButtonRange.m_range);
-        m_disableFont.render("一起开始吧!", m_startButtonRange.m_range.x, m_startButtonRange.m_range.y, 1.5f);
+        m_disableFont->render("一起开始吧!", m_startButtonRange.m_range.x, m_startButtonRange.m_range.y, 1.5f);
     }
     return 0;
 }

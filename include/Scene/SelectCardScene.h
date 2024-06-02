@@ -17,8 +17,9 @@ protected:
     SDL_Texture* m_startButtonBK;
     SDL_Texture* m_startButtonDisable;
     SDL_Texture* m_startButtonBloom;
-    Dictionary m_enableFont;
-    Dictionary m_disableFont;
+    std::shared_ptr<Dictionary> m_enableFont;
+    std::shared_ptr<Dictionary> m_disableFont;
+    
 public:
     SelectCardScene();
 

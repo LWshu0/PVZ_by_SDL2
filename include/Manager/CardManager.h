@@ -46,7 +46,7 @@ protected:
     std::vector<CardNode> m_cardInSlot;         // 卡槽中的卡片
 
     // 阳光数值的字体
-    Dictionary m_sunFont;
+    std::shared_ptr<Dictionary> m_sunFont;
 
     /* card manager 管理需要手动释放 */
     // 植物纹理

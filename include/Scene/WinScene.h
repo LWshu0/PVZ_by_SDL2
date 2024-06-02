@@ -19,8 +19,8 @@ protected:
 
     SDL_Rect m_cardRect;
 
-    Dictionary m_buttonFont;
-    Dictionary m_inforFont;
+    std::shared_ptr<Dictionary> m_buttonFont;
+    std::shared_ptr<Dictionary> m_inforFont;
 public:
     WinScene();
 

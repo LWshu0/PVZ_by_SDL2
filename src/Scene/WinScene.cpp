@@ -14,12 +14,14 @@ WinScene::WinScene() :
     m_buttonNextRange(SDL_Rect{ 152, 511, 156, 42 }),
     m_buttonQuitRange(SDL_Rect{ 467, 511, 156, 42 }),
     m_cardRect{350, 140, 100, 140},
-    m_buttonFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 255,255,0,255 }),
-    m_inforFont("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0, 0, 0, 255 })
+    m_buttonFont(nullptr),
+    m_inforFont(nullptr)
 {
     m_bkTexture = ResVars::getInstance().textureRes.getTextureFrom("images/AwardScreen_Back.jpg");
     m_buttonIdle = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button.png");
     m_buttonHover = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Button_Glow.png");
+    m_buttonFont = ResVars::getInstance().dictRes.getDictFrom("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 255,255,0,255 });
+    m_inforFont = ResVars::getInstance().dictRes.getDictFrom("data/_BrianneTod16.png", "data/BrianneTod16.txt", SDL_Color{ 0, 0, 0, 255 });
 }
 
 SceneType WinScene::getType()
@@ -90,9 +92,9 @@ int WinScene::renderScene()
     SDL_RenderCopy(CoreVars::getInstance().renderer, m_buttonIdle, NULL, &m_buttonNextRange.m_range);
     SDL_RenderCopy(CoreVars::getInstance().renderer, m_buttonIdle, NULL, &m_buttonQuitRange.m_range);
     // 按钮字
-    m_buttonFont.render("下一关!", m_buttonNextRange.m_range.x + 20, m_buttonNextRange.m_range.y, 1.5f);
-    m_buttonFont.render("返回主界面!", m_buttonQuitRange.m_range.x, m_buttonQuitRange.m_range.y, 1.5f);
-    m_buttonFont.render("你得到一株新植物!", 240, 20, 2.0f);
+    m_buttonFont->render("下一关!", m_buttonNextRange.m_range.x + 20, m_buttonNextRange.m_range.y, 1.5f);
+    m_buttonFont->render("返回主界面!", m_buttonQuitRange.m_range.x, m_buttonQuitRange.m_range.y, 1.5f);
+    m_buttonFont->render("你得到一株新植物!", 240, 20, 2.0f);
     // 发光
     if (m_buttonNextTexture != nullptr)
         SDL_RenderCopy(CoreVars::getInstance().renderer, m_buttonNextTexture, NULL, &m_buttonNextRange.m_range);
@@ -106,7 +108,7 @@ int WinScene::renderScene()
         &m_cardRect
     );
     // 描述
-    m_inforFont.render("暂无描述", 324, 393);
+    m_inforFont->render("暂无描述", 324, 393);
     return 0;
 }
 
