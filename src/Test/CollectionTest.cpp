@@ -1,10 +1,6 @@
-#include "Scene/GameScene.h"
 #include <thread>
-#include "SDL_image.h"
-#include "Core/Timer.h"
-#include "Core/Camera.h"
-#include "Core/TextureRes.h"
-#include "Core/AnimPlayer.h"
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 #include "Manager/CollectionManager.h"
 
 #define FLUSH_DELAY 1000 / 45

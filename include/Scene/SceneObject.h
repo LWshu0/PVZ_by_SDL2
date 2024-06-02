@@ -3,9 +3,6 @@
 #include <memory>
 
 #include "SDL.h"
-#include "Core/GlobalVars.h"
-#include "Core/AnimLoader.h"
-#include "Core/AnimPlayer.h"
 
 enum SceneType {
     Scene_MainScene,                // 游戏主界面

@@ -1,5 +1,5 @@
-#include "Core/TextureRes.h"
-#include "Core/GlobalVars.h"
+#include "Resource/TextureRes.h"
+#include "Core/CoreVars.h"
 
 TextureRes::TextureRes(
     const std::string& xml_path,
@@ -29,7 +29,7 @@ SDL_Texture* TextureRes::getTextureFrom(const std::string& file_path)
 {
     if (m_textures.find(file_path) == m_textures.end())
     {
-        SDL_Texture* img_texture = IMG_LoadTexture(GlobalVars::getInstance().renderer, file_path.c_str());
+        SDL_Texture* img_texture = IMG_LoadTexture(CoreVars::getInstance().renderer, file_path.c_str());
         if (img_texture != NULL)
         {
             m_textures[file_path] = img_texture;
@@ -77,7 +77,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const std::string& _file_path, const
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
     if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
     // 创建纹理
-    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(GlobalVars::getInstance().renderer, surface);
+    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(CoreVars::getInstance().renderer, surface);
     SDL_SetTextureBlendMode(img_texture, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(mask);
@@ -132,7 +132,7 @@ SDL_Texture* TextureRes::getTextureWithMask(const SDL_Color& color, const std::s
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
     if (SDL_MUSTLOCK(mask)) SDL_UnlockSurface(mask);
     // 创建纹理
-    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(GlobalVars::getInstance().renderer, surface);
+    SDL_Texture* img_texture = SDL_CreateTextureFromSurface(CoreVars::getInstance().renderer, surface);
     SDL_SetTextureBlendMode(img_texture, SDL_BLENDMODE_BLEND);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(mask);
@@ -158,7 +158,7 @@ SDL_Texture* TextureRes::getReanimTexture(const std::string& reanim_name)
     }
     else
     {
-        SDL_Texture* img_texture = IMG_LoadTexture(GlobalVars::getInstance().renderer, image_path.c_str());
+        SDL_Texture* img_texture = IMG_LoadTexture(CoreVars::getInstance().renderer, image_path.c_str());
         if (img_texture != NULL)
         {
             m_textures[image_path] = img_texture;
@@ -183,7 +183,7 @@ int TextureRes::FreeTexture(const std::string& _file_path)
     return 0;
 }
 
-void TextureRes::CleanUp()
+void TextureRes::clean()
 {
     for (auto tex : m_textures)
     {

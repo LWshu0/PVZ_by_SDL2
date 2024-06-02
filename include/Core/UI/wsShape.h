@@ -2,7 +2,6 @@
 #define WSSHAPE_H
 
 #include "SDL.h"
-#include "Core/GlobalVars.h"
 
 class wsShape {
 protected:

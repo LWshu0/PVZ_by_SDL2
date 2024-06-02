@@ -3,14 +3,10 @@
 
 #include <vector>
 #include <memory>
-#include "Core/GlobalVars.h"
 #include "Plants/PlantObject.h"
 #include "Plants/PeaShooterSingle.h"
 #include "Plants/SunFlower.h"
-
-class MapManager;
-class ProductManager;
-class ZombieManager;
+#include "Manager/Managers.h"
 
 class PlantManager {
 protected:

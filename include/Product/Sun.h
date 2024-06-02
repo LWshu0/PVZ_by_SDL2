@@ -2,6 +2,7 @@
 #define SUN_H
 
 #include "CollectionObject.h"
+#include "Resource/AnimPlayer.h"
 
 class Sun :public CollectionObject {
 protected:
@@ -11,8 +12,7 @@ protected:
     uint64_t m_lifetimeMilliSecond;
 public:
     Sun(
-        const SDL_FRect& aabb,
-        std::shared_ptr<AnimLoader> loader
+        const SDL_FRect& aabb
     );
     virtual void initilize(float x, float y) override;
     virtual ProductType getType() override;
@@ -22,8 +22,6 @@ public:
 };
 
 class SunFactory :public ObjectFactory<ProductObject> {
-private:
-    std::shared_ptr<AnimLoader> sun_loader;
 public:
     SunFactory();
     virtual std::shared_ptr<ProductObject> create() override;

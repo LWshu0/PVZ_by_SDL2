@@ -1,6 +1,6 @@
-#include "Core/AnimLoader.h"
-#include "Core/GlobalVars.h"
-
+#include "Resource/AnimLoader.h"
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 AnimFrame::AnimFrame(
     int m_f,
     SDL_Texture* tex,
@@ -182,7 +182,7 @@ int AnimTrack::renderTrack(
     //     last_frame_X = m_frames[real_frame_idx].m_point[0].x + dst_point.x;
     // }
     int index[] = { 0, 2, 1, 1, 2, 3 };
-    return SDL_RenderGeometry(GlobalVars::getInstance().renderer, render_texture, vertices, 4, index, 6);
+    return SDL_RenderGeometry(CoreVars::getInstance().renderer, render_texture, vertices, 4, index, 6);
 }
 
 int AnimTrack::renderTrack(
@@ -213,7 +213,7 @@ int AnimTrack::renderTrack(
             {255, 255, 255, mask_a}, {1, 1} }
     };
     int index[] = { 0, 2, 1, 1, 2, 3 };
-    return SDL_RenderGeometry(GlobalVars::getInstance().renderer, m_frames[real_frame_idx].m_texture, vertices, 4, index, 6);
+    return SDL_RenderGeometry(CoreVars::getInstance().renderer, m_frames[real_frame_idx].m_texture, vertices, 4, index, 6);
 }
 
 AnimLoader::AnimLoader(
@@ -321,7 +321,7 @@ int AnimLoader::GetFrame(const std::string& _reanim_str)
         if (reanim_str.substr(start + 2, end - start - 2) != tag) return -1;    // 反标签出错
         if ("i" == tag)
         {
-            new_frame.SetImg(GlobalVars::getInstance().textureRes.getReanimTexture(content));
+            new_frame.SetImg(ResVars::getInstance().textureRes.getReanimTexture(content));
         }
         else if ("f" == tag)
         {

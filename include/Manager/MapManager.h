@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <memory>
-#include "Core/GlobalVars.h"
 #include "Map/MapObject.h"
+#include "Manager/Managers.h"
 
 enum MapType {
     MapGrassDayOneLine,

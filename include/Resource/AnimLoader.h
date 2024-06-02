@@ -6,10 +6,10 @@
 #include <cmath>
 #include <string>
 #include "SDL.h"
-#include "ExtSDL.h"
+#include "Core/ExtSDL.h"
 
-#include "TextureRes.h"
-#include "XmlLoader.h"
+#include "Resource/TextureRes.h"
+#include "Resource/XmlLoader.h"
 
 class AnimFrame {
 public:

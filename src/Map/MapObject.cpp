@@ -1,9 +1,12 @@
 #include "Map/MapObject.h"
-#include "Core/GlobalVars.h"
 #include <fstream>
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
+
 MapObject::MapObject()
 {}
 
@@ -14,7 +17,7 @@ int MapObject::load(const std::string& file)
     rapidjson::IStreamWrapper isw(map_file);
     rapidjson::Document doc;
     doc.ParseStream(isw);
-    m_bkTexture = GlobalVars::getInstance().textureRes.getTextureFrom(doc["texture"].GetString());
+    m_bkTexture = ResVars::getInstance().textureRes.getTextureFrom(doc["texture"].GetString());
     int w, h;
     SDL_QueryTexture(m_bkTexture, NULL, NULL, &w, &h);
     m_mapWidthPixel = static_cast<float>(w);

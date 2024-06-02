@@ -7,7 +7,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
-#include "XmlLoader.h"
+#include "Resource/XmlLoader.h"
 
 class TextureRes {
 protected:
@@ -52,7 +52,7 @@ public:
     int FreeTexture(const std::string& file_path);
 
     // 释放纹理资源 必需在 SDL_Quit 之前调用
-    void CleanUp();
+    void clean();
 
     ~TextureRes();
 protected:

@@ -9,7 +9,7 @@
 
 #include <list>
 
-class MapManager;
+#include "Manager/Managers.h"
 
 class ProductManager {
 protected:

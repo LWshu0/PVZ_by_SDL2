@@ -1,5 +1,5 @@
 #include "Core/Particle/ParticleRenderers_2d.h"
-#include "Core/GlobalVars.h"
+#include "Core/CoreVars.h"
 
 ParticleRenderer_2d_default::ParticleRenderer_2d_default(SDL_Texture* texture) :
     ParticleRenderer_2d(),
@@ -13,15 +13,15 @@ ParticleRenderer_2d_default::ParticleRenderer_2d_default(SDL_Texture* texture) :
 void ParticleRenderer_2d_default::render(Particle_2d& particle)
 {
     SDL_FRect rect{
-        GlobalVars::getInstance().camera.getRenderX(particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale),
-        GlobalVars::getInstance().camera.getRenderY(particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale),
+        CoreVars::getInstance().camera.getRenderX(particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale),
+        CoreVars::getInstance().camera.getRenderY(particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale),
         m_dstRectWidth_half * 2 * particle.m_scale,
         m_dstRectHeight_half * 2 * particle.m_scale
     };
     SDL_SetTextureColorMod(m_texture, particle.m_color.r, particle.m_color.g, particle.m_color.b);
     SDL_SetTextureAlphaMod(m_texture, particle.m_color.a);
     SDL_RenderCopyExF(
-        GlobalVars::getInstance().renderer,
+        CoreVars::getInstance().renderer,
         m_texture,
         NULL,
         &rect,
@@ -54,15 +54,15 @@ void ParticleRenderer_2d_Sprite::render(Particle_2d& particle)
         m_texHeight
     };
     SDL_FRect dst_rect{
-        GlobalVars::getInstance().camera.getRenderX(particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale),
-        GlobalVars::getInstance().camera.getRenderY(particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale),
+        CoreVars::getInstance().camera.getRenderX(particle.m_originPoint.x - m_dstRectWidth_half * particle.m_scale),
+        CoreVars::getInstance().camera.getRenderY(particle.m_originPoint.y - m_dstRectHeight_half * particle.m_scale),
         m_dstRectWidth_half * 2 * particle.m_scale,
         m_dstRectHeight_half * 2 * particle.m_scale
     };
     SDL_SetTextureColorMod(m_texture, particle.m_color.r, particle.m_color.g, particle.m_color.b);
     SDL_SetTextureAlphaMod(m_texture, particle.m_color.a);
     SDL_RenderCopyExF(
-        GlobalVars::getInstance().renderer,
+        CoreVars::getInstance().renderer,
         m_texture,
         &src_rect,
         &dst_rect,

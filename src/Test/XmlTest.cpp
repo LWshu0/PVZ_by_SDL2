@@ -1,4 +1,4 @@
-#include "Core/XmlLoader.h"
+#include "Resource/XmlLoader.h"
 
 int main(int argc, char* args[])
 {

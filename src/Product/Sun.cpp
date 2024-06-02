@@ -1,16 +1,18 @@
 #include "Product/Sun.h"
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
+
 /*
 0: Sun3 -> range: [0, 12] total: [0, 12]
 1: Sun2 -> range: [0, 12] total: [0, 12]
 2: Sun1 -> range: [0, 12] total: [0, 12]
 */
 Sun::Sun(
-    const SDL_FRect& aabb,
-    std::shared_ptr<AnimLoader> loader
+    const SDL_FRect& aabb
 ) :
     CollectionObject(aabb),
     m_animPlayer(
-        loader,
+        ResVars::getInstance().animRes.getAnimFrom("reanim/Sun.reanim"),
         SDL_FPoint{ aabb.x + aabb.w / 2 , aabb.y + aabb.h / 2 }   // 渲染位置
     ),
     m_lifetimeMilliSecond(8000)
@@ -44,15 +46,15 @@ ProductType Sun::getType()
 int Sun::update()
 {
     m_animPlayer.updatePlayingFrameIdx();
-    if (m_lifetimeMilliSecond > GlobalVars::getInstance().timer.getDeltaTime())
+    if (m_lifetimeMilliSecond > CoreVars::getInstance().timer.getDeltaTime())
     {
-        m_lifetimeMilliSecond -= GlobalVars::getInstance().timer.getDeltaTime();
+        m_lifetimeMilliSecond -= CoreVars::getInstance().timer.getDeltaTime();
     }
     else
     {
         m_state = ProductState::Product_DELETE;
     }
-    int rt = m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
+    int rt = m_updater->step(this, CoreVars::getInstance().timer.getDeltaTime());
     m_animPlayer.setPlayPosition(SDL_FPoint{ m_aabb.x + m_aabb.w / 2 , m_aabb.y + m_aabb.h / 2 });
     if (rt == -1 && ProductState::Product_DEAD == m_state)
     {
@@ -65,11 +67,11 @@ int Sun::render()
 {
     m_animPlayer.render();
 #ifndef NDEBUG
-    SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 255, 255, 255, 255);
     SDL_FRect render_aabb = m_aabb;
-    render_aabb.x = GlobalVars::getInstance().camera.getRenderX(m_aabb.x);
-    render_aabb.y = GlobalVars::getInstance().camera.getRenderY(m_aabb.y);
-    SDL_RenderDrawRectF(GlobalVars::getInstance().renderer, &render_aabb);
+    render_aabb.x = CoreVars::getInstance().camera.getRenderX(m_aabb.x);
+    render_aabb.y = CoreVars::getInstance().camera.getRenderY(m_aabb.y);
+    SDL_RenderDrawRectF(CoreVars::getInstance().renderer, &render_aabb);
 #endif
     return 0;
 }
@@ -78,12 +80,9 @@ Sun::~Sun()
 {}
 
 
-SunFactory::SunFactory()
-{
-    sun_loader = std::make_shared<AnimLoader>("reanim/Sun.reanim");
-}
+SunFactory::SunFactory() {}
 
 std::shared_ptr<ProductObject> SunFactory::create()
 {
-    return std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f }, sun_loader);
+    return std::make_shared<Sun>(SDL_FRect{ 0.0f,0.0f, 80.0f,80.0f });
 }

@@ -1,5 +1,4 @@
 #include "Manager/UsrInfoManager.h"
-#include "Core/GlobalVars.h"
 #include <fstream>
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/rapidjson.h"

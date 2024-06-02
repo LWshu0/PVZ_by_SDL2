@@ -1,9 +1,8 @@
 #ifndef PLANTOBJECT_H
 #define PLANTOBJECT_H
 
-#include "Core/Timer.h"
 #include "Core/GameObject.h"
-#include "Core/AnimPlayer.h"
+#include "Resource/AnimPlayer.h"
 #include "Product/ProductObject.h"
 #include "Core/ExtSDL.h"
 

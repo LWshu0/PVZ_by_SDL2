@@ -1,10 +1,8 @@
 #ifndef PRODUCTOBJECT_H
 #define PRODUCTOBJECT_H
-#include "Core/AnimLoader.h"
-#include "Core/AnimPlayer.h"
+
 #include "Core/ObjectMotion.h"
 #include "Core/GameObject.h"
-#include "Core/GlobalVars.h"
 #include "Core/ObjectPool.h"
 
 enum ProductState {
@@ -33,11 +31,7 @@ public:
     virtual void setState(ProductState state) { m_state = state; }
     inline ProductState getState() { return m_state; }
     virtual ProductType getType() = 0;
-    virtual int update() override
-    {
-        return m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
-    }
-
+    virtual int update() override;
     // 设置运动更新器
     inline void setMotion(std::shared_ptr<ObjectMotion> motion)
     {

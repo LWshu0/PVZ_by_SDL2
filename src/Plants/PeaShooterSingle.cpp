@@ -1,5 +1,7 @@
 #include "Plants/PeaShooterSingle.h"
-#include "Core/GlobalVars.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 #include "Manager/ProductManager.h"
 #include "Manager/ZombieManager.h"
 /*
@@ -98,10 +100,10 @@ int PeaShooterSingle::setPlantState(PlantState to_state)
     if (PlantState::Plant_ATTACK == to_state)
     {
         // 进入攻击状态前进行时间检查 是否可以进入攻击状态
-        if (m_nextAttackAnimMilliSecond > GlobalVars::getInstance().timer.getTime()) return -1;
+        if (m_nextAttackAnimMilliSecond > CoreVars::getInstance().timer.getTime()) return -1;
         // 进入成功 设置为攻击状态
-        m_nextAttackAnimMilliSecond = GlobalVars::getInstance().timer.getTime() + m_reloadMilliSecond;
-        m_nextFireMilliSecond = GlobalVars::getInstance().timer.getTime() + m_windUpDuration;
+        m_nextAttackAnimMilliSecond = CoreVars::getInstance().timer.getTime() + m_reloadMilliSecond;
+        m_nextFireMilliSecond = CoreVars::getInstance().timer.getTime() + m_windUpDuration;
         // 设置攻击动画
         m_animPlayer.setPlayingTrack(
             { 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17 },
@@ -143,13 +145,13 @@ int PeaShooterSingle::update()
     // 更新帧
     m_animPlayer.updatePlayingFrameIdx();
     // 眨眼
-    if (last_blink_ms + delta_blink_ms < GlobalVars::getInstance().timer.getTime())
+    if (last_blink_ms + delta_blink_ms < CoreVars::getInstance().timer.getTime())
     {
         is_blinking = true;
-        last_blink_ms = GlobalVars::getInstance().timer.getTime();
+        last_blink_ms = CoreVars::getInstance().timer.getTime();
     }
     // 敌人检测
-    if (GlobalVars::getInstance().zombieManager->hasZombieInAttackRange(this))
+    if (Managers::getInstance().zombieManager->hasZombieInAttackRange(this))
     {
         setPlantState(PlantState::Plant_ATTACK);
     }
@@ -159,10 +161,10 @@ int PeaShooterSingle::update()
     }
     // 攻击
     if (PlantState::Plant_ATTACK == m_state
-        && GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
+        && CoreVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
     {
         m_nextFireMilliSecond = m_nextFireMilliSecond + m_reloadMilliSecond;    // 防止在攻击动画播放完成前多次返回子弹
-        GlobalVars::getInstance().productManager->addBullet(ProductType::PeaType, m_aabb.x + m_aabb.w, m_aabb.y);
+        Managers::getInstance().productManager->addBullet(ProductType::PeaType, m_aabb.x + m_aabb.w, m_aabb.y);
     }
     return 0;
 }

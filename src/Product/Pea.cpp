@@ -3,6 +3,8 @@
 #include "Core/Particle/ParticleUpdaters_2d.h"
 #include "Core/Particle/ParticleRenderers_2d.h"
 #include "Manager/ZombieManager.h"
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 Pea::Pea(
     float x, float y,
@@ -18,7 +20,7 @@ Pea::Pea(
     m_centerEmitter(centerEmitter),
     m_otherEmitter(otherEmitter)
 {
-    m_texture = GlobalVars::getInstance().textureRes.getTextureFrom("images/ProjectilePea.png");
+    m_texture = ResVars::getInstance().textureRes.getTextureFrom("images/ProjectilePea.png");
     if (m_texture != nullptr)
     {
         SDL_QueryTexture(m_texture, NULL, NULL, &m_textureWidth, &m_textureHeight);
@@ -55,8 +57,8 @@ int Pea::update()
     switch (m_state)
     {
     case ProductState::Product_MOVE:
-        m_updater->step(this, GlobalVars::getInstance().timer.getDeltaTime());
-        if (0 != GlobalVars::getInstance().zombieManager->damageZombie(this, m_damage))
+        m_updater->step(this, CoreVars::getInstance().timer.getDeltaTime());
+        if (0 != Managers::getInstance().zombieManager->damageZombie(this, m_damage))
         {
             setState(ProductState::Product_DEAD);
         }
@@ -81,10 +83,10 @@ int Pea::render()
     {
     case ProductState::Product_MOVE:
     {
-        SDL_FRect tex_rect{ GlobalVars::getInstance().camera.getRenderX(m_aabb.x), GlobalVars::getInstance().camera.getRenderY(m_aabb.y), (float)m_textureWidth, (float)m_textureHeight };
-        SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_texture, NULL, &tex_rect);
-        SDL_FRect sha_rect{ GlobalVars::getInstance().camera.getRenderX(m_aabb.x + m_offsetShadow.x), GlobalVars::getInstance().camera.getRenderY(m_aabb.y + m_offsetShadow.y), m_shadowWidth, m_shadowHeight };
-        SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_shadow, NULL, &sha_rect);
+        SDL_FRect tex_rect{ CoreVars::getInstance().camera.getRenderX(m_aabb.x), CoreVars::getInstance().camera.getRenderY(m_aabb.y), (float)m_textureWidth, (float)m_textureHeight };
+        SDL_RenderCopyF(CoreVars::getInstance().renderer, m_texture, NULL, &tex_rect);
+        SDL_FRect sha_rect{ CoreVars::getInstance().camera.getRenderX(m_aabb.x + m_offsetShadow.x), CoreVars::getInstance().camera.getRenderY(m_aabb.y + m_offsetShadow.y), m_shadowWidth, m_shadowHeight };
+        SDL_RenderCopyF(CoreVars::getInstance().renderer, m_shadow, NULL, &sha_rect);
         break;
     }
     case ProductState::Product_DEAD:
@@ -99,9 +101,9 @@ int Pea::render()
     
 #ifndef NDEBUG
     SDL_FRect aabb_box = m_aabb;
-    aabb_box.x = GlobalVars::getInstance().camera.getRenderX(aabb_box.x);
-    aabb_box.y = GlobalVars::getInstance().camera.getRenderY(aabb_box.y);
-    SDL_RenderDrawRectF(GlobalVars::getInstance().renderer, &aabb_box);
+    aabb_box.x = CoreVars::getInstance().camera.getRenderX(aabb_box.x);
+    aabb_box.y = CoreVars::getInstance().camera.getRenderY(aabb_box.y);
+    SDL_RenderDrawRectF(CoreVars::getInstance().renderer, &aabb_box);
 #endif
     return 0;
 }
@@ -124,10 +126,10 @@ PeaFactory::PeaFactory()
     updater_force = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 150.0f);
     // renderer
     render_other = std::make_shared<ParticleRenderer_2d_Sprite>(
-        GlobalVars::getInstance().textureRes.getTextureFrom("particles/Pea_particles.png"), 3);
+        ResVars::getInstance().textureRes.getTextureFrom("particles/Pea_particles.png"), 3);
 
     render_center = std::make_shared<ParticleRenderer_2d_Sprite>(
-        GlobalVars::getInstance().textureRes.getTextureFrom("particles/pea_splats.png"), 4);
+        ResVars::getInstance().textureRes.getTextureFrom("particles/pea_splats.png"), 4);
 
 }
 

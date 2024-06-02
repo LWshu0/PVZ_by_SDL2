@@ -1,5 +1,5 @@
-#include "Core/AnimPlayer.h"
-#include "Core/GlobalVars.h"
+#include "Resource/AnimPlayer.h"
+#include "Core/CoreVars.h"
 
 AnimPlayer::AnimPlayer(
     std::shared_ptr<AnimLoader> loader,
@@ -23,9 +23,9 @@ int AnimPlayer::updatePlayingFrameIdx()
 {
     for (int track_idx : m_playingTrack)
     {
-        if (GlobalVars::getInstance().timer.getTime() >= m_trackPlayRecord[track_idx].m_lastMilliSecond + m_trackPlayRecord[track_idx].m_deltaMilliSecond)
+        if (CoreVars::getInstance().timer.getTime() >= m_trackPlayRecord[track_idx].m_lastMilliSecond + m_trackPlayRecord[track_idx].m_deltaMilliSecond)
         {
-            m_trackPlayRecord[track_idx].m_lastMilliSecond = GlobalVars::getInstance().timer.getTime();
+            m_trackPlayRecord[track_idx].m_lastMilliSecond = CoreVars::getInstance().timer.getTime();
             m_trackPlayRecord[track_idx].m_playingFrameIdx += 1;
             if (m_trackPlayRecord[track_idx].m_playingFrameIdx > m_trackPlayRecord[track_idx].m_end)
             {
@@ -39,7 +39,7 @@ int AnimPlayer::updatePlayingFrameIdx()
 int AnimPlayer::renderTrack(int track_idx, SDL_FPoint ext_offset)
 {
     return m_loader->m_tracks[track_idx].renderTrack(
-        GlobalVars::getInstance().camera.getRenderPoint(getRealPoint(track_idx) + ext_offset),
+        CoreVars::getInstance().camera.getRenderPoint(getRealPoint(track_idx) + ext_offset),
         m_trackPlayRecord[track_idx].m_playingFrameIdx,
         m_trackPlayRecord[track_idx].m_alterTexture,
         m_trackPlayRecord[track_idx].m_maskR,
@@ -51,7 +51,7 @@ int AnimPlayer::renderTrack(int track_idx, SDL_FPoint ext_offset)
 int AnimPlayer::renderTrack(int track_idx, Uint8 mask_a)
 {
     return m_loader->m_tracks[track_idx].renderTrack(
-        GlobalVars::getInstance().camera.getRenderPoint(getRealPoint(track_idx)),
+        CoreVars::getInstance().camera.getRenderPoint(getRealPoint(track_idx)),
         m_trackPlayRecord[track_idx].m_playingFrameIdx,
         mask_a
     );
@@ -62,7 +62,7 @@ int AnimPlayer::renderTracks(const std::initializer_list<int>& track_idx)
     for (int idx : track_idx)
     {
         m_loader->m_tracks[idx].renderTrack(
-            GlobalVars::getInstance().camera.getRenderPoint(getRealPoint(idx)),
+            CoreVars::getInstance().camera.getRenderPoint(getRealPoint(idx)),
             m_trackPlayRecord[idx].m_playingFrameIdx,
             m_trackPlayRecord[idx].m_alterTexture,
             m_trackPlayRecord[idx].m_maskR,
@@ -78,7 +78,7 @@ int AnimPlayer::renderTracks(const std::initializer_list<int>& track_idx, Uint8 
     for (int idx : track_idx)
     {
         m_loader->m_tracks[idx].renderTrack(
-            GlobalVars::getInstance().camera.getRenderPoint(getRealPoint(idx)),
+            CoreVars::getInstance().camera.getRenderPoint(getRealPoint(idx)),
             m_trackPlayRecord[idx].m_playingFrameIdx,
             m_trackPlayRecord[idx].m_alterTexture,
             mask_a
@@ -89,7 +89,7 @@ int AnimPlayer::renderTracks(const std::initializer_list<int>& track_idx, Uint8 
 
 int AnimPlayer::renderTrackGroup(const std::initializer_list<int>& track_idx, int mainTrack_idx)
 {
-    SDL_FPoint real_point = GlobalVars::getInstance().camera.getRenderPoint(getRealPoint(mainTrack_idx));
+    SDL_FPoint real_point = CoreVars::getInstance().camera.getRenderPoint(getRealPoint(mainTrack_idx));
     for (int idx : track_idx)
     {
         m_loader->m_tracks[idx].renderTrack(
@@ -106,7 +106,7 @@ int AnimPlayer::renderTrackGroup(const std::initializer_list<int>& track_idx, in
 
 int AnimPlayer::renderTrackGroup(const std::initializer_list<int>& track_idx, int mainTrack_idx, Uint8 mask_a)
 {
-    SDL_FPoint real_point = GlobalVars::getInstance().camera.getRenderPoint(getRealPoint(mainTrack_idx));
+    SDL_FPoint real_point = CoreVars::getInstance().camera.getRenderPoint(getRealPoint(mainTrack_idx));
     for (int idx : track_idx)
     {
         m_loader->m_tracks[idx].renderTrack(

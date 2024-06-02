@@ -3,9 +3,8 @@
 
 #include <memory>
 
-#include "Core/GlobalVars.h"
 #include "Core/GameObject.h"
-#include "Core/AnimPlayer.h"
+#include "Resource/AnimPlayer.h"
 
 enum ZombieType {
     ZombieNormal,

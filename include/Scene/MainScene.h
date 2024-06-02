@@ -4,8 +4,9 @@
 #include "Core/UI/wsShape.h"
 #include "Core/UI/wsTriangles.h"
 #include "Scene/SceneObject.h"
+#include "Resource/AnimPlayer.h"
 
-class MainScene:public SceneObject
+class MainScene :public SceneObject
 {
 protected:
     // 定义按钮

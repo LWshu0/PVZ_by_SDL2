@@ -1,4 +1,7 @@
 #include "Zombies/ZombieObject.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 ZombieObject::ZombieObject(
     std::shared_ptr<AnimLoader> loader,
@@ -19,7 +22,7 @@ ZombieObject::ZombieObject(
     m_animPlayer(loader, init_point),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
 {
-    m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
+    m_shadow = ResVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
 }
 
 ZombieObject::ZombieObject(
@@ -42,7 +45,7 @@ ZombieObject::ZombieObject(
     m_animPlayer(loader, init_point),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
 {
-    m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
+    m_shadow = ResVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
 }
 
 int ZombieObject::damage(int damege_num)
@@ -89,17 +92,17 @@ int ZombieObject::update()
 int ZombieObject::showAABB()
 {
     SDL_FRect aabb = m_aabb;
-    aabb.x = GlobalVars::getInstance().camera.getRenderX(aabb.x);
-    aabb.y = GlobalVars::getInstance().camera.getRenderY(aabb.y);
-    return SDL_RenderDrawRectF(GlobalVars::getInstance().renderer, &aabb);
+    aabb.x = CoreVars::getInstance().camera.getRenderX(aabb.x);
+    aabb.y = CoreVars::getInstance().camera.getRenderY(aabb.y);
+    return SDL_RenderDrawRectF(CoreVars::getInstance().renderer, &aabb);
 }
 
 int ZombieObject::showShadow()
 {
     SDL_FRect aabb = m_shadowRange;
-    aabb.x = GlobalVars::getInstance().camera.getRenderX(aabb.x);
-    aabb.y = GlobalVars::getInstance().camera.getRenderY(aabb.y);
-    return SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_shadow, NULL, &aabb);
+    aabb.x = CoreVars::getInstance().camera.getRenderX(aabb.x);
+    aabb.y = CoreVars::getInstance().camera.getRenderY(aabb.y);
+    return SDL_RenderCopyF(CoreVars::getInstance().renderer, m_shadow, NULL, &aabb);
 }
 
 ZombieObject::~ZombieObject()

@@ -4,7 +4,7 @@
 #include "SceneObject.h"
 #include "Plants/PlantObject.h"
 #include "Core/UI/wsRectangle.h"
-#include "Core/Dictionary.h"
+#include "Resource/Dictionary.h"
 
 class MapManager;
 class CardManager;

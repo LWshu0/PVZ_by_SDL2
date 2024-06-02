@@ -2,6 +2,7 @@
 #define USRINFOMANAGER_H
 
 #include "Plants/PlantObject.h"
+#include "Manager/Managers.h"
 
 class UsrInfoManager
 {

@@ -2,6 +2,7 @@
 #define BULLETOBJECT_H
 
 #include "ProductObject.h"
+#include "Resource/ResVars.h"
 
 class BulletObject :public ProductObject {
 protected:
@@ -27,7 +28,7 @@ public:
         m_shadowHeight(shadowHeight),
         m_damage(dam)
     {
-        m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
+        m_shadow = ResVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
     }
 
     // 返回子弹的伤害

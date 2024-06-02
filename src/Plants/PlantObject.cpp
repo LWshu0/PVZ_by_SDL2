@@ -1,4 +1,7 @@
 #include "Plants/PlantObject.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 PlantObject::PlantObject(
     std::shared_ptr<AnimLoader> loader,
@@ -24,7 +27,7 @@ PlantObject::PlantObject(
     m_offsetShadow(offset_shadow),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
 {
-    m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
+    m_shadow = ResVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
 }
 
 PlantObject::PlantObject(
@@ -53,7 +56,7 @@ PlantObject::PlantObject(
     m_offsetShadow(offset_shadow),
     m_shadowRange(SDL_FRect{ init_point.x + offset_shadow.x, init_point.y + offset_shadow.y, shadow_width, shadow_height })
 {
-    m_shadow = GlobalVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
+    m_shadow = ResVars::getInstance().textureRes.getTextureFrom("images/plantshadow.png");
 }
 
 void PlantObject::setObjectPosition(const SDL_FPoint& real_point)
@@ -73,15 +76,15 @@ void PlantObject::damage(int damege_num)
 int PlantObject::showAABB()
 {
     SDL_FRect aabb = m_aabb;
-    aabb.x = GlobalVars::getInstance().camera.getRenderX(aabb.x);
-    aabb.y = GlobalVars::getInstance().camera.getRenderY(aabb.y);
-    return SDL_RenderDrawRectF(GlobalVars::getInstance().renderer, &aabb);
+    aabb.x = CoreVars::getInstance().camera.getRenderX(aabb.x);
+    aabb.y = CoreVars::getInstance().camera.getRenderY(aabb.y);
+    return SDL_RenderDrawRectF(CoreVars::getInstance().renderer, &aabb);
 }
 
 int PlantObject::showShadow()
 {
     SDL_FRect aabb = m_shadowRange;
-    aabb.x = GlobalVars::getInstance().camera.getRenderX(aabb.x);
-    aabb.y = GlobalVars::getInstance().camera.getRenderY(aabb.y);
-    return SDL_RenderCopyF(GlobalVars::getInstance().renderer, m_shadow, NULL, &aabb);
+    aabb.x = CoreVars::getInstance().camera.getRenderX(aabb.x);
+    aabb.y = CoreVars::getInstance().camera.getRenderY(aabb.y);
+    return SDL_RenderCopyF(CoreVars::getInstance().renderer, m_shadow, NULL, &aabb);
 }

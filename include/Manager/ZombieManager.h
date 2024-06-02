@@ -5,23 +5,17 @@
 #include <memory>
 #include <list>
 
-#include "Core/GlobalVars.h"
-#include "Core/AnimLoader.h"
-
 #include "Zombies/ZombieObject.h"
 #include "Zombies/Zombie.h"
 #include "Plants/PlantObject.h"
 
-class MapManager;
-class ProductManager;
-class PlantManager;
+#include "Manager/Managers.h"
 
 class ZombieManager {
 protected:
     /**************************
     *    初始化后不可变成员   *
     **************************/
-    std::vector<std::shared_ptr<AnimLoader>> m_animLoader;          // 僵尸动画资源
     std::vector<std::shared_ptr<ZombieObject>> m_zombieTemplate;    // 僵尸模板
 
     // zombies in game

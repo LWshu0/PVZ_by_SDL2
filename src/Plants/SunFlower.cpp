@@ -1,5 +1,7 @@
 #include "Plants/SunFlower.h"
-#include "Core/GlobalVars.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 #include "Manager/ProductManager.h"
 /*
 fps: 12
@@ -100,18 +102,18 @@ int SunFlower::update()
     // 更新帧
     m_animPlayer.updatePlayingFrameIdx();
     // 眨眼
-    if (!is_blinking && last_blink_ms + delta_blink_ms < GlobalVars::getInstance().timer.getTime())
+    if (!is_blinking && last_blink_ms + delta_blink_ms < CoreVars::getInstance().timer.getTime())
     {
         m_animPlayer.pushPlayingTrack(28, 1);
         m_animPlayer.restartTrack(28);
         is_blinking = true;
-        last_blink_ms = GlobalVars::getInstance().timer.getTime();
+        last_blink_ms = CoreVars::getInstance().timer.getTime();
     }
     // 产生阳光
-    if (GlobalVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
+    if (CoreVars::getInstance().timer.getTime() >= m_nextFireMilliSecond)
     {
-        m_nextFireMilliSecond = GlobalVars::getInstance().timer.getTime() + m_reloadMilliSecond;
-        GlobalVars::getInstance().productManager->produceCollection(ProductType::SunType, m_aabb.x - m_aabb.w / 2, m_aabb.y);
+        m_nextFireMilliSecond = CoreVars::getInstance().timer.getTime() + m_reloadMilliSecond;
+        Managers::getInstance().productManager->produceCollection(ProductType::SunType, m_aabb.x - m_aabb.w / 2, m_aabb.y);
     }
     return 0;
 }

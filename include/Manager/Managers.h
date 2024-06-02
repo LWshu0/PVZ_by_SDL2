@@ -1,12 +1,7 @@
-#ifndef GLOBALVARS_H
-#define GLOBALVARS_H
+#ifndef MANAGERS_H
+#define MANAGERS_H
 
-#include "SDL.h"
-#include "SDL_image.h"
-#include "ExtSDL.h"
-#include "Timer.h"
-#include "Camera.h"
-#include "TextureRes.h"
+#include <memory>
 
 class MapManager;
 class ProductManager;
@@ -17,23 +12,8 @@ class CardManager;
 class SceneManager;
 class UsrInfoManager;
 
-class GlobalVars {
+class Managers {
 public:
-    static GlobalVars& getInstance();
-
-    // 禁止复制和赋值
-    GlobalVars(GlobalVars const&) = delete;
-    void operator=(GlobalVars const&) = delete;
-
-    SDL_Renderer* renderer;
-    SDL_Window* window;
-    unsigned int window_width;
-    unsigned int window_height;
-
-    Timer timer;
-    Camera camera;
-    TextureRes textureRes;
-
     std::shared_ptr<MapManager> mapManager;
     std::shared_ptr<ProductManager> productManager;
     std::shared_ptr<PlantManager> plantManager;
@@ -42,8 +22,16 @@ public:
     std::shared_ptr<CardManager> cardManager;
     std::shared_ptr<SceneManager> sceneManager;
     std::shared_ptr<UsrInfoManager> usrinfoManager;
+
+    static Managers& getInstance();
+
+    // 禁止复制和赋值
+    Managers(Managers const&) = delete;
+    void operator=(Managers const&) = delete;
+
 private:
-    GlobalVars();
+    Managers() = default;
+    
 };
 
 #endif

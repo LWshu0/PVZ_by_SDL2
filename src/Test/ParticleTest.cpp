@@ -2,7 +2,9 @@
 #include "Core/Particle/ParticleSetters_2d.h"
 #include "Core/Particle/ParticleUpdaters_2d.h"
 #include "Core/Particle/ParticleRenderers_2d.h"
-#include "Core/GlobalVars.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 #define FLUSH_DELAY 1000 / 45
 
@@ -10,6 +12,9 @@ int main(int argc, char* args[])
 {
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
+    // 全局变量的初始化
+    CoreVars::getInstance();
+    ResVars::getInstance();
 
     // builder
     std::shared_ptr<ParticleSetter_2d> setter = std::make_shared<ParticleSetter_2d_default>(
@@ -26,7 +31,7 @@ int main(int argc, char* args[])
     std::shared_ptr<ParticleUpdater_2d> updater8 = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 500.0f);
     // renderer
     std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_default>(
-        GlobalVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
+        ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
 
     // emitter
     ParticleEmitter_2d emitter(
@@ -57,7 +62,7 @@ int main(int argc, char* args[])
 
         }
         // 更新时钟
-        GlobalVars::getInstance().timer.updateTime();
+        CoreVars::getInstance().timer.updateTime();
         // 更新粒子发射器
         emitter.update();
 
@@ -67,28 +72,29 @@ int main(int argc, char* args[])
         }
 
         // 清空屏幕
-        SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 10, 100, 255);
-        SDL_RenderClear(GlobalVars::getInstance().renderer);
+        SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 10, 100, 255);
+        SDL_RenderClear(CoreVars::getInstance().renderer);
 
         // 渲染图形
-        SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 255, 255, 255, 255);
-        SDL_RenderDrawLine(GlobalVars::getInstance().renderer, 0, 100, 200, 100);
-        SDL_RenderDrawLine(GlobalVars::getInstance().renderer, 100, 0, 100, 200);
+        SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 255, 255, 255, 255);
+        SDL_RenderDrawLine(CoreVars::getInstance().renderer, 0, 100, 200, 100);
+        SDL_RenderDrawLine(CoreVars::getInstance().renderer, 100, 0, 100, 200);
         // 渲染粒子发射器
         emitter.render();
 
         // 刷新屏幕
-        SDL_RenderPresent(GlobalVars::getInstance().renderer);
+        SDL_RenderPresent(CoreVars::getInstance().renderer);
 
         // 帧率控制
-        if (GlobalVars::getInstance().timer.getDeltaTime() < FLUSH_DELAY)
+        if (CoreVars::getInstance().timer.getDeltaTime() < FLUSH_DELAY)
         {
-            SDL_Delay(FLUSH_DELAY - GlobalVars::getInstance().timer.getDeltaTime());
+            SDL_Delay(FLUSH_DELAY - CoreVars::getInstance().timer.getDeltaTime());
         }
     }
-
-    SDL_DestroyRenderer(GlobalVars::getInstance().renderer);
-    SDL_DestroyWindow(GlobalVars::getInstance().window);
+    
+    ResVars::release();
+    SDL_DestroyRenderer(CoreVars::getInstance().renderer);
+    SDL_DestroyWindow(CoreVars::getInstance().window);
     IMG_Quit();
     SDL_Quit();
     return 0;

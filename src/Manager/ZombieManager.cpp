@@ -2,15 +2,15 @@
 #include "Manager/MapManager.h"
 #include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
-#include "Core/GlobalVars.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 ZombieManager::ZombieManager()
 {
     m_zombieTemplate.resize(ZombieType::MaxZombieType);
-    m_animLoader.resize(ZombieType::MaxZombieType);
     // 普通僵尸
-    m_animLoader[ZombieType::ZombieNormal] = std::make_shared<AnimLoader>("reanim/Zombie.reanim");
-    m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(m_animLoader[ZombieType::ZombieNormal], SDL_FPoint{ 0.0f, 0.0f });
+    m_zombieTemplate[ZombieType::ZombieNormal] = std::make_shared<Zombie>(SDL_FPoint{ 0.0f, 0.0f });
 }
 
 int ZombieManager::initilizeZombie()
@@ -21,16 +21,16 @@ int ZombieManager::initilizeZombie()
 
 int ZombieManager::addZombie(ZombieType type, int row, int col)
 {
-    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
+    if (row < 0 || row >= Managers::getInstance().mapManager->getRow()
         || col < 0  // 不可从屏幕左侧起始, 可从屏幕右侧起始
         || ZombieType::MaxZombieType == type)
     {
         return -1;
     }
-    float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
-    float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
-    root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
-    root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
+    float root_x = Managers::getInstance().mapManager->getLeftMargin() + col * Managers::getInstance().mapManager->getCellWidth();
+    float root_y = Managers::getInstance().mapManager->getTopMargin() + row * Managers::getInstance().mapManager->getCellHeight();
+    root_x += Managers::getInstance().mapManager->getCellWidth() / 2;
+    root_y += Managers::getInstance().mapManager->getCellHeight() * 0.8;
     m_zombies.push_front(m_zombieTemplate[type]->clone(SDL_FPoint{ root_x, root_y }));
     m_zombies.front()->setZombieState(ZombieState::Zombie_WALK);
     return 0;
@@ -69,7 +69,7 @@ bool ZombieManager::hasZombieBetween(int row, float left_x, float right_x)
 {
     for (auto& ptr : m_zombies)
     {
-        int rowIdx = GlobalVars::getInstance().mapManager->caculRow(ptr->m_aabb.y + ptr->m_aabb.h);
+        int rowIdx = Managers::getInstance().mapManager->caculRow(ptr->m_aabb.y + ptr->m_aabb.h);
         if (rowIdx == row && (ptr->m_aabb.x >= left_x && ptr->m_aabb.x <= right_x))
         {
             return true;
@@ -89,7 +89,7 @@ bool ZombieManager::hasZombieInAttackRange(PlantObject* plant)
 
 bool ZombieManager::hasZombieInHouse()
 {
-    float house_margin = GlobalVars::getInstance().camera.getClickX(0);
+    float house_margin = CoreVars::getInstance().camera.getClickX(0);
     for (auto& ptr : m_zombies)
     {
         if (ptr->m_aabb.x + ptr->m_aabb.w < house_margin)

@@ -2,7 +2,8 @@ link_libraries(mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf
 
 add_executable(PVZ PVZ.cpp)
 target_link_libraries(PVZ PUBLIC 
-    normal_core sdl_core 
+    core ui particle
+    resource
     map mapmanager 
     product productmanager 
     plants plantmanager
@@ -10,7 +11,6 @@ target_link_libraries(PVZ PUBLIC
     taskmanager
     cardmanager
     scene scenemanager
-    ui
     usrinfomanager
-    particle
+    managers
 )

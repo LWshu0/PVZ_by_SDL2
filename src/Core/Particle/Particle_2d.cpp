@@ -1,5 +1,5 @@
 #include "Core/Particle/Particle_2d.h"
-#include "Core/GlobalVars.h"
+#include "Core/CoreVars.h"
 
 ParticleEmitter_2d::ParticleEmitter_2d(
     float x, float y,
@@ -121,11 +121,11 @@ void ParticleEmitter_2d::update()
         }
     }
     // 更新粒子发射器
-    m_lifetime -= GlobalVars::getInstance().timer.getDeltaTime();
+    m_lifetime -= CoreVars::getInstance().timer.getDeltaTime();
     if (0 == count && m_lifetime < 0) m_valid = false;
     else
     {
-        m_emitTimePassby += GlobalVars::getInstance().timer.getDeltaTime();
+        m_emitTimePassby += CoreVars::getInstance().timer.getDeltaTime();
         if (m_emitTimePassby >= m_emitDeltaTime)
         {
             emit();

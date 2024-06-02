@@ -8,6 +8,8 @@
 #include "Scene/GameScene.h"
 #include "Scene/WinScene.h"
 #include "Scene/LoseScene.h"
+#include "Manager/Managers.h"
+
 class SceneManager {
 protected:
 

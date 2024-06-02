@@ -5,7 +5,9 @@
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
 #include "Manager/CardManager.h"
-#include "Core/GlobalVars.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 GameScene::GameScene() :
     SceneObject(),
@@ -28,12 +30,12 @@ int GameScene::enterScene()
     m_cardInHandIdx = -1;
     m_plantInHandType = PlantType::MaxPlantType;
     m_dropSunCountDown = 5000;
-    // GlobalVars::getInstance().mapManager->setMap(MapType::MapGrassDayOneLine);
-    GlobalVars::getInstance().plantManager->initilizePlants();
-    GlobalVars::getInstance().zombieManager->initilizeZombie();
-    GlobalVars::getInstance().productManager->clear();
-    GlobalVars::getInstance().taskManager->loadTask();
-    GlobalVars::getInstance().productManager->setSunNum(50);
+    // Managers::getInstance().mapManager->setMap(MapType::MapGrassDayOneLine);
+    Managers::getInstance().plantManager->initilizePlants();
+    Managers::getInstance().zombieManager->initilizeZombie();
+    Managers::getInstance().productManager->clear();
+    Managers::getInstance().taskManager->loadTask();
+    Managers::getInstance().productManager->setSunNum(50);
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 0)) { SDL_Log("add plant at (0, 0)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 0, 1)) { SDL_Log("add plant at (0, 1)\n"); }
     // if (0 == m_plantManager->addPlant(PlantType::PlantPeaShooter1, 1, 1)) { SDL_Log("add plant at (1, 1)\n"); }
@@ -41,7 +43,7 @@ int GameScene::enterScene()
 
     // if (0 == m_zombieManager->addZombie(ZombieType::ZombieNormal, 0, 5)) { SDL_Log("add zombie at (0, 0)\n"); }
     // 相机位置
-    GlobalVars::getInstance().camera.setPosition(210.0f, 0.0f);
+    CoreVars::getInstance().camera.setPosition(210.0f, 0.0f);
     return 0;
 }
 
@@ -56,26 +58,26 @@ SceneType GameScene::handleEvent(SDL_Event& event)
             if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试安防植物
             {
                 // 坐标转换
-                int mouse_click_x = GlobalVars::getInstance().camera.getClickX(event.button.x);
-                int  mouse_click_y = GlobalVars::getInstance().camera.getClickY(event.button.y);
-                int row = GlobalVars::getInstance().mapManager->caculRow(mouse_click_y);
-                int col = GlobalVars::getInstance().mapManager->caculCol(mouse_click_x);
-                if (GlobalVars::getInstance().mapManager->isValidCell(row, col))
+                int mouse_click_x = CoreVars::getInstance().camera.getClickX(event.button.x);
+                int  mouse_click_y = CoreVars::getInstance().camera.getClickY(event.button.y);
+                int row = Managers::getInstance().mapManager->caculRow(mouse_click_y);
+                int col = Managers::getInstance().mapManager->caculCol(mouse_click_x);
+                if (Managers::getInstance().mapManager->isValidCell(row, col))
                 {
                     // 安放植物
-                    GlobalVars::getInstance().plantManager->settlePlant();
+                    Managers::getInstance().plantManager->settlePlant();
                     // m_plantManager->addPlant(m_plantInHandType, row, col);
-                    GlobalVars::getInstance().cardManager->settleCard(m_cardInHandIdx);
+                    Managers::getInstance().cardManager->settleCard(m_cardInHandIdx);
                     m_cardInHandIdx = -1;
                     m_plantInHandType = PlantType::MaxPlantType;
                 }
             }
             else if (event.button.button == SDL_BUTTON_RIGHT) // 右键放回植物
             {
-                GlobalVars::getInstance().cardManager->putbackCard(m_cardInHandIdx);
+                Managers::getInstance().cardManager->putbackCard(m_cardInHandIdx);
                 m_cardInHandIdx = -1;
                 m_plantInHandType = PlantType::MaxPlantType;
-                GlobalVars::getInstance().plantManager->putbackPlant();
+                Managers::getInstance().plantManager->putbackPlant();
             }
         }
         // 是否 pick 卡
@@ -83,16 +85,16 @@ SceneType GameScene::handleEvent(SDL_Event& event)
         {
             if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试选卡 or 收集阳光/银币
             {
-                m_cardInHandIdx = GlobalVars::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
+                m_cardInHandIdx = Managers::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
                 if (m_cardInHandIdx != -1)
                 {
-                    m_plantInHandType = GlobalVars::getInstance().cardManager->pickupCard(m_cardInHandIdx);
-                    GlobalVars::getInstance().plantManager->pickPlant(m_plantInHandType);
+                    m_plantInHandType = Managers::getInstance().cardManager->pickupCard(m_cardInHandIdx);
+                    Managers::getInstance().plantManager->pickPlant(m_plantInHandType);
                 }
                 else // 尝试收集
                 {
                     // todo ...
-                    GlobalVars::getInstance().productManager->clickCollection(event.button.x, event.button.y);
+                    Managers::getInstance().productManager->clickCollection(event.button.x, event.button.y);
                 }
 
             }
@@ -103,35 +105,35 @@ SceneType GameScene::handleEvent(SDL_Event& event)
         // 坐标转换
         m_mousePositionX = event.motion.x;
         m_mousePositionY = event.motion.y;
-        int mousePositionX = GlobalVars::getInstance().camera.getClickX(event.motion.x);
-        int mousePositionY = GlobalVars::getInstance().camera.getClickY(event.motion.y);
-        if (m_cardInHandIdx != -1) GlobalVars::getInstance().plantManager->presettlePlant(mousePositionX, mousePositionY);
+        int mousePositionX = CoreVars::getInstance().camera.getClickX(event.motion.x);
+        int mousePositionY = CoreVars::getInstance().camera.getClickY(event.motion.y);
+        if (m_cardInHandIdx != -1) Managers::getInstance().plantManager->presettlePlant(mousePositionX, mousePositionY);
     }
     return SceneType::Scene_MaxSceneIdx;
 }
 
 SceneType GameScene::updateScene()
 {
-    GlobalVars::getInstance().taskManager->updateTask();
-    GlobalVars::getInstance().plantManager->updatePlants();
-    GlobalVars::getInstance().productManager->update();
-    GlobalVars::getInstance().zombieManager->updateZombie();
-    GlobalVars::getInstance().cardManager->updateCardInSlot();
-    if (m_dropSunCountDown <= GlobalVars::getInstance().timer.getDeltaTime())
+    Managers::getInstance().taskManager->updateTask();
+    Managers::getInstance().plantManager->updatePlants();
+    Managers::getInstance().productManager->update();
+    Managers::getInstance().zombieManager->updateZombie();
+    Managers::getInstance().cardManager->updateCardInSlot();
+    if (m_dropSunCountDown <= CoreVars::getInstance().timer.getDeltaTime())
     {
         m_dropSunCountDown = m_dropSunIntervalTime;
-        GlobalVars::getInstance().productManager->randomDropSun();
+        Managers::getInstance().productManager->randomDropSun();
     }
     else
     {
-        m_dropSunCountDown -= GlobalVars::getInstance().timer.getDeltaTime();
+        m_dropSunCountDown -= CoreVars::getInstance().timer.getDeltaTime();
     }
-    if (GlobalVars::getInstance().taskManager->isFinish() && !GlobalVars::getInstance().zombieManager->hasZombie())
+    if (Managers::getInstance().taskManager->isFinish() && !Managers::getInstance().zombieManager->hasZombie())
     {
         // win
         return SceneType::Scene_WinScene;
     }
-    else if (GlobalVars::getInstance().zombieManager->hasZombieInHouse())
+    else if (Managers::getInstance().zombieManager->hasZombieInHouse())
     {
         // lose
         return SceneType::Scene_LoseScene;
@@ -142,25 +144,25 @@ SceneType GameScene::updateScene()
 int GameScene::exitScene()
 {
     SDL_Log("exit game scene\n");
-    GlobalVars::getInstance().productManager->collect();
-    GlobalVars::getInstance().productManager->setSunNum(50);
+    Managers::getInstance().productManager->collect();
+    Managers::getInstance().productManager->setSunNum(50);
     return 0;
 }
 
 int GameScene::renderScene()
 {
-    GlobalVars::getInstance().mapManager->renderMap();
-    GlobalVars::getInstance().plantManager->renderPlants();
-    GlobalVars::getInstance().zombieManager->renderZombie();
-    GlobalVars::getInstance().cardManager->renderCardSlot();
+    Managers::getInstance().mapManager->renderMap();
+    Managers::getInstance().plantManager->renderPlants();
+    Managers::getInstance().zombieManager->renderZombie();
+    Managers::getInstance().cardManager->renderCardSlot();
     if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)
     {
         // 渲染手中植物
-        GlobalVars::getInstance().cardManager->renderCardInHand(m_plantInHandType, m_mousePositionX, m_mousePositionY);
+        Managers::getInstance().cardManager->renderCardInHand(m_plantInHandType, m_mousePositionX, m_mousePositionY);
         // 预放置位置虚影(在 m_plantManager->renderPlants() 中实现)
     }
-    GlobalVars::getInstance().cardManager->renderCardCoolDown();
-    GlobalVars::getInstance().productManager->render();
+    Managers::getInstance().cardManager->renderCardCoolDown();
+    Managers::getInstance().productManager->render();
     return 0;
 }
 

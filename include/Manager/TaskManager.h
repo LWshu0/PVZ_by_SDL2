@@ -4,11 +4,10 @@
 #include <vector>
 #include <memory>
 #include "Core/Timer.h"
-#include "Core/XmlLoader.h"
+#include "Resource/XmlLoader.h"
 #include "Zombies/ZombieObject.h"
 
-class MapManager;
-class ZombieManager;
+#include "Manager/Managers.h"
 
 struct TaskEvent
 {

@@ -1,7 +1,7 @@
 #include <thread>
 #include "SDL.h"
-#include "Core/TextureRes.h"
-#include "Core/Dictionary.h"
+#include "Resource/TextureRes.h"
+#include "Resource/Dictionary.h"
 
 #define FLUSH_DELAY 1000 / 45
 

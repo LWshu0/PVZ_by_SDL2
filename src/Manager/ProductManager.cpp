@@ -1,5 +1,8 @@
 #include "Manager/ProductManager.h"
 #include "Manager/MapManager.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 ProductManager::ProductManager(
     int maxCollection,
@@ -50,8 +53,8 @@ int ProductManager::produceCollection(ProductType type, int x, int y)
 int ProductManager::randomDropSun()
 {
     if (m_collectionItems.size() > m_maxCollectionLimit) return -1;
-    float width = GlobalVars::getInstance().mapManager->getRightMargin() - GlobalVars::getInstance().mapManager->getLeftMargin() - 100.0f;
-    float gene_x = GlobalVars::getInstance().mapManager->getLeftMargin() + width * rand() / RAND_MAX;
+    float width = Managers::getInstance().mapManager->getRightMargin() - Managers::getInstance().mapManager->getLeftMargin() - 100.0f;
+    float gene_x = Managers::getInstance().mapManager->getLeftMargin() + width * rand() / RAND_MAX;
     uint64_t lifetime = 3000 + 10000 * rand() / RAND_MAX;
     std::shared_ptr<CollectionObject> new_collection = std::static_pointer_cast<CollectionObject>(m_productPool[ProductType::SunType]->getReusable());
     new_collection->initilize(gene_x, 0.0f);
@@ -77,8 +80,8 @@ int ProductManager::calculateDamage(std::shared_ptr<GameObject> other)
 
 int ProductManager::clickCollection(int mouse_x, int mouse_y)
 {
-    float real_x = GlobalVars::getInstance().camera.getClickX(mouse_x);
-    float real_y = GlobalVars::getInstance().camera.getClickY(mouse_y);
+    float real_x = CoreVars::getInstance().camera.getClickX(mouse_x);
+    float real_y = CoreVars::getInstance().camera.getClickY(mouse_y);
     for (auto iter = m_collectionItems.begin();iter != m_collectionItems.end(); iter++)
     {
         if ((*iter)->inObject(real_x, real_y))
@@ -88,8 +91,8 @@ int ProductManager::clickCollection(int mouse_x, int mouse_y)
             case ProductType::SunType:
                 m_sunNum += 50;
                 (*iter)->setMotion(std::make_shared<MotionTargetPoint>(
-                    GlobalVars::getInstance().camera.getClickX(20.0f),
-                    GlobalVars::getInstance().camera.getClickY(16.0f),
+                    CoreVars::getInstance().camera.getClickX(20.0f),
+                    CoreVars::getInstance().camera.getClickY(16.0f),
                     1000.0f)
                 );
                 break;
@@ -109,10 +112,10 @@ int ProductManager::update()
     {
         (*iter)->update();
         // 超出屏幕范围子弹检查
-        if ((*iter)->m_aabb.x > GlobalVars::getInstance().camera.getRight()
-            || (*iter)->m_aabb.x + (*iter)->m_aabb.w < GlobalVars::getInstance().camera.getLeft()
-            || (*iter)->m_aabb.y > GlobalVars::getInstance().camera.getBottom()
-            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < GlobalVars::getInstance().camera.getTop()
+        if ((*iter)->m_aabb.x > CoreVars::getInstance().camera.getRight()
+            || (*iter)->m_aabb.x + (*iter)->m_aabb.w < CoreVars::getInstance().camera.getLeft()
+            || (*iter)->m_aabb.y > CoreVars::getInstance().camera.getBottom()
+            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < CoreVars::getInstance().camera.getTop()
             || ProductState::Product_DELETE == (*iter)->getState())
         {
             std::shared_ptr<ProductObject> ptr = std::static_pointer_cast<ProductObject>(*iter);
@@ -129,10 +132,10 @@ int ProductManager::update()
     {
         (*iter)->update();
         // 超出屏幕范围子弹检查
-        if ((*iter)->m_aabb.x > GlobalVars::getInstance().camera.getRight()
-            || (*iter)->m_aabb.x + (*iter)->m_aabb.w < GlobalVars::getInstance().camera.getLeft()
-            || (*iter)->m_aabb.y > GlobalVars::getInstance().camera.getBottom()
-            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < GlobalVars::getInstance().camera.getTop()
+        if ((*iter)->m_aabb.x > CoreVars::getInstance().camera.getRight()
+            || (*iter)->m_aabb.x + (*iter)->m_aabb.w < CoreVars::getInstance().camera.getLeft()
+            || (*iter)->m_aabb.y > CoreVars::getInstance().camera.getBottom()
+            || (*iter)->m_aabb.y + (*iter)->m_aabb.h < CoreVars::getInstance().camera.getTop()
             || ProductState::Product_DELETE == (*iter)->getState())
         {
             std::shared_ptr<ProductObject> ptr = std::static_pointer_cast<ProductObject>(*iter);

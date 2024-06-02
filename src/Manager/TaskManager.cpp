@@ -2,7 +2,8 @@
 #include "Manager/ZombieManager.h"
 #include "Manager/MapManager.h"
 #include "Manager/UsrInfoManager.h"
-#include "Core/GlobalVars.h"
+// 全局单例
+#include "Core/CoreVars.h"
 
 TaskManager::TaskManager() :
     m_taskPointer(-1)
@@ -40,9 +41,9 @@ int TaskManager::loadTask(const std::string& file_path)
 
 int TaskManager::loadTask()
 {
-    int pre = GlobalVars::getInstance().usrinfoManager->getTaskPre();
-    int post = GlobalVars::getInstance().usrinfoManager->getTaskPost();
-    int round = GlobalVars::getInstance().usrinfoManager->getRoundNum();
+    int pre = Managers::getInstance().usrinfoManager->getTaskPre();
+    int post = Managers::getInstance().usrinfoManager->getTaskPost();
+    int round = Managers::getInstance().usrinfoManager->getRoundNum();
     std::string task_file_name = std::to_string(pre) + "-" + std::to_string(post) + "-";
     if (round >= 1) task_file_name += "n";
     else task_file_name += "1";
@@ -55,7 +56,7 @@ int TaskManager::updateTask()
     // task 错误
     if (m_taskPointer < 0) return -1;
     // 侦测直到等待事件触发
-    uint64_t delta_ms = GlobalVars::getInstance().timer.getDeltaTime();    // 剩余时间
+    uint64_t delta_ms = CoreVars::getInstance().timer.getDeltaTime();    // 剩余时间
     while (m_taskPointer < m_taskRecord.size())
     {
         // prewait
@@ -74,9 +75,9 @@ int TaskManager::updateTask()
         {
             int row_idx = m_taskRecord[m_taskPointer].m_rowIdx;
             int col_idx = m_taskRecord[m_taskPointer].m_colIdx;
-            if (row_idx < 0) row_idx = rand() % GlobalVars::getInstance().mapManager->getRow();
-            if (col_idx < 0) col_idx = GlobalVars::getInstance().mapManager->getCol();
-            GlobalVars::getInstance().zombieManager->addZombie(m_taskRecord[m_taskPointer].m_zombieType, row_idx, col_idx);
+            if (row_idx < 0) row_idx = rand() % Managers::getInstance().mapManager->getRow();
+            if (col_idx < 0) col_idx = Managers::getInstance().mapManager->getCol();
+            Managers::getInstance().zombieManager->addZombie(m_taskRecord[m_taskPointer].m_zombieType, row_idx, col_idx);
         }
         m_taskPointer++;
     }
@@ -95,7 +96,7 @@ bool TaskManager::isValidEvent(TaskEvent& event)
         && (event.m_zombieType == ZombieType::MaxZombieType
             || event.m_zombieNumber <= 0)) return false;
     /* 行数不能超过地图限制的范围 */
-    if (event.m_rowIdx >= GlobalVars::getInstance().mapManager->getRow()) return false;
+    if (event.m_rowIdx >= Managers::getInstance().mapManager->getRow()) return false;
     // 否则
     return true;
 }

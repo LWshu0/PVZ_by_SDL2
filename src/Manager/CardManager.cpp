@@ -2,7 +2,10 @@
 #include "Manager/ProductManager.h"
 #include "Manager/PlantManager.h"
 #include "Manager/UsrInfoManager.h"
-#include "Core/GlobalVars.h"
+
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 CardManager::CardManager(
 ) :
@@ -22,14 +25,14 @@ CardManager::CardManager(
     m_slotCardOffsetY(8),
     m_slotCardSepX(1)
 {
-    m_cardPoolBK = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Background.png");
+    m_cardPoolBK = ResVars::getInstance().textureRes.getTextureFrom("images/SeedChooser_Background.png");
     if (m_cardPoolBK != nullptr)
     {
         SDL_QueryTexture(m_cardPoolBK, NULL, NULL, &m_cardPoolRange.w, &m_cardPoolRange.h);
         m_cardPoolRange.x = 0;
         m_cardPoolRange.y = 600 - m_cardPoolRange.h;
     }
-    m_cardSlotBK = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedBank.png");
+    m_cardSlotBK = ResVars::getInstance().textureRes.getTextureFrom("images/SeedBank.png");
     if (m_cardSlotBK != nullptr)
     {
         SDL_QueryTexture(m_cardSlotBK, NULL, NULL, &m_cardSlotRange.w, &m_cardSlotRange.h);
@@ -53,7 +56,7 @@ CardManager::CardManager(
     }
     // 设置卡片在卡槽中占据的位置
     for (int i = 0, x = m_slotCardOffsetX, y = m_slotCardOffsetY;
-        i < GlobalVars::getInstance().usrinfoManager->getUnlockSlotNum();
+        i < Managers::getInstance().usrinfoManager->getUnlockSlotNum();
         i++)
     {
         m_cardRangeInSlot.push_back(wsRectangle{ SDL_Rect{x, y, m_cardWidth, m_cardHeight} });
@@ -96,41 +99,41 @@ CardManager::CardManager(
 
 int CardManager::initilizeManagers()
 {
-    if (GlobalVars::getInstance().plantManager == nullptr) return -1;
+    if (Managers::getInstance().plantManager == nullptr) return -1;
     // 初始化纹理数组为最大 plant 数量
     m_plantCardTexture.resize(PlantType::MaxPlantType);
     m_plantImageTexture.resize(PlantType::MaxPlantType);
 
-    SDL_Texture* card_bk = GlobalVars::getInstance().textureRes.getTextureFrom("images/SeedPacket_Larger.png");
+    SDL_Texture* card_bk = ResVars::getInstance().textureRes.getTextureFrom("images/SeedPacket_Larger.png");
     int card_w = 0, card_h = 0;
     SDL_QueryTexture(card_bk, NULL, NULL, &card_w, &card_h);
     for (int i = 0; i < PlantType::MaxPlantType; i++)
     {
         // 创建植物预览图片纹理
         // 设置植物状态 获取需要的纹理大小
-        std::shared_ptr<PlantObject> plant = GlobalVars::getInstance().plantManager->getPlantTemplate(i);
+        std::shared_ptr<PlantObject> plant = Managers::getInstance().plantManager->getPlantTemplate(i);
         plant->changeToStatic();
         float width, height;
         plant->getAnimRange(width, height);
         // 根据上述大小创建纹理
-        SDL_Texture* plant_texture = SDL_CreateTexture(GlobalVars::getInstance().renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+        SDL_Texture* plant_texture = SDL_CreateTexture(CoreVars::getInstance().renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
         SDL_SetTextureBlendMode(plant_texture, SDL_BLENDMODE_BLEND);
         // 清空纹理为全透明
-        SDL_SetRenderTarget(GlobalVars::getInstance().renderer, plant_texture);
-        SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 0, 0, 0);
-        SDL_RenderClear(GlobalVars::getInstance().renderer);
+        SDL_SetRenderTarget(CoreVars::getInstance().renderer, plant_texture);
+        SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 0, 0, 0);
+        SDL_RenderClear(CoreVars::getInstance().renderer);
         // 渲染植物
         plant->renderStatic();
         m_plantImageTexture[i] = plant_texture;
         // 创建植物卡片纹理
-        SDL_Texture* card_texture = SDL_CreateTexture(GlobalVars::getInstance().renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, card_w, card_h);
+        SDL_Texture* card_texture = SDL_CreateTexture(CoreVars::getInstance().renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, card_w, card_h);
         SDL_SetTextureBlendMode(card_texture, SDL_BLENDMODE_BLEND);
         // 清空纹理为全透明
-        SDL_SetRenderTarget(GlobalVars::getInstance().renderer, card_texture);
-        SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 0, 0, 0);
-        SDL_RenderClear(GlobalVars::getInstance().renderer);
+        SDL_SetRenderTarget(CoreVars::getInstance().renderer, card_texture);
+        SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 0, 0, 0);
+        SDL_RenderClear(CoreVars::getInstance().renderer);
         // 渲染卡片背景
-        SDL_RenderCopy(GlobalVars::getInstance().renderer, card_bk, NULL, NULL);
+        SDL_RenderCopy(CoreVars::getInstance().renderer, card_bk, NULL, NULL);
         // 尽量把植物渲染到卡片的中间位置
         // 0.14 - 0.71
         // 0.1 - 0.9
@@ -147,13 +150,13 @@ int CardManager::initilizeManagers()
             dst_rect.y += (dst_rect.h - new_height);
             dst_rect.h = new_height;
         }
-        SDL_RenderCopyF(GlobalVars::getInstance().renderer, plant_texture, NULL, &dst_rect);
+        SDL_RenderCopyF(CoreVars::getInstance().renderer, plant_texture, NULL, &dst_rect);
         // 渲染阳光消耗数量
         m_sunFont.render(std::to_string(m_cardInPool[i].m_sunCost), card_w * 0.1f, card_h * 0.7f, 1.5f);
         // 添加到列表存储
         m_plantCardTexture[i] = card_texture;
     }
-    SDL_SetRenderTarget(GlobalVars::getInstance().renderer, NULL);
+    SDL_SetRenderTarget(CoreVars::getInstance().renderer, NULL);
     return 0;
 }
 
@@ -182,9 +185,9 @@ void CardManager::updateCardInSlot()
 {
     for (auto& card : m_cardInSlot)
     {
-        card.m_endble = (card.m_sunCost <= GlobalVars::getInstance().productManager->getSunNum());
-        if (card.m_rmCoolMilliSecond <= GlobalVars::getInstance().timer.getDeltaTime()) card.m_rmCoolMilliSecond = 0;
-        else card.m_rmCoolMilliSecond -= GlobalVars::getInstance().timer.getDeltaTime();
+        card.m_endble = (card.m_sunCost <= Managers::getInstance().productManager->getSunNum());
+        if (card.m_rmCoolMilliSecond <= CoreVars::getInstance().timer.getDeltaTime()) card.m_rmCoolMilliSecond = 0;
+        else card.m_rmCoolMilliSecond -= CoreVars::getInstance().timer.getDeltaTime();
     }
 }
 
@@ -221,8 +224,8 @@ int CardManager::settleCard(int card_slot_idx)
         && card_slot_idx < m_cardInSlot.size())
     {
 
-        GlobalVars::getInstance().productManager->setSunNum(GlobalVars::getInstance().productManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
-        m_cardInSlot[card_slot_idx].m_endble = GlobalVars::getInstance().productManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
+        Managers::getInstance().productManager->setSunNum(Managers::getInstance().productManager->getSunNum() - m_cardInSlot[card_slot_idx].m_sunCost);
+        m_cardInSlot[card_slot_idx].m_endble = Managers::getInstance().productManager->getSunNum() <= m_cardInSlot[card_slot_idx].m_sunCost;
         m_cardInSlot[card_slot_idx].m_rmCoolMilliSecond = m_cardInSlot[card_slot_idx].m_coolMilliSecond;
         return card_slot_idx;
     }
@@ -271,24 +274,24 @@ int CardManager::getPoolIdx(int x, int y)
 
 bool CardManager::isFullSlot()
 {
-    return GlobalVars::getInstance().usrinfoManager->getUnlockSlotNum() == m_cardInSlot.size()
-        || GlobalVars::getInstance().usrinfoManager->getUnlockPlantNum() == m_cardInSlot.size();
+    return Managers::getInstance().usrinfoManager->getUnlockSlotNum() == m_cardInSlot.size()
+        || Managers::getInstance().usrinfoManager->getUnlockPlantNum() == m_cardInSlot.size();
 }
 
 int CardManager::renderCardSlot()
 {
-    SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 0, 0, 75);
-    SDL_RenderCopy(GlobalVars::getInstance().renderer, m_cardSlotBK, NULL, &m_cardSlotRange);
+    SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 0, 0, 75);
+    SDL_RenderCopy(CoreVars::getInstance().renderer, m_cardSlotBK, NULL, &m_cardSlotRange);
     for (int i = 0; i < m_cardInSlot.size();i++)
     {
         if (m_cardInSlot[i].m_plantType == PlantType::MaxPlantType) break;
-        SDL_RenderCopy(GlobalVars::getInstance().renderer, m_plantCardTexture[m_cardInSlot[i].m_plantType], NULL, &m_cardRangeInSlot[i].m_range);
+        SDL_RenderCopy(CoreVars::getInstance().renderer, m_plantCardTexture[m_cardInSlot[i].m_plantType], NULL, &m_cardRangeInSlot[i].m_range);
         if (!m_cardInSlot[i].m_endble)
         {
-            SDL_RenderFillRect(GlobalVars::getInstance().renderer, &m_cardRangeInSlot[i].m_range);
+            SDL_RenderFillRect(CoreVars::getInstance().renderer, &m_cardRangeInSlot[i].m_range);
         }
     }
-    std::string sunNum = std::to_string(GlobalVars::getInstance().productManager->getSunNum());
+    std::string sunNum = std::to_string(Managers::getInstance().productManager->getSunNum());
     m_sunFont.render(sunNum, 15, 57);
 #ifndef NDEBUG
     // 显示可点击范围
@@ -302,7 +305,7 @@ int CardManager::renderCardSlot()
 
 int CardManager::renderCardCoolDown()
 {
-    SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 0, 0, 75);
+    SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 0, 0, 75);
     for (int i = 0; i < m_cardInSlot.size();i++)
     {
         if (m_cardInSlot[i].m_plantType == PlantType::MaxPlantType) break;
@@ -313,23 +316,23 @@ int CardManager::renderCardCoolDown()
             m_cardRangeInSlot[i].m_range.w,
             m_cardRangeInSlot[i].m_range.h * (int)(m_cardInSlot[i].m_rmCoolMilliSecond) / (int)(m_cardInSlot[i].m_coolMilliSecond)
         };
-        SDL_RenderFillRect(GlobalVars::getInstance().renderer, &mask_range);
+        SDL_RenderFillRect(CoreVars::getInstance().renderer, &mask_range);
     }
     return 0;
 }
 
 int CardManager::renderCardPool()
 {
-    SDL_SetRenderDrawColor(GlobalVars::getInstance().renderer, 0, 0, 0, 75);
-    SDL_RenderCopy(GlobalVars::getInstance().renderer, m_cardPoolBK, NULL, &m_cardPoolRange);
+    SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 0, 0, 75);
+    SDL_RenderCopy(CoreVars::getInstance().renderer, m_cardPoolBK, NULL, &m_cardPoolRange);
     for (int i = 0; i < PlantType::MaxPlantType;i++)
     {
         if (m_cardInPool[i].m_plantType == PlantType::MaxPlantType) continue;
-        if (!GlobalVars::getInstance().usrinfoManager->isUnlockPlant(i)) continue;  // 不渲染未解锁的植物
-        SDL_RenderCopy(GlobalVars::getInstance().renderer, m_plantCardTexture[i], NULL, &m_cardRangeInPool[i].m_range);
+        if (!Managers::getInstance().usrinfoManager->isUnlockPlant(i)) continue;  // 不渲染未解锁的植物
+        SDL_RenderCopy(CoreVars::getInstance().renderer, m_plantCardTexture[i], NULL, &m_cardRangeInPool[i].m_range);
         if (!m_cardInPool[i].m_endble)
         {
-            SDL_RenderFillRect(GlobalVars::getInstance().renderer, &m_cardRangeInPool[i].m_range);
+            SDL_RenderFillRect(CoreVars::getInstance().renderer, &m_cardRangeInPool[i].m_range);
         }
     }
 #ifndef NDEBUG
@@ -348,7 +351,7 @@ int CardManager::renderCardInHand(PlantType type, int mouse_x, int mouse_y)
     int tex_w, tex_h;
     SDL_QueryTexture(m_plantImageTexture[type], NULL, NULL, &tex_w, &tex_h);
     SDL_Rect rect{ mouse_x - tex_w / 2, mouse_y - tex_h, tex_w, tex_h };
-    SDL_RenderCopy(GlobalVars::getInstance().renderer, m_plantImageTexture[type], NULL, &rect);
+    SDL_RenderCopy(CoreVars::getInstance().renderer, m_plantImageTexture[type], NULL, &rect);
     return 0;
 }
 

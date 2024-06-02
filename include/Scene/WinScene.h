@@ -2,8 +2,8 @@
 #define WINSCENE_H
 
 #include "SceneObject.h"
-#include "Core/Dictionary.h"
 #include "Core/UI/wsRectangle.h"
+#include "Resource/Dictionary.h"
 
 class WinScene : public SceneObject
 {

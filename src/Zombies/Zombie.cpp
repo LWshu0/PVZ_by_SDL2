@@ -1,8 +1,9 @@
 #include "Zombies/Zombie.h"
-#include "Core/GlobalVars.h"
 #include "Manager/MapManager.h"
 #include "Manager/PlantManager.h"
-
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 /*
 0: anim_superlongdeath -> range: [292, 429] total: [0, 503]
 1: anim_swim -> range: [250, 292] total: [0, 503]
@@ -49,11 +50,10 @@
 */
 
 Zombie::Zombie(
-    std::shared_ptr<AnimLoader> loader,
     const SDL_FPoint& root_point
 ) :
     ZombieObject(
-        loader,                                              // 资源
+        ResVars::getInstance().animRes.getAnimFrom("reanim/Zombie.reanim"),                                              // 资源
         SDL_FPoint{ root_point.x - 40, root_point.y - 120 }, // 动画播放位置
         SDL_FPoint{ 20, 20 }, 40, 100,                       // 碰撞箱
         SDL_FPoint{ 10, 100 }, 80, 30,                       // 阴影
@@ -75,7 +75,7 @@ Zombie::Zombie(
 
 std::shared_ptr<ZombieObject> Zombie::clone(const SDL_FPoint& root_point)
 {
-    return std::make_shared<Zombie>(m_animPlayer.getAnimLoader(), root_point);
+    return std::make_shared<Zombie>(root_point);
 }
 
 int Zombie::setZombieState(ZombieState to_state)
@@ -143,7 +143,7 @@ int Zombie::setZombieState(ZombieState to_state)
 
 int Zombie::attack()
 {
-    return 0.1f * GlobalVars::getInstance().timer.getDeltaTime();
+    return 0.1f * CoreVars::getInstance().timer.getDeltaTime();
 }
 
 int Zombie::damage(int damege_num)
@@ -154,7 +154,7 @@ int Zombie::damage(int damege_num)
         m_loseArm = true;
         m_animPlayer.setTrackTexture(
             36,
-            GlobalVars::getInstance().textureRes.getTextureFrom("reanim/Zombie_outerarm_upper2.png")
+            ResVars::getInstance().textureRes.getTextureFrom("reanim/Zombie_outerarm_upper2.png")
         );
         std::shared_ptr<ParticleSetter_2d> setter = std::make_shared<ParticleSetter_2d_default>(
             600,
@@ -164,7 +164,7 @@ int Zombie::damage(int damege_num)
         std::shared_ptr<ParticleUpdater_2d> updater1 = std::make_shared<ParticleUpdater_2d_Speed>();
         std::shared_ptr<ParticleUpdater_2d> updater3 = std::make_shared<ParticleUpdater_2d_Rotate>(-180.0f);
         std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_default>(
-            GlobalVars::getInstance().textureRes.getTextureFrom("particles/ZombieArm.png"));
+            ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieArm.png"));
         m_emitter = std::make_shared<ParticleEmitter_2d>(
             m_aabb.x + 20, m_aabb.y + 50,         // 发射器位置
             1,                    // 最大粒子数量
@@ -191,7 +191,7 @@ int Zombie::damage(int damege_num)
         std::shared_ptr<ParticleUpdater_2d> updater8 = std::make_shared<ParticleUpdater_2d_Force>(0.0f, 500.0f);
         // renderer
         std::shared_ptr<ParticleRenderer_2d> render0 = std::make_shared<ParticleRenderer_2d_default>(
-            GlobalVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
+            ResVars::getInstance().textureRes.getTextureFrom("particles/ZombieHead.png"));
         
         m_emitter = std::make_shared<ParticleEmitter_2d>(
             m_aabb.x + 20, m_aabb.y + 10,         // 发射器位置
@@ -246,7 +246,7 @@ void Zombie::onUpdateWalk()
         if (!m_emitter->valid()) m_emitter = nullptr;
     }
     // 移动
-    if (m_animPlayer.isUpdateAt(11, GlobalVars::getInstance().timer.getTime()))
+    if (m_animPlayer.isUpdateAt(11, CoreVars::getInstance().timer.getTime()))
     {
         if (m_animPlayer.isPlayBegin(11))
         {
@@ -259,9 +259,9 @@ void Zombie::onUpdateWalk()
         m_shadowRange.x = anim_playing_point.x + m_offsetShadow.x;
     }
     // 检测攻击
-    int row = GlobalVars::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
-    int col = GlobalVars::getInstance().mapManager->caculCol(m_aabb.x);
-    if (GlobalVars::getInstance().plantManager->collisionPlant(this, row, col))
+    int row = Managers::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
+    int col = Managers::getInstance().mapManager->caculCol(m_aabb.x);
+    if (Managers::getInstance().plantManager->collisionPlant(this, row, col))
     {
         setZombieState(ZombieState::Zombie_ATTACK);
     }
@@ -275,12 +275,12 @@ void Zombie::onUpdateAttack()
         if (!m_emitter->valid()) m_emitter = nullptr;
     }
     // 攻击
-    int row = GlobalVars::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
-    int col = GlobalVars::getInstance().mapManager->caculCol(m_aabb.x);
-    if (GlobalVars::getInstance().plantManager->collisionPlant(this, row, col))
+    int row = Managers::getInstance().mapManager->caculRow(m_aabb.y + m_aabb.h);
+    int col = Managers::getInstance().mapManager->caculCol(m_aabb.x);
+    if (Managers::getInstance().plantManager->collisionPlant(this, row, col))
     {
         int dam = attack();
-        GlobalVars::getInstance().plantManager->doDamage(row, col, dam);
+        Managers::getInstance().plantManager->doDamage(row, col, dam);
     }
     else
     {

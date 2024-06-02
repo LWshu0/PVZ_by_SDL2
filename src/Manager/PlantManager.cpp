@@ -2,8 +2,9 @@
 #include "Manager/MapManager.h"
 #include "Manager/ProductManager.h"
 #include "Manager/ZombieManager.h"
-#include "Core/GlobalVars.h"
-
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 PlantManager::PlantManager()
 {
@@ -23,12 +24,12 @@ PlantManager::PlantManager()
 
 int PlantManager::initilizePlants()
 {
-    if (nullptr == GlobalVars::getInstance().mapManager) return -1;
+    if (nullptr == Managers::getInstance().mapManager) return -1;
     // resize & clear
-    m_mainPlants.resize(GlobalVars::getInstance().mapManager->getRow());
+    m_mainPlants.resize(Managers::getInstance().mapManager->getRow());
     for (auto& r : m_mainPlants)
     {
-        r.resize(GlobalVars::getInstance().mapManager->getCol());
+        r.resize(Managers::getInstance().mapManager->getCol());
         for (auto& c : r)
         {
             c = nullptr;
@@ -42,8 +43,8 @@ int PlantManager::initilizePlants()
 
 bool PlantManager::collisionPlant(GameObject* obj, int row, int col)
 {
-    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
-        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
+    if (row < 0 || row >= Managers::getInstance().mapManager->getRow()
+        || col < 0 || col >= Managers::getInstance().mapManager->getCol()
         || nullptr == obj
         || nullptr == m_mainPlants[row][col])
     {
@@ -64,17 +65,17 @@ int PlantManager::pickPlant(PlantType type)
 
 int PlantManager::presettlePlant(int mouse_x, int mouse_y)
 {
-    int row = GlobalVars::getInstance().mapManager->caculRow(mouse_y);
-    int col = GlobalVars::getInstance().mapManager->caculCol(mouse_x);
-    if (GlobalVars::getInstance().mapManager->isValidCell(row, col)
+    int row = Managers::getInstance().mapManager->caculRow(mouse_y);
+    int col = Managers::getInstance().mapManager->caculCol(mouse_x);
+    if (Managers::getInstance().mapManager->isValidCell(row, col)
         && m_mainPlants[row][col] == nullptr)
     {
         m_presettleRowIdx = row;
         m_presettleColIdx = col;
-        float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
-        float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
-        root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
-        root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
+        float root_x = Managers::getInstance().mapManager->getLeftMargin() + col * Managers::getInstance().mapManager->getCellWidth();
+        float root_y = Managers::getInstance().mapManager->getTopMargin() + row * Managers::getInstance().mapManager->getCellHeight();
+        root_x += Managers::getInstance().mapManager->getCellWidth() / 2;
+        root_y += Managers::getInstance().mapManager->getCellHeight() * 0.8;
         m_presettlePlantImage->setRootPoint(SDL_FPoint{ root_x,root_y });
     }
     else
@@ -109,25 +110,25 @@ int PlantManager::putbackPlant()
 
 int PlantManager::addPlant(PlantType type, int row, int col)
 {
-    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
-        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
+    if (row < 0 || row >= Managers::getInstance().mapManager->getRow()
+        || col < 0 || col >= Managers::getInstance().mapManager->getCol()
         || PlantType::MaxPlantType == type
         || nullptr != m_mainPlants[row][col])
     {
         return -1;
     }
-    float root_x = GlobalVars::getInstance().mapManager->getLeftMargin() + col * GlobalVars::getInstance().mapManager->getCellWidth();
-    float root_y = GlobalVars::getInstance().mapManager->getTopMargin() + row * GlobalVars::getInstance().mapManager->getCellHeight();
-    root_x += GlobalVars::getInstance().mapManager->getCellWidth() / 2;
-    root_y += GlobalVars::getInstance().mapManager->getCellHeight() * 0.8;
+    float root_x = Managers::getInstance().mapManager->getLeftMargin() + col * Managers::getInstance().mapManager->getCellWidth();
+    float root_y = Managers::getInstance().mapManager->getTopMargin() + row * Managers::getInstance().mapManager->getCellHeight();
+    root_x += Managers::getInstance().mapManager->getCellWidth() / 2;
+    root_y += Managers::getInstance().mapManager->getCellHeight() * 0.8;
     m_mainPlants[row][col] = m_plantTemplate[type]->clone(SDL_FPoint{ root_x, root_y });
     return 0;
 }
 
 int PlantManager::removePlant(int row, int col)
 {
-    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
-        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol())
+    if (row < 0 || row >= Managers::getInstance().mapManager->getRow()
+        || col < 0 || col >= Managers::getInstance().mapManager->getCol())
     {
         return -1;
     }
@@ -137,8 +138,8 @@ int PlantManager::removePlant(int row, int col)
 
 int PlantManager::doDamage(int row, int col, int d)
 {
-    if (row < 0 || row >= GlobalVars::getInstance().mapManager->getRow()
-        || col < 0 || col >= GlobalVars::getInstance().mapManager->getCol()
+    if (row < 0 || row >= Managers::getInstance().mapManager->getRow()
+        || col < 0 || col >= Managers::getInstance().mapManager->getCol()
         || nullptr == m_mainPlants[row][col])
     {
         return -1;

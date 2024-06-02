@@ -7,7 +7,7 @@
 #include <string>
 #include "SDL.h"
 
-#include "AnimLoader.h"
+#include "Resource/AnimLoader.h"
 
 // 动画播放器
 // 后根据不同的物体做不同的初始化

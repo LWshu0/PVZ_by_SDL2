@@ -5,16 +5,10 @@
 #include <memory>
 
 #include "SDL.h"
-#include "Core/GlobalVars.h"
 #include "Core/UI/wsRectangle.h"
-#include "Core/XmlLoader.h"
-#include "Core/Dictionary.h"
-
 #include "Plants/PlantObject.h"
-
-class MapManager;
-class PlantManager;
-class ProductManager;
+#include "Resource/Dictionary.h"
+#include "Manager/Managers.h"
 
 //卡槽卡池节点
 struct CardNode {

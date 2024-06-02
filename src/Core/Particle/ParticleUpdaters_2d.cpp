@@ -1,18 +1,18 @@
 #include "Core/Particle/ParticleUpdaters_2d.h"
-#include "Core/GlobalVars.h"
+#include "Core/CoreVars.h"
 
 ParticleUpdater_2d_Lifetime::ParticleUpdater_2d_Lifetime() {}
 
 void ParticleUpdater_2d_Lifetime::update(Particle_2d& particle)
 {
-    particle.m_lifetime -= GlobalVars::getInstance().timer.getDeltaTime();
+    particle.m_lifetime -= CoreVars::getInstance().timer.getDeltaTime();
 }
 
 ParticleUpdater_2d_Speed::ParticleUpdater_2d_Speed() {}
 
 void ParticleUpdater_2d_Speed::update(Particle_2d& particle)
 {
-    float delta_s = static_cast<float>(GlobalVars::getInstance().timer.getDeltaTime()) / 1000.0f;
+    float delta_s = static_cast<float>(CoreVars::getInstance().timer.getDeltaTime()) / 1000.0f;
     particle.m_originPoint.x += particle.m_speed.x * delta_s;
     particle.m_originPoint.y += particle.m_speed.y * delta_s;
 }
@@ -21,7 +21,7 @@ ParticleUpdater_2d_Force::ParticleUpdater_2d_Force(float x_acc, float y_acc) : m
 
 void ParticleUpdater_2d_Force::update(Particle_2d& particle)
 {
-    float delta_s = static_cast<float>(GlobalVars::getInstance().timer.getDeltaTime()) / 1000.0f;
+    float delta_s = static_cast<float>(CoreVars::getInstance().timer.getDeltaTime()) / 1000.0f;
     particle.m_speed.x += m_accX * delta_s;
     particle.m_speed.y += m_accY * delta_s;
 }
@@ -49,7 +49,7 @@ ParticleUpdater_2d_Rotate::ParticleUpdater_2d_Rotate(float speed_degree)
 
 void ParticleUpdater_2d_Rotate::update(Particle_2d& particle)
 {
-    float delta_s = static_cast<float>(GlobalVars::getInstance().timer.getDeltaTime()) / 1000.0f;
+    float delta_s = static_cast<float>(CoreVars::getInstance().timer.getDeltaTime()) / 1000.0f;
     particle.m_degree += m_speedRadian * delta_s;
 }
 

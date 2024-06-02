@@ -6,4 +6,4 @@ add_library(scene OBJECT
     WinScene.cpp
     LoseScene.cpp
 )
-target_link_libraries(scene PUBLIC normal_core sdl_core ui)
+target_link_libraries(scene PUBLIC core ui)

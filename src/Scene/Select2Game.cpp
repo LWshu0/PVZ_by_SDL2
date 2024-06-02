@@ -1,5 +1,8 @@
 #include "Scene/Select2Game.h"
 #include "Manager/MapManager.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 Select2Game::Select2Game() :
     SceneObject()
@@ -23,9 +26,9 @@ SceneType Select2Game::handleEvent(SDL_Event& event)
 
 SceneType Select2Game::updateScene()
 {
-    float delta_x = 0.3f * GlobalVars::getInstance().timer.getDeltaTime();
-    GlobalVars::getInstance().camera.setPosition(GlobalVars::getInstance().camera.getX() - delta_x, GlobalVars::getInstance().camera.getY());
-    if (GlobalVars::getInstance().camera.getX() <= 210.0f)
+    float delta_x = 0.3f * CoreVars::getInstance().timer.getDeltaTime();
+    CoreVars::getInstance().camera.setPosition(CoreVars::getInstance().camera.getX() - delta_x, CoreVars::getInstance().camera.getY());
+    if (CoreVars::getInstance().camera.getX() <= 210.0f)
     {
         return SceneType::Scene_GameScene;
     }
@@ -40,7 +43,7 @@ int Select2Game::exitScene()
 
 int Select2Game::renderScene()
 {
-    return GlobalVars::getInstance().mapManager->renderMap();
+    return Managers::getInstance().mapManager->renderMap();
 }
 
 Select2Game::~Select2Game()

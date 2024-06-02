@@ -2,7 +2,7 @@
 #define LOSESCENE_H
 
 #include "SceneObject.h"
-#include "Core/AnimPlayer.h"
+#include "Resource/AnimPlayer.h"
 
 class LoseScene : public SceneObject {
 protected:

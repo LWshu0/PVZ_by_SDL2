@@ -5,8 +5,9 @@
 #include "Manager/ZombieManager.h"
 #include "Manager/TaskManager.h"
 #include "Manager/CardManager.h"
-#include "Core/GlobalVars.h"
-#include "Core/AnimLoader.h"
+// 全局单例
+#include "Core/CoreVars.h"
+#include "Resource/ResVars.h"
 
 LoseScene::LoseScene() :
     SceneObject(),
@@ -46,13 +47,13 @@ SceneType LoseScene::updateScene()
     }
     else
     {
-        if (m_stopTimeCountDown <= GlobalVars::getInstance().timer.getDeltaTime())
+        if (m_stopTimeCountDown <= CoreVars::getInstance().timer.getDeltaTime())
         {
             return SceneType::Scene_MainScene;
         }
         else
         {
-            m_stopTimeCountDown -= GlobalVars::getInstance().timer.getDeltaTime();
+            m_stopTimeCountDown -= CoreVars::getInstance().timer.getDeltaTime();
         }
     }
     return SceneType::Scene_MaxSceneIdx;
@@ -68,10 +69,10 @@ int LoseScene::exitScene()
 
 int LoseScene::renderScene()
 {
-    GlobalVars::getInstance().mapManager->renderMap();
-    GlobalVars::getInstance().plantManager->renderPlants();
-    GlobalVars::getInstance().zombieManager->renderZombie();
-    GlobalVars::getInstance().productManager->render();
+    Managers::getInstance().mapManager->renderMap();
+    Managers::getInstance().plantManager->renderPlants();
+    Managers::getInstance().zombieManager->renderZombie();
+    Managers::getInstance().productManager->render();
     m_animPlayer.render();
 
     return 0;
