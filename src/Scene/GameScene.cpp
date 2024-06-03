@@ -163,6 +163,7 @@ int GameScene::renderScene()
     }
     Managers::getInstance().cardManager->renderCardCoolDown();
     Managers::getInstance().productManager->render();
+    Managers::getInstance().taskManager->renderTask();
     return 0;
 }
 

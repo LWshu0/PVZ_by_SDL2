@@ -13,16 +13,37 @@ struct TaskEvent
 {
     uint64_t m_prewaitMilliSecond = 0;                      // 该事件执行之前等待的时间
     ZombieType m_zombieType = ZombieType::MaxZombieType;    // 添加的僵尸种类
-    unsigned int m_zombieNumber = 0;                        // 添加的僵尸数量
+    unsigned int m_zombieNumber = 1;                        // 添加的僵尸数量
     int m_rowIdx = -1;                                      // 僵尸所在的行号 从 0 开始, -1 代表随机一行
     int m_colIdx = -1;                                      // 僵尸所在的列号 从 0 开始, -1 代表最右侧
 };
 
+struct WaveEvent {
+    int m_startTaskIdx;
+    int m_endTaskIdx;
+};
 
 class TaskManager {
 protected:
     int m_taskPointer;                      // 当前所在的记录下标
     std::vector<TaskEvent> m_taskRecord;    // 关卡记录
+    std::vector<WaveEvent> m_waveRecord;    // 进度条记录
+
+    SDL_Texture* m_progressBarBK;
+    SDL_Texture* m_progressBarTag;
+    SDL_Texture* m_progressBarFlag;
+    SDL_Rect m_fullBarSrc;
+    SDL_Rect m_emptyBarSrc;
+    SDL_Rect m_barDst;
+    SDL_Rect m_tagDst;
+    SDL_Rect m_headSrc;
+    SDL_Rect m_poleSrc;
+    SDL_Rect m_flagSrc;
+
+    SDL_Texture* m_nextWave;
+    int64_t m_nextContinueTime;
+    SDL_Texture* m_finalWave;
+    int64_t m_lastContinueTime;
 
 public:
     TaskManager();
@@ -36,17 +57,28 @@ public:
      */
     int updateTask();
 
+    // 渲染关卡进度条
+    int renderTask();
+
     inline bool isFinish() { return m_taskPointer >= m_taskRecord.size(); }
 
     ~TaskManager();
 
 protected:
+    // task 是否是 wave 的开始
+    bool isWaveStart(int idx);
+    // 
+    bool isLastWaveStart(int idx);
+    // 计算进度条填充长度
+    int getFullLength();
 
     bool isValidEvent(TaskEvent& event);
     // 解析一个 task 标签事件
     void addTaskEvent(XmlNodePtr ptr);
     // 解析一个 group 标签事件
     void addGroupEvent(XmlNodePtr ptr);
+    // 解析一个 wave 标签事件
+    void addWaveEvent(XmlNodePtr ptr);
 };
 
 #endif

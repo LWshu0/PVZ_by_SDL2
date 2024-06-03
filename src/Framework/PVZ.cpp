@@ -34,7 +34,7 @@ void RenderThread()
         Managers::getInstance().sceneManager->updateScene();
 
         // 清空屏幕
-        SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 10, 100, 255);
+        SDL_SetRenderDrawColor(CoreVars::getInstance().renderer, 0, 0, 0, 255);
         SDL_RenderClear(CoreVars::getInstance().renderer);
 
         // 渲染场景

@@ -545,10 +545,15 @@ int XmlLoader::SkipComment(std::string& str, size_t& pos)
         return -1;
     }
     pos = new_pos - 2;   // 找到 "-->" 的第一个字符位置
-    if (!isCommentEnd(str, pos))
+    while (!isCommentEnd(str, pos))
     {
-        std::cout << "error: comment tag not close" << std::endl;
-        return -1;
+        new_pos = str.find_first_of(">", new_pos + 1);
+        if (std::string::npos == new_pos)
+        {
+            std::cout << "error: can't find comment end tag \'>\'" << std::endl;
+            return -1;
+        }
+        pos = new_pos - 2;   // 找到 "-->" 的第一个字符位置
     }
     pos = new_pos + 1;
     if (pos >= str.length())
