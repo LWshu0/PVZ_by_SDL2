@@ -9,7 +9,6 @@
 #include "Core/ExtSDL.h"
 
 #include "Resource/TextureRes.h"
-#include "Resource/XmlLoader.h"
 
 class AnimFrame {
 public:

@@ -7,7 +7,7 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
-#include "Resource/XmlLoader.h"
+#include "Resource/tinyxml2.h"
 
 class TextureRes {
 protected:

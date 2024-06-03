@@ -1,14 +1,25 @@
-#include "Resource/XmlLoader.h"
+#include "Resource/tinyxml2.h"
+#include <string>
+#include <iostream>
+#include "SDL.h"
 
 int main(int argc, char* args[])
 {
-    std::string xml_path = "resource/resource.xml";
-    std::string xml_outpath = "./output.xml";
-    XmlLoader loader;
-    loader.Import(xml_path);
-    std::cout << "root's attr prefix: " << loader.m_root->getAttr("prefix") << std::endl
-        << "root's name: " <<  loader.m_root->getName() << std::endl;
-    loader.m_root->getChild("ZOMBIE_HAND_ARM")->setAttr("test", "new attr");
-    std::cout << "get path of ZOMBIE_HAND_ARM: " << loader.m_root->getChild("ZOMBIE_HAND_ARM")->getPath() << std::endl;
-    loader.Export(xml_outpath);
+    SDL_Init(SDL_INIT_EVERYTHING);
+    std::string xml_path = "task/1-1-1.xml";
+    tinyxml2::XMLDocument doc;
+    int error = doc.LoadFile("task/1-1-1.xml");
+    if (tinyxml2::XML_SUCCESS != error)
+    {
+        std::cout << "fail to load, error code: " << error << std::endl;
+    }
+
+    tinyxml2::XMLElement* item_ptr = doc.RootElement()->FirstChildElement();
+    SDL_Log("%s\n", doc.RootElement()->Attribute("pp"));
+    for (;item_ptr != nullptr;item_ptr = item_ptr->NextSiblingElement())
+    {
+        SDL_Log("%s\n", item_ptr->Name());
+    }
+
+    doc.SaveFile("output.xml");
 }

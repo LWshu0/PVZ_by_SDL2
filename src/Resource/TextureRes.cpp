@@ -13,14 +13,15 @@ void TextureRes::initilize(const std::string& xml_path, const std::string& image
 {
     m_imageRootPath = image_path;
     buildObjName();
-    XmlLoader loader;
-    if (-1 != loader.Import(xml_path))
+    tinyxml2::XMLDocument doc;
+    if (tinyxml2::XML_SUCCESS == doc.LoadFile(xml_path.c_str()))
     {
-        std::string prefix = loader.m_root->getAttr("prefix");
-        auto& children = loader.m_root->getChildren();
-        for (auto ptr : children)
+        std::string prefix = doc.RootElement()->Attribute("prefix");
+
+        tinyxml2::XMLElement* item_ptr = doc.RootElement()->FirstChildElement();
+        for (;item_ptr != nullptr;item_ptr = item_ptr->NextSiblingElement())
         {
-            m_reanim2real[prefix + ptr->getName()] = ptr->getAttr("path");
+            m_reanim2real[prefix + item_ptr->Name()] = item_ptr->Attribute("path");
         }
     }
 }

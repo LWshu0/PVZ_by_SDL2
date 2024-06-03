@@ -1,5 +1,5 @@
 set(RESOURCE_SRC
-    XmlLoader.cpp
+    tinyxml2.cpp
     TextureRes.cpp 
     Dictionary.cpp
     AnimLoader.cpp

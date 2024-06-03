@@ -65,30 +65,31 @@ CardManager::CardManager(
     }
     // 初始化卡池中卡片的信息
     m_cardInPool.resize(PlantType::MaxPlantType);
-    XmlLoader loader;
-    if (0 != loader.Import("resource/card_data.xml"))
+
+    tinyxml2::XMLDocument doc;
+    if (tinyxml2::XML_SUCCESS != doc.LoadFile("resource/card_data.xml"))
     {
         SDL_Log("CardManager can't load resource/card_data.xml");
     }
-    auto children = loader.m_root->getChildren();
-    for (auto child : children)
+    auto child = doc.RootElement()->FirstChildElement();
+    for (;child != nullptr;child = child->NextSiblingElement())
     {
         CardNode new_node{ PlantType::MaxPlantType,0,0,0 };
         std::string content;
-        content = child->getAttr("type");
+        content = child->Attribute("type");
         if (content != "")
         {
             int type = std::stoi(content);
             if (type >= PlantType::MaxPlantType || type < 0)
             {
-                SDL_Log("unknown card in card_data.xml\nName: %s, Type: %s", child->getName(), content);
+                SDL_Log("unknown card in card_data.xml\nName: %s, Type: %s", child->Name(), content);
                 continue;
             }
             new_node.m_plantType = static_cast<PlantType>(type);
         }
-        content = child->getAttr("sun_cost");
+        content = child->Attribute("sun_cost");
         if (content != "") new_node.m_sunCost = std::stoi(content);
-        content = child->getAttr("cool_ms");
+        content = child->Attribute("cool_ms");
         if (content != "") new_node.m_coolMilliSecond = std::stoi(content);
         new_node.m_rmCoolMilliSecond = new_node.m_coolMilliSecond;
         new_node.m_endble = true;

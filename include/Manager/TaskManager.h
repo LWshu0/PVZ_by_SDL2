@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include "Core/Timer.h"
-#include "Resource/XmlLoader.h"
+#include "Resource/tinyxml2.h"
 #include "Zombies/ZombieObject.h"
 
 #include "Manager/Managers.h"
@@ -74,11 +74,11 @@ protected:
 
     bool isValidEvent(TaskEvent& event);
     // 解析一个 task 标签事件
-    void addTaskEvent(XmlNodePtr ptr);
+    void addTaskEvent(tinyxml2::XMLElement* ptr);
     // 解析一个 group 标签事件
-    void addGroupEvent(XmlNodePtr ptr);
+    void addGroupEvent(tinyxml2::XMLElement* ptr);
     // 解析一个 wave 标签事件
-    void addWaveEvent(XmlNodePtr ptr);
+    void addWaveEvent(tinyxml2::XMLElement* ptr);
 };
 
 #endif

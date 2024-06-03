@@ -42,27 +42,26 @@ int TaskManager::loadTask(const std::string& file_path)
     m_nextContinueTime = 0;
     m_lastContinueTime = 0;
     m_taskRecord.clear();
-    XmlLoader loader;
-    if (loader.Import(file_path) == 0)
+    tinyxml2::XMLDocument doc;
+    if (tinyxml2::XML_SUCCESS == doc.LoadFile(file_path.c_str()))
     {
         m_taskPointer = 0;
-        auto children = loader.m_root->getChildren();
-        for (auto ptr : children)
+
+        tinyxml2::XMLElement* item_ptr = doc.RootElement()->FirstChildElement();
+        for (;item_ptr != nullptr;item_ptr = item_ptr->NextSiblingElement())
         {
-            TaskEvent event;
-            std::string node_name;
-            node_name = ptr->getName();
+            std::string node_name(item_ptr->Name());
             if ("group" == node_name)
             {
-                addGroupEvent(ptr);
+                addGroupEvent(item_ptr);
             }
             else if ("task" == node_name)
             {
-                addTaskEvent(ptr);
+                addTaskEvent(item_ptr);
             }
             else if ("wave" == node_name)
             {
-                addWaveEvent(ptr);
+                addWaveEvent(item_ptr);
             }
         }
     }
@@ -301,27 +300,39 @@ bool TaskManager::isValidEvent(TaskEvent& event)
     return true;
 }
 
-void TaskManager::addTaskEvent(XmlNodePtr ptr)
+void TaskManager::addTaskEvent(tinyxml2::XMLElement* ptr)
 {
     TaskEvent event;
     std::string content;
-    content = ptr->getAttr("prewait");
-    if (content != "") event.m_prewaitMilliSecond = std::stoll(content);
-    content = ptr->getAttr("zombietype");
-    if (content != "")
+    auto attr = ptr->FirstAttribute();
+    for (;attr != nullptr;attr = attr->Next())
     {
-        int zombie_type = std::stoi(content);
-        if (zombie_type < ZombieType::MaxZombieType && zombie_type >= 0)
+        std::string attr_name = attr->Name();
+        if ("prewait" == attr_name)
         {
-            event.m_zombieType = static_cast<ZombieType>(zombie_type);
+            event.m_prewaitMilliSecond = attr->Unsigned64Value();
+        }
+        else if ("zombietype" == attr_name)
+        {
+            int zombie_type = attr->IntValue();
+            if (zombie_type < ZombieType::MaxZombieType && zombie_type >= 0)
+            {
+                event.m_zombieType = static_cast<ZombieType>(zombie_type);
+            }
+        }
+        else if ("number" == attr_name)
+        {
+            event.m_zombieNumber = attr->IntValue();
+        }
+        else if ("rowidx" == attr_name)
+        {
+            event.m_rowIdx = attr->IntValue();
+        }
+        else if ("colidx" == attr_name)
+        {
+            event.m_colIdx = attr->IntValue();
         }
     }
-    content = ptr->getAttr("number");
-    if (content != "") event.m_zombieNumber = std::stoll(content);
-    content = ptr->getAttr("rowidx");
-    if (content != "") event.m_rowIdx = std::stoll(content);
-    content = ptr->getAttr("colidx");
-    if (content != "") event.m_colIdx = std::stoll(content);
     // check & push
     if (isValidEvent(event))
     {
@@ -329,25 +340,34 @@ void TaskManager::addTaskEvent(XmlNodePtr ptr)
     }
 }
 
-void TaskManager::addGroupEvent(XmlNodePtr ptr)
+void TaskManager::addGroupEvent(tinyxml2::XMLElement* ptr)
 {
     // 重复次数
-    std::string content = ptr->getAttr("repeat");
-    if ("" == content) return;
-    int repeat_times = std::stoi(content);
-    // 重复间隔
-    content = ptr->getAttr("septime");
-    if ("" == content) return;
-    int sep_ms = std::stoi(content);
+    int repeat_times = 0;
+    int sep_ms = 0;
+    auto attr = ptr->FirstAttribute();
+    for (;attr != nullptr;attr = attr->Next())
+    {
+        std::string attr_name = attr->Name();
+        if ("repeat" == attr_name)
+        {
+            repeat_times = attr->IntValue();
+        }
+        else if ("septime" == attr_name)
+        {
+            sep_ms = attr->IntValue();
+        }
+    }
     TaskEvent wait_event;
     wait_event.m_prewaitMilliSecond = sep_ms;
     // handle
     for (int i = 0;i < repeat_times;i++)
     {
-        auto children = ptr->getChildren();
-        for (auto child : children)
+        auto child = ptr->FirstChildElement();
+        for (;child != nullptr;child = child->NextSiblingElement())
         {
-            if ("task" == child->getName())
+            std::string node_name = std::string(child->Name());
+            if ("task" == node_name)
             {
                 addTaskEvent(child);
             }
@@ -359,15 +379,13 @@ void TaskManager::addGroupEvent(XmlNodePtr ptr)
     }
 }
 
-void TaskManager::addWaveEvent(XmlNodePtr ptr)
+void TaskManager::addWaveEvent(tinyxml2::XMLElement* ptr)
 {
     int wave_start = m_taskRecord.size();
-    auto children = ptr->getChildren();
-    for (auto child : children)
+    auto child = ptr->FirstChildElement();
+    for (;child != nullptr;child = child->NextSiblingElement())
     {
-        TaskEvent event;
-        std::string node_name;
-        node_name = child->getName();
+        std::string node_name(child->Name());
         if ("group" == node_name)
         {
             addGroupEvent(child);
