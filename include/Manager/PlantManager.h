@@ -61,6 +61,8 @@ public:
 
     ~PlantManager();
 
+    bool emptyPosition(int plant_type, int row, int col);
+
     // 根据植物类型枚举获取 loader
     inline std::shared_ptr<AnimLoader> getPlantAnimLoader(int plant_type)
     {

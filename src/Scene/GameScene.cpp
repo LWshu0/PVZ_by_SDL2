@@ -49,65 +49,36 @@ int GameScene::enterScene()
 
 SceneType GameScene::handleEvent(SDL_Event& event)
 {
-    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_q) return SceneType::Scene_MainScene;
-    if (event.type == SDL_MOUSEBUTTONDOWN)
+    switch (event.type)
     {
-        // 是否放置植物
-        if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)  // 手中有植物
+    case SDL_KEYDOWN:
+    case SDLK_q:
+        return SceneType::Scene_MainScene;
+    case SDL_MOUSEBUTTONDOWN: {
+        if (event.button.button == SDL_BUTTON_LEFT)
         {
-            if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试安防植物
-            {
-                // 坐标转换
-                int mouse_click_x = CoreVars::getInstance().camera.getClickX(event.button.x);
-                int  mouse_click_y = CoreVars::getInstance().camera.getClickY(event.button.y);
-                int row = Managers::getInstance().mapManager->caculRow(mouse_click_y);
-                int col = Managers::getInstance().mapManager->caculCol(mouse_click_x);
-                if (Managers::getInstance().mapManager->isValidCell(row, col))
-                {
-                    // 安放植物
-                    Managers::getInstance().plantManager->settlePlant();
-                    // m_plantManager->addPlant(m_plantInHandType, row, col);
-                    Managers::getInstance().cardManager->settleCard(m_cardInHandIdx);
-                    m_cardInHandIdx = -1;
-                    m_plantInHandType = PlantType::MaxPlantType;
-                }
-            }
-            else if (event.button.button == SDL_BUTTON_RIGHT) // 右键放回植物
-            {
-                Managers::getInstance().cardManager->putbackCard(m_cardInHandIdx);
-                m_cardInHandIdx = -1;
-                m_plantInHandType = PlantType::MaxPlantType;
-                Managers::getInstance().plantManager->putbackPlant();
-            }
+            if (m_cardInHandIdx != -1 && m_plantInHandType != PlantType::MaxPlantType)  // 手中有植物
+                _on_LB_haveCardInHand(event);   // 左键 尝试安防植物
+            else
+                _on_LB_noCardInHand(event); // 左键 尝试选卡 or 收集阳光/银币
         }
-        // 是否 pick 卡
-        else    // 手中没有植物
+        else if (event.button.button == SDL_BUTTON_RIGHT)
         {
-            if (event.button.button == SDL_BUTTON_LEFT) // 左键 尝试选卡 or 收集阳光/银币
-            {
-                m_cardInHandIdx = Managers::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
-                if (m_cardInHandIdx != -1)
-                {
-                    m_plantInHandType = Managers::getInstance().cardManager->pickupCard(m_cardInHandIdx);
-                    Managers::getInstance().plantManager->pickPlant(m_plantInHandType);
-                }
-                else // 尝试收集
-                {
-                    // todo ...
-                    Managers::getInstance().productManager->clickCollection(event.button.x, event.button.y);
-                }
-
-            }
+            _put_back_card(); // 右键放回植物
         }
+        break;
     }
-    else if (event.type == SDL_MOUSEMOTION)
-    {
+    case SDL_MOUSEMOTION: {
         // 坐标转换
         m_mousePositionX = event.motion.x;
         m_mousePositionY = event.motion.y;
         int mousePositionX = CoreVars::getInstance().camera.getClickX(event.motion.x);
         int mousePositionY = CoreVars::getInstance().camera.getClickY(event.motion.y);
         if (m_cardInHandIdx != -1) Managers::getInstance().plantManager->presettlePlant(mousePositionX, mousePositionY);
+        break;
+    }
+    default:
+        break;
     }
     return SceneType::Scene_MaxSceneIdx;
 }
@@ -169,3 +140,55 @@ int GameScene::renderScene()
 
 GameScene::~GameScene()
 {}
+
+void GameScene::_settle_plant()
+{
+    Managers::getInstance().plantManager->settlePlant();
+    Managers::getInstance().cardManager->settleCard(m_cardInHandIdx);
+    m_cardInHandIdx = -1;
+    m_plantInHandType = PlantType::MaxPlantType;
+}
+
+void GameScene::_put_back_card()
+{
+    Managers::getInstance().cardManager->putbackCard(m_cardInHandIdx);
+    m_cardInHandIdx = -1;
+    m_plantInHandType = PlantType::MaxPlantType;
+    Managers::getInstance().plantManager->putbackPlant();
+}
+
+void GameScene::_on_LB_haveCardInHand(SDL_Event& event)
+{
+    // 点击的卡槽
+    if (Managers::getInstance().cardManager->inSlot(event.button.x, event.button.y))
+    {
+        _put_back_card();
+    }
+    // 点击非卡槽
+    else
+    {
+        // 坐标转换
+        int mouse_click_x = CoreVars::getInstance().camera.getClickX(event.button.x);
+        int mouse_click_y = CoreVars::getInstance().camera.getClickY(event.button.y);
+        int row = Managers::getInstance().mapManager->caculRow(mouse_click_y);
+        int col = Managers::getInstance().mapManager->caculCol(mouse_click_x);
+        if (Managers::getInstance().mapManager->isValidCell(row, col)
+            && Managers::getInstance().plantManager->emptyPosition(m_plantInHandType, row, col))
+        {
+            // 安放植物
+            _settle_plant();
+        }
+    }
+}
+
+void GameScene::_on_LB_noCardInHand(SDL_Event& event)
+{
+    // 收集
+    int rt = Managers::getInstance().productManager->clickCollection(event.button.x, event.button.y);
+    if (rt == 0) return;
+    // 选卡
+    m_cardInHandIdx = Managers::getInstance().cardManager->getSlotIdx(event.button.x, event.button.y);
+    if (m_cardInHandIdx == -1) return;
+    m_plantInHandType = Managers::getInstance().cardManager->pickupCard(m_cardInHandIdx);
+    Managers::getInstance().plantManager->pickPlant(m_plantInHandType);
+}

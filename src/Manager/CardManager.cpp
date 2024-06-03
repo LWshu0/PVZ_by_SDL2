@@ -274,6 +274,12 @@ int CardManager::getPoolIdx(int x, int y)
     return -1;
 }
 
+bool CardManager::inSlot(int mouse_x, int mouse_y)
+{
+    SDL_Point point{ mouse_x, mouse_y };
+    return SDL_PointInRect(&point, &m_cardSlotRange);
+}
+
 bool CardManager::isFullSlot()
 {
     return Managers::getInstance().usrinfoManager->getUnlockSlotNum() == m_cardInSlot.size()

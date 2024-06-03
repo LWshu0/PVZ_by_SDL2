@@ -91,6 +91,9 @@ public:
     // 返回 -1 代表该坐标不在任何卡池卡片范围内
     int getPoolIdx(int x, int y);
 
+    // 鼠标点击的坐标是否在卡槽范围内
+    bool inSlot(int mouse_x, int mouse_y);
+
     // 判断卡槽是否填满
     // 填满 or 所有的卡都在卡槽中
     bool isFullSlot();

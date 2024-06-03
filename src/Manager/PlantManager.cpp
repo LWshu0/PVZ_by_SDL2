@@ -193,6 +193,11 @@ int PlantManager::renderPlants()
 PlantManager::~PlantManager()
 {}
 
+bool PlantManager::emptyPosition(int plant_type, int row, int col)
+{
+    return m_mainPlants[row][col] == nullptr;
+}
+
 int PlantManager::changeAllTo(PlantState state)
 {
     for (int i = 0;i < m_mainPlants.size();i++)

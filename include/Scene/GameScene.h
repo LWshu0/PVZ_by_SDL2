@@ -31,6 +31,13 @@ public:
     virtual int renderScene() override;
 
     virtual ~GameScene();
+
+protected:
+    void _settle_plant();
+    void _put_back_card();
+
+    void _on_LB_haveCardInHand(SDL_Event& event);
+    void _on_LB_noCardInHand(SDL_Event& event);
 };
 
 

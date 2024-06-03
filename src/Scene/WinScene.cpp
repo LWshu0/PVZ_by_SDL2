@@ -39,13 +39,13 @@ int WinScene::enterScene()
     // 相机位置
     CoreVars::getInstance().camera.setPosition(0.0f, 0.0f);
     // 奖励植物
-    Managers::getInstance().usrinfoManager->unlockPlant(
-        Managers::getInstance().taskManager->getRewardPlant()
-    );
+    // Managers::getInstance().usrinfoManager->unlockPlant(
+    //     Managers::getInstance().taskManager->getRewardPlant()
+    // );
     // 进入下一关
-    Managers::getInstance().usrinfoManager->nextTask();
+    // Managers::getInstance().usrinfoManager->nextTask();
     // 保存进度
-    Managers::getInstance().usrinfoManager->save();
+    // Managers::getInstance().usrinfoManager->save();
     return 0;
 }
 
