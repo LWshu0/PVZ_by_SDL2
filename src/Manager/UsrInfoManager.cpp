@@ -1,8 +1,4 @@
 #include "Manager/UsrInfoManager.h"
-#include <fstream>
-#include "rapidjson/istreamwrapper.h"
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/document.h"
 
 UsrInfoManager::UsrInfoManager()
 {}
@@ -12,16 +8,15 @@ int UsrInfoManager::read()
     std::ifstream map_file("resource/usr.json");
     if (!map_file.is_open()) return -1;
     rapidjson::IStreamWrapper isw(map_file);
-    rapidjson::Document doc;
-    doc.ParseStream(isw);
-    m_roundNum = doc["round"].GetInt();
-    m_taskIdxPre = doc["task"]["pre"].GetInt();
-    m_taskIdxPost = doc["task"]["post"].GetInt();
-    m_unlockSlotNum = doc["unlock_slot"].GetInt();
+    m_doc.ParseStream(isw);
+    m_roundNum = m_doc["round"].GetInt();
+    m_taskIdxPre = m_doc["task"]["pre"].GetInt();
+    m_taskIdxPost = m_doc["task"]["post"].GetInt();
+    m_unlockSlotNum = m_doc["unlock_slot"].GetInt();
 
     memset(m_unlockPlants, 0, sizeof(m_unlockPlants));
     m_unlockPlantNum = 0;
-    rapidjson::Value& unlock_plants_array = doc["unlock_plants"];
+    rapidjson::Value& unlock_plants_array = m_doc["unlock_plants"];
     for (rapidjson::Value::ConstValueIterator itr = unlock_plants_array.Begin(); itr != unlock_plants_array.End(); ++itr)
     {
         int plant_idx = itr->GetInt();
@@ -31,6 +26,33 @@ int UsrInfoManager::read()
             m_unlockPlantNum += 1;
         }
     }
+    map_file.close();
+    return 0;
+}
+
+int UsrInfoManager::save()
+{
+    m_doc["round"].SetInt(m_roundNum);
+    m_doc["task"]["pre"].SetInt(m_taskIdxPre);
+    m_doc["task"]["post"].SetInt(m_taskIdxPost);
+    m_doc["unlock_slot"].SetInt(m_unlockSlotNum);
+    rapidjson::Value a(rapidjson::kArrayType);
+    rapidjson::Document::AllocatorType& allocator = m_doc.GetAllocator();
+    m_doc["unlock_plants"].Reserve(PlantType::MaxPlantType, allocator);
+    m_doc["unlock_plants"].Clear();
+    for (int i = 0; i < PlantType::MaxPlantType; i++)
+    {
+        if (m_unlockPlants[i])
+        {
+            m_doc["unlock_plants"].PushBack(i, allocator);
+        }
+    }
+    std::ofstream map_file("resource/usr.json");
+    if (!map_file.is_open()) return -1;
+    rapidjson::OStreamWrapper osw(map_file);
+    rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+    m_doc.Accept(writer);
+    map_file.close();
     return 0;
 }
 
@@ -49,7 +71,7 @@ void UsrInfoManager::nextTask()
     }
 }
 
-void UsrInfoManager::unlockPlant(PlantType plant_type)
+void UsrInfoManager::unlockPlant(int plant_type)
 {
     if (plant_type != PlantType::MaxPlantType)
     {

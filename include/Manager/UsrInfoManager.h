@@ -3,6 +3,12 @@
 
 #include "Plants/PlantObject.h"
 #include "Manager/Managers.h"
+#include <fstream>
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
+#include "rapidjson/istreamwrapper.h"
+#include "rapidjson/ostreamwrapper.h"
+#include <rapidjson/writer.h>
 
 class UsrInfoManager
 {
@@ -17,10 +23,12 @@ private:
     bool m_unlockPlants[PlantType::MaxPlantType];
     int m_unlockPlantNum;
 
+    rapidjson::Document m_doc;
 public:
     UsrInfoManager();
 
     int read();
+    int save();
 
     inline int getRoundNum() { return m_roundNum; }
     inline int getTaskPre() { return m_taskIdxPre; }
@@ -30,7 +38,7 @@ public:
 
     void nextTask();
 
-    void unlockPlant(PlantType plant_type);
+    void unlockPlant(int plant_type);
     bool isUnlockPlant(int plant_type);
 
     ~UsrInfoManager();

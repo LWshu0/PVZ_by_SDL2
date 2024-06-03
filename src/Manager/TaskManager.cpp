@@ -46,7 +46,7 @@ int TaskManager::loadTask(const std::string& file_path)
     if (tinyxml2::XML_SUCCESS == doc.LoadFile(file_path.c_str()))
     {
         m_taskPointer = 0;
-
+        m_rewardPlant = doc.RootElement()->IntAttribute("reward", PlantType::MaxPlantType);
         tinyxml2::XMLElement* item_ptr = doc.RootElement()->FirstChildElement();
         for (;item_ptr != nullptr;item_ptr = item_ptr->NextSiblingElement())
         {

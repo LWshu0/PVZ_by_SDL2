@@ -25,6 +25,7 @@ struct WaveEvent {
 
 class TaskManager {
 protected:
+    int m_rewardPlant;                      // 关卡获胜后的奖励植物
     int m_taskPointer;                      // 当前所在的记录下标
     std::vector<TaskEvent> m_taskRecord;    // 关卡记录
     std::vector<WaveEvent> m_waveRecord;    // 进度条记录
@@ -60,6 +61,7 @@ public:
     // 渲染关卡进度条
     int renderTask();
 
+    inline int getRewardPlant() { return m_rewardPlant; }
     inline bool isFinish() { return m_taskPointer >= m_taskRecord.size(); }
 
     ~TaskManager();

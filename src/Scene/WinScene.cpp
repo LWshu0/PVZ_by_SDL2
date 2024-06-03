@@ -1,5 +1,7 @@
 #include "Scene/WinScene.h"
 #include "Manager/CardManager.h"
+#include "Manager/TaskManager.h"
+#include "Manager/UsrInfoManager.h"
 // 全局单例
 #include "Core/CoreVars.h"
 #include "Resource/ResVars.h"
@@ -36,6 +38,14 @@ int WinScene::enterScene()
     m_buttonQuitTexture = nullptr;
     // 相机位置
     CoreVars::getInstance().camera.setPosition(0.0f, 0.0f);
+    // 奖励植物
+    Managers::getInstance().usrinfoManager->unlockPlant(
+        Managers::getInstance().taskManager->getRewardPlant()
+    );
+    // 进入下一关
+    Managers::getInstance().usrinfoManager->nextTask();
+    // 保存进度
+    Managers::getInstance().usrinfoManager->save();
     return 0;
 }
 
@@ -103,7 +113,9 @@ int WinScene::renderScene()
     // 卡片
     SDL_RenderCopy(
         CoreVars::getInstance().renderer,
-        Managers::getInstance().cardManager->getCardTexture(PlantType::PlantPeaShooter1),
+        Managers::getInstance().cardManager->getCardTexture(
+            Managers::getInstance().taskManager->getRewardPlant()
+        ),
         NULL,
         &m_cardRect
     );
