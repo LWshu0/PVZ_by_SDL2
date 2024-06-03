@@ -14,11 +14,6 @@ void Camera::initilize(float x, float y, float w, float h)
     m_cameraViewport = SDL_FRect{ x, y, w, h };
 }
 
-void Camera::setOriginPoint(float x, float y)
-{
-    m_originPoint = SDL_FPoint{ x, y };
-}
-
 void Camera::setPosition(float x, float y)
 {
     m_cameraViewport.x = x;

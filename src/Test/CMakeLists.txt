@@ -1,5 +1,5 @@
 add_executable(XmlTest XmlTest.cpp)
-target_link_libraries(XmlTest PUBLIC core)
+target_link_libraries(XmlTest PUBLIC core resource)
 
 add_executable(OperatorTest OperatorTest.cpp)
 target_link_libraries(OperatorTest PUBLIC mingw32 SDL2::SDL2main SDL2::SDL2 core )
