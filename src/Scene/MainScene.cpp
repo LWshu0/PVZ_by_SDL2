@@ -59,7 +59,7 @@ MainScene::MainScene() :
         std::make_shared<AnimLoader>("reanim/SelectorScreen.reanim"),
         SDL_FPoint{ 0.0f, 0.0f }
     ),
-    m_state(MainSceneState::EnterScene),
+    m_state(MainSceneState::Invalid),
     m_hoverButtonIdx(MainSceneButtonType::MainScene_MaxButtonNum)
 {
     m_buttonRange.resize(MainSceneButtonType::MainScene_MaxButtonNum);

@@ -42,6 +42,7 @@ int TaskManager::loadTask(const std::string& file_path)
     m_nextContinueTime = 0;
     m_lastContinueTime = 0;
     m_taskRecord.clear();
+    m_waveRecord.clear();
     tinyxml2::XMLDocument doc;
     if (tinyxml2::XML_SUCCESS == doc.LoadFile(file_path.c_str()))
     {

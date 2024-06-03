@@ -120,7 +120,7 @@ public:
     // 判断播放到结束帧
     inline bool isPlayEnd(int track_idx)
     {
-        return m_trackPlayRecord[track_idx].m_playingFrameIdx == m_trackPlayRecord[track_idx].m_end;
+        return m_trackPlayRecord[track_idx].m_playingFrameIdx == (m_trackPlayRecord[track_idx].m_end - 1);
     }
     // 判断轨道是否是在当前时刻更新的
     inline bool isUpdateAt(int track_idx, uint64_t now_ms)

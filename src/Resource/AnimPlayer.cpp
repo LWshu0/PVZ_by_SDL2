@@ -27,7 +27,7 @@ int AnimPlayer::updatePlayingFrameIdx()
         {
             m_trackPlayRecord[track_idx].m_lastMilliSecond = CoreVars::getInstance().timer.getTime();
             m_trackPlayRecord[track_idx].m_playingFrameIdx += 1;
-            if (m_trackPlayRecord[track_idx].m_playingFrameIdx > m_trackPlayRecord[track_idx].m_end)
+            if (m_trackPlayRecord[track_idx].m_playingFrameIdx >= m_trackPlayRecord[track_idx].m_end)
             {
                 m_trackPlayRecord[track_idx].m_playingFrameIdx = m_trackPlayRecord[track_idx].m_begin;
             }

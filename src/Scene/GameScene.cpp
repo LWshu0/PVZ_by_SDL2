@@ -51,9 +51,11 @@ SceneType GameScene::handleEvent(SDL_Event& event)
 {
     switch (event.type)
     {
-    case SDL_KEYDOWN:
-    case SDLK_q:
-        return SceneType::Scene_MainScene;
+    case SDL_KEYDOWN: {
+        if (event.key.keysym.sym == SDLK_q)
+            return SceneType::Scene_MainScene;
+        break;
+    }
     case SDL_MOUSEBUTTONDOWN: {
         if (event.button.button == SDL_BUTTON_LEFT)
         {

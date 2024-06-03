@@ -18,6 +18,7 @@ protected:
         MainScene_MaxButtonNum
     };
     enum MainSceneState {
+        Invalid,        // 非法
         EnterScene,     // 墓碑升起
         WoodDrop,       // 告示牌掉落
         Idle            // 空闲
